@@ -1,0 +1,31 @@
+
+plugins {
+	id 'java'
+	id 'idea'
+	id 'eclipse-wtp'
+	// Allows running "gradle shadowJar" to create an executable JAR of your project
+	id 'com.github.johnrengelman.shadow' version '2.0.0'
+}
+
+repositories {
+	jcenter()
+    maven {
+	url  "https://jitpack.io"
+	}	
+}
+
+dependencies {
+	compile "com.github.austinv11:Discord4j:2.9.3"
+	// Allows you to log events from Discord4J
+	compile "ch.qos.logback:logback-classic:1.2.3"
+	compile 'com.google.code.gson:gson:2.8.2' 
+	sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+}
+
+jar {
+	manifest {
+		attributes 	'Main-Class': 'com.github.xhiroyui.OrinBot'
+		}
+	}
+	

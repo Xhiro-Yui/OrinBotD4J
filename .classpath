@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src/main/java">
+		<attributes>
+			<attribute name="FROM_GRADLE_MODEL" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="src" path="src/test/java">
+		<attributes>
+			<attribute name="FROM_GRADLE_MODEL" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.buildship.core.gradleclasspathcontainer"/>
+	<classpathentry path="bin/default" kind="output"/>
+	<classpathentry output="bin/main" kind="src" path="src/main/java">
+		<attributes>
+			<attribute name="gradle_scope" value="main"/>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry output="bin/test" kind="src" path="src/test/java">
+		<attributes>
+			<attribute name="gradle_scope" value="test"/>
+			<attribute name="gradle_used_by_scope" value="test"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7/"/>
+	<classpathentry sourcepath="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/com.github.austinv11/Discord4J/2.9.3/cc48c37da12aa9b610ed5eb9c73ec4079896ba9b/Discord4j-2.9.3-sources.jar" kind="lib" path="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/com.github.austinv11/Discord4J/2.9.3/908c7cb01342ec6cf915c9110ef5cd08b6b21634/Discord4j-2.9.3.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/ch.qos.logback/logback-classic/1.2.3/cfd5385e0c5ed1c8a5dce57d86e79cf357153a64/logback-classic-1.2.3-sources.jar" kind="lib" path="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/ch.qos.logback/logback-classic/1.2.3/7c4f3c474fb2c041d8028740440937705ebb473a/logback-classic-1.2.3.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/com.google.code.gson/gson/2.8.2/b2da9f8444128651758719856de579eacff7f387/gson-2.8.2-sources.jar" kind="lib" path="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/com.google.code.gson/gson/2.8.2/3edcfe49d2c6053a70a2a47e4e1c2f94998a49cf/gson-2.8.2.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/org.slf4j/slf4j-api/1.7.25/962153db4a9ea71b79d047dfd1b2a0d80d8f4739/slf4j-api-1.7.25-sources.jar" kind="lib" path="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/org.slf4j/slf4j-api/1.7.25/da76ca59f6a57ee3102f8f9bd9cee742973efa8a/slf4j-api-1.7.25.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/org.apache.httpcomponents/httpmime/4.5.4/9d13c7f8c9604caf07825fcd79e3b06c7eabf496/httpmime-4.5.4-sources.jar" kind="lib" path="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/org.apache.httpcomponents/httpmime/4.5.4/c3a4bf52f42ca74ed3d6484d0a5b5f8f2fed13ea/httpmime-4.5.4.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/org.apache.httpcomponents/httpclient/4.5.4/67fd2133e2289b0f21b5c686ecb4194aa421e173/httpclient-4.5.4-sources.jar" kind="lib" path="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/org.apache.httpcomponents/httpclient/4.5.4/2f8a3c0c53550b237d8f7a98a417397395af8b80/httpclient-4.5.4.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/org.apache.httpcomponents/httpcore/4.4.8/4b69507bc39c2e0c14798dd91ff4da82ac356f81/httpcore-4.4.8-sources.jar" kind="lib" path="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/org.apache.httpcomponents/httpcore/4.4.8/70539e2a07865bab38b4153da1ce599cf081790a/httpcore-4.4.8.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/commons-io/commons-io/2.6/2566800dc841d9d2c5a0d34d807e45d4107dbbdf/commons-io-2.6-sources.jar" kind="lib" path="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/commons-io/commons-io/2.6/815893df5f31da2ece4040fe0a12fd44b577afaf/commons-io-2.6.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/org.eclipse.jetty.websocket/websocket-client/9.4.8.v20171121/4d808ddf4528b8666314f266b865ebc8f4c0f676/websocket-client-9.4.8.v20171121-sources.jar" kind="lib" path="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/org.eclipse.jetty.websocket/websocket-client/9.4.8.v20171121/f83fc3fbd52109a57d09b3ef88b715a36e8acdb4/websocket-client-9.4.8.v20171121.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/net.jodah/typetools/0.5.0/c9f6661d39cf855398543f912b8bbc91a5214838/typetools-0.5.0-sources.jar" kind="lib" path="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/net.jodah/typetools/0.5.0/f61380c805c48c98305157e2543ca0bfc91583fe/typetools-0.5.0.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/org.apache.commons/commons-lang3/3.7/e7e36219edde1c66c93495a75490d8f526c377cb/commons-lang3-3.7-sources.jar" kind="lib" path="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/org.apache.commons/commons-lang3/3.7/557edd918fd41f9260963583ebf5a61a43a6b423/commons-lang3-3.7.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.module/jackson-module-afterburner/2.9.2/91e9e1c75e3dbf6a528efdfd7eb355f47f707a63/jackson-module-afterburner-2.9.2-sources.jar" kind="lib" path="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.module/jackson-module-afterburner/2.9.2/1f542b95562b748b54da58a1aab140ded15e42a8/jackson-module-afterburner-2.9.2.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/net.java.dev.jna/jna/4.5.0/81072e8420f1635a3625cdfd253ccea6e33535cc/jna-4.5.0-sources.jar" kind="lib" path="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/net.java.dev.jna/jna/4.5.0/55b548d3195efc5280bf1c3f17b49659c54dee40/jna-4.5.0.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/com.googlecode.soundlibs/mp3spi/1.9.5.4/62b042ffd0f66a598486440b0328874d436c5a3f/mp3spi-1.9.5.4-sources.jar" kind="lib" path="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/com.googlecode.soundlibs/mp3spi/1.9.5.4/3bdf9ffd65c157daec8735e127c3705513bd384d/mp3spi-1.9.5.4.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/org.jcraft/jorbis/0.0.17/5446be5d62e4c6b347c8e6cd28dc00a936417ba2/jorbis-0.0.17-sources.jar" kind="lib" path="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/org.jcraft/jorbis/0.0.17/8872d22b293e8f5d7d56ff92be966e6dc28ebdc6/jorbis-0.0.17.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/org.jflac/jflac-codec/1.5.2/d93bdae682ffc882bd1e0ff064b859f295789040/jflac-codec-1.5.2-sources.jar" kind="lib" path="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/org.jflac/jflac-codec/1.5.2/21da27e1fa32a059040c09d05e4265ac0cec95fa/jflac-codec-1.5.2.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/com.googlecode.soundlibs/tritonus-share/0.3.7.4/f05ddcdbb81f05faec9f90014b67a9e9ded062e8/tritonus-share-0.3.7.4-sources.jar" kind="lib" path="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/com.googlecode.soundlibs/tritonus-share/0.3.7.4/bdddc55194f9cf7b970dd5f3affcbacb88342b0b/tritonus-share-0.3.7.4.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/org.tritonus/tritonus-dsp/0.3.6/fa2811353519d460913c32598b16ea10d13423dc/tritonus-dsp-0.3.6.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/com.vdurmont/emoji-java/4.0.0/11bafddee06019e8305adc6e45bcea720e383a39/emoji-java-4.0.0-sources.jar" kind="lib" path="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/com.vdurmont/emoji-java/4.0.0/b2de319e06192443ee273dd7e69d10b09ffb3442/emoji-java-4.0.0.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/com.koloboke/koloboke-impl-common-jdk8/1.0.0/e618de104cafff2f35d727d8bd004ac1fd0f774b/koloboke-impl-common-jdk8-1.0.0-sources.jar" kind="lib" path="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/com.koloboke/koloboke-impl-common-jdk8/1.0.0/7a47633f274105dc0a8c70e1f1d846874a092410/koloboke-impl-common-jdk8-1.0.0.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/ch.qos.logback/logback-core/1.2.3/3ebabe69eba0196af9ad3a814f723fb720b9101e/logback-core-1.2.3-sources.jar" kind="lib" path="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/ch.qos.logback/logback-core/1.2.3/864344400c3d4d92dfeb0a305dc87d953677c03c/logback-core-1.2.3.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/commons-logging/commons-logging/1.2/ecf26c7507d67782a3bbd148d170b31dfad001aa/commons-logging-1.2-sources.jar" kind="lib" path="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/commons-logging/commons-logging/1.2/4bfc12adfe4842bf07b657f0369c4cb522955686/commons-logging-1.2.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/commons-codec/commons-codec/1.10/11fb3d88ae7e3b757d70237064210ceb954a5a04/commons-codec-1.10-sources.jar" kind="lib" path="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/commons-codec/commons-codec/1.10/4b95f4897fa13f2cd904aee711aeafc0c5295cd8/commons-codec-1.10.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/org.eclipse.jetty/jetty-client/9.4.8.v20171121/bf31f6e1035e38f28904cb346dcf682e25368be0/jetty-client-9.4.8.v20171121-sources.jar" kind="lib" path="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/org.eclipse.jetty/jetty-client/9.4.8.v20171121/e93cac2ce46e81ee8b36288cf7e19d3bac82d536/jetty-client-9.4.8.v20171121.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/org.eclipse.jetty/jetty-xml/9.4.8.v20171121/59e30884b43f91ea6715425621ea47368ba0b927/jetty-xml-9.4.8.v20171121-sources.jar" kind="lib" path="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/org.eclipse.jetty/jetty-xml/9.4.8.v20171121/b0d6f87f580a9bd7fa9aaf9b7448bf63cf0ac34f/jetty-xml-9.4.8.v20171121.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/org.eclipse.jetty.websocket/websocket-common/9.4.8.v20171121/faa7caf4cfb6e6a90ebb368339457d0281f85fb5/websocket-common-9.4.8.v20171121-sources.jar" kind="lib" path="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/org.eclipse.jetty.websocket/websocket-common/9.4.8.v20171121/82cd6d9caa68baf6557176159e6e5c37faed0e9b/websocket-common-9.4.8.v20171121.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/org.eclipse.jetty/jetty-http/9.4.8.v20171121/5e746cd0ccb732eef0427c8c4b9dcb034e26c61b/jetty-http-9.4.8.v20171121-sources.jar" kind="lib" path="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/org.eclipse.jetty/jetty-http/9.4.8.v20171121/9879d6c4e37400bf43f0cd4b3c6e34a3ba409864/jetty-http-9.4.8.v20171121.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/org.eclipse.jetty/jetty-io/9.4.8.v20171121/41f25e1e1bba14ab0d3415488fa189f09c27a1cf/jetty-io-9.4.8.v20171121-sources.jar" kind="lib" path="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/org.eclipse.jetty/jetty-io/9.4.8.v20171121/d3fe2dfa62f52ee91ff07cb359f63387e0e30b40/jetty-io-9.4.8.v20171121.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/org.eclipse.jetty/jetty-util/9.4.8.v20171121/a74ecb43f96b2e21852f6908604316d7348a16ad/jetty-util-9.4.8.v20171121-sources.jar" kind="lib" path="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/org.eclipse.jetty/jetty-util/9.4.8.v20171121/d6ec1a1613c7fa72aa6bf5d8c204750afbc3df3b/jetty-util-9.4.8.v20171121.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-databind/2.9.2/21f2f0b1de60af93890b12fac673035f516f0c94/jackson-databind-2.9.2-sources.jar" kind="lib" path="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-databind/2.9.2/1d8d8cb7cf26920ba57fb61fa56da88cc123b21f/jackson-databind-2.9.2.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-core/2.9.2/5c8cc7340ef8234e0b497a21c95e6f2e7af09e6c/jackson-core-2.9.2-sources.jar" kind="lib" path="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-core/2.9.2/aed20e50152a2f19adc1995c8d8f307c7efa414d/jackson-core-2.9.2.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/com.googlecode.soundlibs/jlayer/1.0.1.4/48ca80380f95416451fb56540a4492b15f4f4697/jlayer-1.0.1.4-sources.jar" kind="lib" path="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/com.googlecode.soundlibs/jlayer/1.0.1.4/b8df07ad72b482f7d6e6dee7fed669385e8dd92f/jlayer-1.0.1.4.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/org.json/json/20170516/6d919271d0ac012fb5706abd62fd3aff0f78ed95/json-20170516-sources.jar" kind="lib" path="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/org.json/json/20170516/949abe1460757b8dc9902c562f83e49675444572/json-20170516.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/com.koloboke/koloboke-api-jdk8/1.0.0/3f27eebf75c117a922066fed16537db427eb7a38/koloboke-api-jdk8-1.0.0-sources.jar" kind="lib" path="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/com.koloboke/koloboke-api-jdk8/1.0.0/266824ffd8d8c3ea57d2a1617b168a1195ee263c/koloboke-api-jdk8-1.0.0.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/org.eclipse.jetty.websocket/websocket-api/9.4.8.v20171121/3e68cf3965b05f5c81704a6e98bef7f479f8b0b6/websocket-api-9.4.8.v20171121-sources.jar" kind="lib" path="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/org.eclipse.jetty.websocket/websocket-api/9.4.8.v20171121/6d889f9a8b5fd2a573c6d1d518c7e119a6d8c170/websocket-api-9.4.8.v20171121.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-annotations/2.9.0/a0ad4e203304ccab7e01266fa814115850edb8a9/jackson-annotations-2.9.0-sources.jar" kind="lib" path="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-annotations/2.9.0/7c10d545325e3a6e72e06381afe469fd40eb701/jackson-annotations-2.9.0.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/junit/junit/3.8.2/aaa058540bf14ad600dd784de979c46c721ccbbe/junit-3.8.2-sources.jar" kind="lib" path="C:/Users/N3296/.gradle/caches/modules-2/files-2.1/junit/junit/3.8.2/7e4cde26b53a9a0e3fe5b00d1dbbc7cc1d46060/junit-3.8.2.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+</classpath>
