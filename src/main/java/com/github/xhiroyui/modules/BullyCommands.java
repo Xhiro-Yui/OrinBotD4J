@@ -8,7 +8,7 @@ import sx.blah.discord.modules.IModule;
 
 public class BullyCommands implements IModule{
 
-    private String moduleName = "SimpleCommand";
+    private String moduleName = "BullyCommands";
     private String moduleVersion = "1.0";
     private String moduleMinimumVersion = "2.3.0";
     private String author = "Xhiro Yui / Rhestia";
