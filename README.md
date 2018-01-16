@@ -2,4 +2,4 @@
 
 OrinBotD4J - OrinBot for Discord using Discord4J API.
 
-WIP
+Work in Progress :D
