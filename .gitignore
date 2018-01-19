@@ -1,5 +1,22 @@
-*.class
 *.log
 *.jar
 hs_err_pid*
 *.bat
+
+# Java class files
+*.class	
+
+# generated files
+bin/
+gen/
+
+# Eclipse project files
+.classpath
+.project
+
+
+#Gradle
+.gradletasknamecache
+.gradle/
+build/
+bin/
