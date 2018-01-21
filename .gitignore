@@ -20,3 +20,4 @@ gen/
 .gradle/
 build/
 bin/
+/.settings/
