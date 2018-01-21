@@ -16,7 +16,7 @@ import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.RateLimitException;
 import sx.blah.discord.util.RequestBuffer;
 
-public class BullyCommandHandler extends CommandHandler {
+public class BullyCommandHandler extends ModuleHandler {
 
 	private BullyCommands module;
 	private UserWhitelist whitelist;

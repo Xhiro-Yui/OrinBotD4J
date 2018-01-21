@@ -16,7 +16,4 @@ public class DiscordClientBuilder {
             return null;
         }
     }
-
-	public void loginClient(IDiscordClient client) { client.login(); }
-    
 }
