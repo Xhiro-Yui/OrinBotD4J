@@ -31,9 +31,5 @@ public class ModuleHandler {
 		new MessageBuilder(AdminCommands.client).appendContent(message).withChannel(event.getMessage().getChannel())
 				.build();
 	}
-	
-//	public String toString() {
-//		return moduleName;
-//	}
-//	
+
 }
