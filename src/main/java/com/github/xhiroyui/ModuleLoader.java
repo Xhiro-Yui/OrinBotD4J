@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import com.github.xhiroyui.modules.AdminCommands;
 import com.github.xhiroyui.modules.BullyCommands;
+import com.github.xhiroyui.modules.GBFCommands;
 import com.github.xhiroyui.util.IModules;
 import com.github.xhiroyui.util.UserWhitelist;
 
@@ -22,6 +23,7 @@ public class ModuleLoader {
 
 	public void loadMandatoryModules() {
 		new AdminCommands(whitelist, moduleList, client).enable();
+		new GBFCommands(client).enable();
 	}
 	
 	public void loadModules() {

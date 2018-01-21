@@ -53,7 +53,7 @@ public class ModuleHandler {
 		return null;
 	}
 
-	public void helpEmbed(Command command, MessageReceivedEvent event) {
+	protected void helpEmbed(Command command, MessageReceivedEvent event) {
 		EmbedBuilder builder = new EmbedBuilder();
 		builder.withAuthorName(command.getCommandName());
 		builder.withDesc(command.getCommandDescription());
@@ -66,5 +66,29 @@ public class ModuleHandler {
 		builder.withFooterText("by Rhestia :3");
 		builder.withFooterIcon("http://i.imgur.com/TELh8OT.png");
 		RequestBuffer.request(() -> event.getChannel().sendMessage(builder.build()));
+	}
+	
+
+	protected void invalidArgsLength(Command commandObj, MessageReceivedEvent event) {
+		String error = "Too many arguments given for the command `"+ commandObj.getCommandName() + "`.";
+		sendMessage(error,event);
+	}
+	
+	protected String validateCommand(MessageReceivedEvent event, String[] command) {
+		Command commandObj = getCommandObj(command[0]);
+		if (commandObj != null) {
+			if (command.length > 1 && command[1].equalsIgnoreCase("help")) {
+				sendMessage(commandObj.getCommandDescription(), event);
+				helpEmbed(commandObj, event);
+			} else {
+				if (command.length - 1 > commandObj.getMaximumArgs()) {
+					invalidArgsLength(commandObj, event);
+				}
+				else {
+					return commandObj.getCommandCode();	
+				}
+			}
+		}
+		return null;
 	}
 }

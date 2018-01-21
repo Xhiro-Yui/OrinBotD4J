@@ -1,27 +1,19 @@
 package com.github.xhiroyui.modules;
 
-import java.util.HashMap;
-
 import com.github.xhiroyui.util.IModules;
-import com.github.xhiroyui.util.UserWhitelist;
-
 import sx.blah.discord.api.IDiscordClient;
 
-public class AdminCommands implements IModules{
+public class GBFCommands implements IModules{
 
-    private String moduleName = "AdminCommands";
+    private String moduleName = "GBFCommands";
     private String moduleVersion = "1.0";
     private String moduleMinimumVersion = "2.3.0";
     private String author = "Xhiro Yui / Rhestia";
     private String prefix = "!";
     public static IDiscordClient client;
-    private UserWhitelist whitelist;
-    private HashMap<IModules, Boolean> moduleList;
     
-    public AdminCommands(UserWhitelist _whitelist, HashMap<IModules, Boolean> _moduleList, IDiscordClient _client) {
-		whitelist = _whitelist;
+    public GBFCommands(IDiscordClient _client) {
 		client = _client;
-		moduleList = _moduleList;
 	}
 
 	public void disable() {
@@ -29,7 +21,7 @@ public class AdminCommands implements IModules{
     }
 
     public boolean enable() {
-        client.getDispatcher().registerListener(new AdminCommandHandler(this, whitelist, moduleList));
+        client.getDispatcher().registerListener(new GBFCommandHandler(this));
         return true;
     }
 
