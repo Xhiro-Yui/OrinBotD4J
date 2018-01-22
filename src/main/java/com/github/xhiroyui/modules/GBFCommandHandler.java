@@ -1,6 +1,7 @@
 package com.github.xhiroyui.modules;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -8,6 +9,8 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import com.github.xhiroyui.util.Command;
+import com.github.xhiroyui.util.SearchUtil;
+
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.util.DiscordException;
@@ -19,6 +22,7 @@ import sx.blah.discord.util.RequestBuffer;
 public class GBFCommandHandler extends ModuleHandler {
 
 	private GBFCommands module;
+	private SearchUtil searchUtil = new SearchUtil();
 
 	public GBFCommandHandler(GBFCommands _module) {
 		module = _module;
@@ -33,6 +37,13 @@ public class GBFCommandHandler extends ModuleHandler {
 		command.setCommandDescription("Displays a GBF character with info");
 		command.getCommandCallers().add("char");
 		command.getCommandCallers().add("caracter");
+		command.setMaximumArgs(1);
+		commandList.add(command);
+		
+		command = new Command("SEARCH_GBF_WIKI");
+		command.setCommandName("GBF Character");
+		command.setCommandDescription("Searches GBF wiki based on query");
+		command.getCommandCallers().add("search");
 		command.setMaximumArgs(1);
 		commandList.add(command);
 
@@ -57,7 +68,11 @@ public class GBFCommandHandler extends ModuleHandler {
 				sendMessage("pong", event);
 				break;
 			case "GET_GBF_CHAR":
+				searchUtil.gbfWikiSearch(Arrays.copyOfRange(command, 1, command.length));
 				parseGBFWiki(event);
+				break;
+			case "SEARCH_GBF_WIKI":
+				sendMessage(searchUtil.gbfWikiSearch(Arrays.copyOfRange(command, 1, command.length)), event);
 				break;
 			}
 		}
