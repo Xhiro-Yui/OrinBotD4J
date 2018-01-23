@@ -1,4 +1,4 @@
-package com.github.xhiroyui.util;
+package com.github.xhiroyui.modules;
 
 public interface IModules {
 

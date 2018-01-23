@@ -2,7 +2,6 @@ package com.github.xhiroyui.modules;
 
 import java.util.HashMap;
 
-import com.github.xhiroyui.util.IModules;
 import com.github.xhiroyui.util.UserWhitelist;
 
 import sx.blah.discord.api.IDiscordClient;

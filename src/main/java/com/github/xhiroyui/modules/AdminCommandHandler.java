@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 import com.github.xhiroyui.util.Command;
-import com.github.xhiroyui.util.IModules;
 import com.github.xhiroyui.util.UserWhitelist;
 
 import sx.blah.discord.api.events.EventSubscriber;

@@ -1,6 +1,5 @@
 package com.github.xhiroyui.modules;
 
-import com.github.xhiroyui.util.IModules;
 import sx.blah.discord.api.IDiscordClient;
 
 public class GBFCommands implements IModules{

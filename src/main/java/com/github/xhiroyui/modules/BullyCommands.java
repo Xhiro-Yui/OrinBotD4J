@@ -1,6 +1,5 @@
 package com.github.xhiroyui.modules;
 
-import com.github.xhiroyui.util.IModules;
 import com.github.xhiroyui.util.UserWhitelist;
 
 import sx.blah.discord.api.IDiscordClient;

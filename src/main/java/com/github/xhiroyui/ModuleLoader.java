@@ -5,7 +5,7 @@ import java.util.HashMap;
 import com.github.xhiroyui.modules.AdminCommands;
 import com.github.xhiroyui.modules.BullyCommands;
 import com.github.xhiroyui.modules.GBFCommands;
-import com.github.xhiroyui.util.IModules;
+import com.github.xhiroyui.modules.IModules;
 import com.github.xhiroyui.util.UserWhitelist;
 
 import sx.blah.discord.api.IDiscordClient;
