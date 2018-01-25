@@ -1,1 +1,1 @@
-worker: java -jar build\libs\OrinBotD4J-all.jar $TOKEN
+worker: java -jar build\libs\OrinBotD4J-all.jar MTkyNTA3MjQ5Njc4MjIxMzEz.DUMkmQ.WHOP0c_1KixZQNvLWUskBfWgXOY
