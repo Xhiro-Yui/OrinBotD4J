@@ -31,3 +31,4 @@ jar {
 		}
 	}
 	
+task stage(dependsOn: ['clean', 'installApp'])
