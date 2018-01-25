@@ -21,3 +21,4 @@ gen/
 build/
 bin/
 /.settings/
+!gradle-wrapper.jar
