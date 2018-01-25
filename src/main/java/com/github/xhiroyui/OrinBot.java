@@ -6,14 +6,13 @@ public class OrinBot {
 	
 	public static void main(String[] args) {
 		IDiscordClient client;
-		try {
-//			For heroku deployment? Not sure if it works
-			 client = new DiscordClientBuilder().buildClient(System.getenv("TOKEN"));
+		String token = System.getenv("TOKEN");
+		if (!(token == null)){
+			client = new DiscordClientBuilder().buildClient(token);
 		}
-		catch (Exception e) {
+		else {
 			client = new DiscordClientBuilder().buildClient(args[0]);
 		}
-		
 		ModuleLoader modLoader = new ModuleLoader(client);
 		
 		modLoader.loadMandatoryModules();
