@@ -122,9 +122,9 @@ public class WebPageParser {
 	public GBFCharacter parseGbfCharacter(String url) throws IOException {
 		// Web part
 		GBFCharacter character = new GBFCharacter();
-		System.out.println("Starting jsoup connect : " + LocalTime.now().truncatedTo(ChronoUnit.SECONDS));
+//		System.out.println("Starting jsoup connect : " + LocalTime.now().truncatedTo(ChronoUnit.SECONDS));
 		Document doc = Jsoup.connect(url).get();
-		System.out.println("Jsoup received : " + LocalTime.now().truncatedTo(ChronoUnit.SECONDS));
+//		System.out.println("Jsoup received : " + LocalTime.now().truncatedTo(ChronoUnit.SECONDS));
 		character.setBaseUri(doc.baseUri());
 		character.setThumbnailUrl(doc.select("meta[property=\"og:image\"]").attr("content"));
 		character.setDescription(doc.select("meta[name=\"description\"]").attr("content"));
@@ -132,17 +132,14 @@ public class WebPageParser {
 		character.setImageUrl(content.select("[title=\"Base Art\"] img[src]").attr("abs:src"));
 		character.setRarityImageUrl(content.select("img[alt^=\"Rarity\"]").attr("abs:src"));
 		character.setVoiceActor(new String[] {doc.select("a.extiw").text(), doc.select("a.extiw").attr("abs:href")});
-		System.out.println("Jsoup parsing part 1 complete");		
-
+		
 		// Json Part
-		System.out.println("Starting json parsing : " + LocalTime.now().truncatedTo(ChronoUnit.SECONDS));
 		URL jsonurl = new URL(getJsonUrl(doc.select("h1#firstHeading").text()));
 		InputStreamReader reader = new InputStreamReader(jsonurl.openStream());
 		JsonParser jsonParser = new JsonParser();
 		String jsonContent = jsonParser.parse(reader).getAsJsonObject().get("query").getAsJsonObject().get("pages")
 				.getAsJsonArray().get(0).getAsJsonObject().get("revisions").getAsJsonArray().get(0).getAsJsonObject()
 				.get("content").getAsString();
-		System.out.println("Json received - starting json splitting and bean building : " + LocalTime.now().truncatedTo(ChronoUnit.SECONDS));
 		String[] values = jsonContent.split("\\\n\\|");
 		for (String contents : values) {
 			if (contents.toLowerCase().startsWith("id"))
@@ -186,10 +183,7 @@ public class WebPageParser {
 				character.setMaxHp(contents.substring(contents.lastIndexOf("=") + 1).trim());
 			else if (contents.toLowerCase().startsWith("flbHp"))
 				character.setFlbHp(contents.substring(contents.lastIndexOf("=") + 1).trim());
-			System.out.println("Ending bean building");
 		}
-
-
 		return character;
 	}
 }

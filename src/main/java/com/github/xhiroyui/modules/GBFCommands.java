@@ -20,7 +20,7 @@ public class GBFCommands implements IModules{
     }
 
     public boolean enable() {
-        client.getDispatcher().registerListener(new GBFCommandHandler(this));
+        client.getDispatcher().registerListener(new GBFCommandsHandler(this));
         return true;
     }
 

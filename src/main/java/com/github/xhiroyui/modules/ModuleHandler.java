@@ -91,4 +91,8 @@ public class ModuleHandler {
 		}
 		return null;
 	}
+	
+	protected void sendEmbed(EmbedBuilder embed, MessageReceivedEvent event) {
+		RequestBuffer.request(() -> event.getChannel().sendMessage(embed.build()));
+	}
 }

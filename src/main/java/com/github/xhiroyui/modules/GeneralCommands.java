@@ -1,29 +1,26 @@
 package com.github.xhiroyui.modules;
 
-import com.github.xhiroyui.util.UserWhitelist;
-
 import sx.blah.discord.api.IDiscordClient;
 
-public class BullyCommands implements IModules{
+public class GeneralCommands implements IModules{
 
-    private String moduleName = "BullyCommands";
+    private String moduleName = "GBFCommands";
     private String moduleVersion = "1.0";
     private String moduleMinimumVersion = "2.3.0";
     private String author = "Xhiro Yui / Rhestia";
-    private String prefix = "$";
+    private String prefix = "!";
     public static IDiscordClient client;
-    private UserWhitelist whitelist;
     
-    public BullyCommands(UserWhitelist _whitelist) {
-		whitelist = _whitelist;
+    public GeneralCommands(IDiscordClient _client) {
+		client = _client;
 	}
 
 	public void disable() {
-		client.getDispatcher().unregisterListener(new BullyCommandHandler(this, whitelist));
+        //Disabled. This module should never be disabled.
     }
 
     public boolean enable() {
-        client.getDispatcher().registerListener(new BullyCommandHandler(this, whitelist));
+        client.getDispatcher().registerListener(new GeneralCommandsHandler(this));
         return true;
     }
 

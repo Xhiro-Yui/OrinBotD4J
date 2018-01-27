@@ -28,7 +28,7 @@ public class AdminCommands implements IModules{
     }
 
     public boolean enable() {
-        client.getDispatcher().registerListener(new AdminCommandHandler(this, whitelist, moduleList));
+        client.getDispatcher().registerListener(new AdminCommandsHandler(this, whitelist, moduleList));
         return true;
     }
 
