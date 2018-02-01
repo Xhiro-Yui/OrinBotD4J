@@ -15,10 +15,8 @@ public class OrinBot {
 		}
 		ModuleLoader modLoader = new ModuleLoader(client);
 		
-		modLoader.loadMandatoryModules();
-		modLoader.initializeModules();
-//		modLoader.loadModules();
-//		modLoader.enableModules();
+		modLoader.loadModules();
+		modLoader.enableModules();
 		
 		client.login();
 	}

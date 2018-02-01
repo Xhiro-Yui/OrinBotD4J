@@ -3,8 +3,6 @@ package com.github.xhiroyui.util;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.time.LocalTime;
-import java.time.temporal.ChronoUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -171,18 +169,22 @@ public class WebPageParser {
 			// + 1).trim());
 			else if (contents.toLowerCase().startsWith("weapon"))
 				character.setSpecialty(contents.substring(contents.lastIndexOf("=") + 1).trim());
-			else if (contents.toLowerCase().startsWith("minAtk"))
+			else if (contents.toLowerCase().startsWith("min_atk"))
 				character.setMinAtk(contents.substring(contents.lastIndexOf("=") + 1).trim());
-			else if (contents.toLowerCase().startsWith("maxAtk"))
+			else if (contents.toLowerCase().startsWith("max_atk"))
 				character.setMaxAtk(contents.substring(contents.lastIndexOf("=") + 1).trim());
-			else if (contents.toLowerCase().startsWith("flbAtk"))
+			else if (contents.toLowerCase().startsWith("flb_atk"))
 				character.setFlbAtk(contents.substring(contents.lastIndexOf("=") + 1).trim());
-			else if (contents.toLowerCase().startsWith("minHp"))
+			else if (contents.toLowerCase().startsWith("bonus_atk"))
+				character.setBonusAtk(contents.substring(contents.lastIndexOf("=") + 1).trim());
+			else if (contents.toLowerCase().startsWith("min_hp"))
 				character.setMinHp(contents.substring(contents.lastIndexOf("=") + 1).trim());
-			else if (contents.toLowerCase().startsWith("maxHp"))
+			else if (contents.toLowerCase().startsWith("max_hp"))
 				character.setMaxHp(contents.substring(contents.lastIndexOf("=") + 1).trim());
-			else if (contents.toLowerCase().startsWith("flbHp"))
+			else if (contents.toLowerCase().startsWith("flb_hp"))
 				character.setFlbHp(contents.substring(contents.lastIndexOf("=") + 1).trim());
+			else if (contents.toLowerCase().startsWith("bonus_hp"))
+				character.setBonusHp(contents.substring(contents.lastIndexOf("=") + 1).trim());
 		}
 		return character;
 	}

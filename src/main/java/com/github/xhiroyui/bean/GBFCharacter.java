@@ -25,9 +25,11 @@ public class GBFCharacter {
 	private String minAtk;
 	private String maxAtk;
 	private String flbAtk;
+	private String bonusAtk;
 	private String minHp;
 	private String maxHp;
 	private String flbHp;
+	private String bonusHp;
 
 	private ArrayList<String> chargeAttack = new ArrayList<String>();
 	private GBFCharacterSkills characterSkills;
@@ -194,6 +196,18 @@ public class GBFCharacter {
 	}
 	public void setSupportSkills(GBFCharacterSkills supportSkills) {
 		this.supportSkills = supportSkills;
+	}
+	public String getBonusAtk() {
+		return bonusAtk;
+	}
+	public void setBonusAtk(String bonusAtk) {
+		this.bonusAtk = bonusAtk;
+	}
+	public String getBonusHp() {
+		return bonusHp;
+	}
+	public void setBonusHp(String bonusHp) {
+		this.bonusHp = bonusHp;
 	}
 	
 

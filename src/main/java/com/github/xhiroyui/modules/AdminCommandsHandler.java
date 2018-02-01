@@ -1,28 +1,23 @@
 package com.github.xhiroyui.modules;
 
-import java.util.Arrays;
-import java.util.HashMap;
-
 import com.github.xhiroyui.util.Command;
+import com.github.xhiroyui.util.ModuleList;
 import com.github.xhiroyui.util.UserWhitelist;
 
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
-import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.DiscordException;
-import sx.blah.discord.util.EmbedBuilder;
 import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.RateLimitException;
-import sx.blah.discord.util.RequestBuffer;
 
 public class AdminCommandsHandler extends ModuleHandler {
 
 	private UserWhitelist whitelist;
 	private AdminCommands module;
-	private HashMap<IModules, Boolean> moduleList;
+	private ModuleList moduleList;
 
 	public AdminCommandsHandler(AdminCommands _module, UserWhitelist _whitelist,
-			HashMap<IModules, Boolean> _moduleList) {
+			ModuleList _moduleList) {
 		whitelist = _whitelist;
 		module = _module;
 		moduleList = _moduleList;
@@ -39,14 +34,7 @@ public class AdminCommandsHandler extends ModuleHandler {
 		command.getCommandCallers().add("author");
 		command.setMaximumArgs(0);
 		commandList.add(command);
-		
-		command = new Command("GET_PEEK");
-		command.setCommandName("boo");
-		command.setCommandDescription("Peeks at you in the bath");
-		command.getCommandCallers().add("peek");
-		command.getCommandCallers().add("peeks");
-		command.setMaximumArgs(0);
-		commandList.add(command);
+
 		
 	}
 

@@ -1,7 +1,6 @@
 package com.github.xhiroyui.modules;
 
-import java.util.HashMap;
-
+import com.github.xhiroyui.util.ModuleList;
 import com.github.xhiroyui.util.UserWhitelist;
 
 import sx.blah.discord.api.IDiscordClient;
@@ -15,9 +14,9 @@ public class AdminCommands implements IModules{
     private String prefix = "!";
     public static IDiscordClient client;
     private UserWhitelist whitelist;
-    private HashMap<IModules, Boolean> moduleList;
+    private ModuleList moduleList;
     
-    public AdminCommands(UserWhitelist _whitelist, HashMap<IModules, Boolean> _moduleList, IDiscordClient _client) {
+    public AdminCommands(UserWhitelist _whitelist, ModuleList _moduleList, IDiscordClient _client) {
 		whitelist = _whitelist;
 		client = _client;
 		moduleList = _moduleList;

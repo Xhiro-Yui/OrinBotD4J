@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import com.github.xhiroyui.bean.GBFCharacter;
+import com.github.xhiroyui.constant.FunctionConstant;
 import com.github.xhiroyui.util.Command;
 import com.github.xhiroyui.util.WebPageParser;
 
@@ -28,7 +29,7 @@ public class GBFCommandsHandler extends ModuleHandler {
 	private void createCommands() {
 		Command command;
 
-		command = new Command("GET_GBF_CHAR");
+		command = new Command(FunctionConstant.GBF_GET_CHARACTER);
 		command.setCommandName("GBF Character");
 		command.setCommandDescription("Displays a GBF character with info");
 		command.getCommandCallers().add("char");
@@ -66,82 +67,15 @@ public class GBFCommandsHandler extends ModuleHandler {
 		String commandCode = validateCommand(event, command);
 		if (commandCode != null) {
 			switch (commandCode) {
-			case "ping":
-				sendMessage("pong", event);
-				break;
-			case "GET_GBF_CHAR":
+			case FunctionConstant.GBF_GET_CHARACTER:
 				createCharEmbed(gbfWikiParser.gbfWikiSearch(Arrays.copyOfRange(command, 1, command.length)) ,event);
 				break;
-//			case "GET_GBF_CHAR2":
-//				createCharEmbed2(gbfWikiParser.gbfWikiSearch(Arrays.copyOfRange(command, 1, command.length)) ,event);
-//				break;
+
 			}
 		}
 	}
 
-//	public void createCharEmbed(String webUrl, MessageReceivedEvent event) throws IOException {
-//		// Do a check to see if search failed or not
-//		// Do X if search fails (select top result?), do Y if search success
-//		// Below is do Y
-//		try {
-//			System.out.println("Starting embed building");
-//			EmbedBuilder builder = new EmbedBuilder();
-//			System.out.println("Starting parse GBF char");
-//			GBFCharacter character = gbfWikiParser.parseGbfCharacterOld(webUrl);
-//			System.out.println("Ending parse gbf char - resuming embed building");
-//			if (!character.getTitle().isEmpty())
-//				builder.withAuthorName("[" + character.getTitle() +"]");
-//			else
-//				builder.withAuthorName("[Skybound]");
-//			builder.withAuthorIcon(character.getRarityImageUrl());
-//			builder.withThumbnail(character.getThumbnailUrl());
-//			builder.appendDesc(character.getDescription());
-//			builder.withTitle(character.getName());
-//			builder.withUrl(character.getBaseUri());
-//			builder.appendField("Element", character.getElement(), true);
-//			builder.appendField("Race", character.getRace(), true);
-//			builder.appendField("Style", character.getStyle(), true);
-//			if( character.getGender().equalsIgnoreCase("m"))
-//				builder.appendField("Gender", "Male", true);
-//			else 
-//				builder.appendField("Gender", "Female", true);
-//			builder.appendField("Specialty", character.getSpecialty(), true);
-//			builder.withImage(character.getImageUrl());
-//			builder.withFooterText("Data obtained from GBF Wiki");
-//			builder.appendField("Voice Actor", "["+character.getVoiceActor()[0]+"]("+character.getVoiceActor()[1]+")", true);
-//			builder.appendField("How to Obtain", "["+character.getObtainableFrom()[0]+"]("+character.getObtainableFrom()[1]+")", true);
-//			if (character.getRecruitmentWeapon()!=null) 
-//			{ builder.appendField("Recruitment Weapon", "["+character.getRecruitmentWeapon()[0]+"]("+character.getRecruitmentWeapon()[1]+")", true); }
-//			switch (character.getElement().toLowerCase()) {
-//			case "fire":
-//				builder.withColor(255, 0, 35);
-//				break;
-//			case "water":
-//				builder.withColor(0, 115, 255);
-//				break;
-//			case "earth":
-//				builder.withColor(175, 100, 35);
-//				break;
-//			case "wind":
-//				builder.withColor(135, 255, 0);
-//				break;
-//			case "light":
-//				builder.withColor(255, 235, 0);
-//				break;
-//			case "dark":
-//				builder.withColor(135, 0, 255);
-//				break;
-//			}
-//			builder.withFooterIcon(faviconUrl);
-//			System.out.println("Ending embed building - Starting send embed");
-//			RequestBuffer.request(() -> event.getChannel().sendMessage(builder.build()));
-//			System.out.println("Ending send embed");
-//		}
-//		catch (IllegalArgumentException e) {
-//			sendMessage("ERROR : Failed to create embed.", event);
-//		}
-//		
-//	}
+
 	
 	public void createCharEmbed(String webUrl, MessageReceivedEvent event) throws IOException {
 		// Do a check to see if search failed or not
@@ -173,6 +107,11 @@ public class GBFCommandsHandler extends ModuleHandler {
 			embed.appendField("How to Obtain", "["+character.getObtainableFrom()[0]+"]("+character.getObtainableFrom()[1]+")", true);
 			if (character.getRecruitmentWeapon()!=null) 
 			{ embed.appendField("Recruitment Weapon", "["+character.getRecruitmentWeapon()[0]+"]("+character.getRecruitmentWeapon()[1]+")", true); }
+			if (character.getBonusAtk()!=null)
+				embed.appendField("Atk (MIN | MAX | FLB [Fate])", character.getMinAtk() + " | " + character.getMaxAtk() + " | " + character.getFlbAtk() + " | (+" + character.getBonusAtk() + ")", true);
+			else
+				embed.appendField("Atk (MIN | MAX | FLB)", character.getMinAtk() + " | " + character.getMaxAtk() + " | " + character.getFlbAtk() + " | (+" + character.getBonusAtk() + ")", true);
+			embed.appendField("HP (MIN | MAX | FLB [Fate])", character.getMinHp() + " | " + character.getMaxHp() + " | " + character.getFlbHp() + " | (+" + character.getBonusHp() + ")", true);
 			switch (character.getElement().toLowerCase()) {
 			case "fire":
 				embed.withColor(255, 0, 35);
