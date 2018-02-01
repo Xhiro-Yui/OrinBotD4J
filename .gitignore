@@ -14,6 +14,10 @@ gen/
 .classpath
 .project
 
+# Intellij
+.idea/
+*.iml
+*.iws
 
 #Gradle
 .gradletasknamecache
