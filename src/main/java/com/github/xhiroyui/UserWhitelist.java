@@ -1,4 +1,4 @@
-package com.github.xhiroyui.util;
+package com.github.xhiroyui;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -13,13 +13,22 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 public class UserWhitelist {
-	ArrayList<String> whitelist = null;
-	Gson gson;  
-	public UserWhitelist() {
+	
+	private static UserWhitelist userWhitelist;
+	private ArrayList<String> whitelist = null;
+	Gson gson;
+	
+	public static UserWhitelist getWhitelist() {
+		if (userWhitelist == null) 
+			userWhitelist = new UserWhitelist();
+		return userWhitelist;
+	}
+	
+	private UserWhitelist() {
 		if (loadWhitelist()) {
-			System.out.print("Whitelist loaded");
+			System.out.println("Whitelist loaded");
 		} else {
-			System.out.print("Creating new whitelist");
+			System.out.println("Creating new whitelist");
 			whitelist = new ArrayList<String>();	
 		}
 	}
@@ -40,8 +49,8 @@ public class UserWhitelist {
 		}
 	}
 	
-	public boolean loadWhitelist() {
-		Gson gson = new Gson();
+	private boolean loadWhitelist() {
+		gson = new Gson();
 		try (BufferedReader br = new BufferedReader(new FileReader("whitelist.json"))) {
 			whitelist = gson.fromJson(br, new TypeToken<ArrayList<String>>(){}.getType());
 			System.out.println(whitelist);
@@ -49,18 +58,13 @@ public class UserWhitelist {
 			System.out.println("No whitelist found");
 			return false;
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		 
 		return true;
 	}
-	
-	public ArrayList<String> getWhitelist() {
-		return whitelist;
-	}
-	
-	public void saveWhitelist() {
+
+	private void saveWhitelist() {
 		try (Writer writer = new FileWriter("whitelist.json")) {
 			Gson gson = new GsonBuilder().create();
 		    gson.toJson(whitelist, writer);

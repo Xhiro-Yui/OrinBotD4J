@@ -3,9 +3,8 @@ package com.github.xhiroyui.util;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -15,40 +14,15 @@ import org.jsoup.select.Elements;
 import com.github.xhiroyui.bean.GBFCharacter;
 import com.google.gson.JsonParser;
 
-public class WebPageParser {
+public class GBFWikiParser {
 	final static String baseJsonUrl = "https://gbf.wiki/api.php?action=query&prop=revisions&rvprop=content&format=json&formatversion=2&titles=";
 	final static String baseSearchUrl = "https://gbf.wiki/index.php?search=";
-	final static String capitalizationRegex = "^([^a-zA-Z])+([a-zA-Z]+)+([')]+)"; //Original -> as-is
-	final static String joinRegex = "\\[\\[([\\w\\s]+)"; //Original  -> \[\[([\w\s]+)
-	final static Pattern capitalizationPattern = Pattern.compile(capitalizationRegex, Pattern.MULTILINE);
-	final static Pattern joinPattern = Pattern.compile(joinRegex, Pattern.MULTILINE);
-	Matcher matcher; 
+	private Matcher matcher; 
 	
 	public String gbfWikiSearch(String[] query) {
 		String searchUrl = baseSearchUrl + query[0];
 		for (int i = 1; i < query.length; i++) {
 				searchUrl = searchUrl + "+" + query[i];
-		}
-		return searchUrl;
-	}
-
-	public String getJsonUrl(String name) {
-		String searchUrl;
-		String[] splitName = nameSplitter(name);
-		searchUrl = baseJsonUrl + StringUtils.capitalize(splitName[0]);
-		for (int i = 1; i < splitName.length; i++) {
-			matcher = capitalizationPattern.matcher(splitName[i]);
-			if (matcher.matches()) {
-				if (matcher.group(2).equalsIgnoreCase("SSR") || matcher.group(2).equalsIgnoreCase("SR"))
-					searchUrl = searchUrl + "%20" + matcher.group(1) + matcher.group(2).toUpperCase()
-							+ matcher.group(3);
-				else
-					searchUrl = searchUrl + "%20" + matcher.group(1) + StringUtils.capitalize(matcher.group(2))
-							+ matcher.group(3);
-			} else {
-				searchUrl = searchUrl + "%20" + StringUtils.capitalize(splitName[i]);
-			}
-
 		}
 		return searchUrl;
 	}
@@ -132,7 +106,7 @@ public class WebPageParser {
 		character.setVoiceActor(new String[] {doc.select("a.extiw").text(), doc.select("a.extiw").attr("abs:href")});
 		
 		// Json Part
-		URL jsonurl = new URL(getJsonUrl(doc.select("h1#firstHeading").text()));
+		URL jsonurl = new URL(baseJsonUrl + URLEncoder.encode(doc.select("h1#firstHeading").text(), "UTF-8"));
 		InputStreamReader reader = new InputStreamReader(jsonurl.openStream());
 		JsonParser jsonParser = new JsonParser();
 		String jsonContent = jsonParser.parse(reader).getAsJsonObject().get("query").getAsJsonObject().get("pages")
@@ -159,7 +133,7 @@ public class WebPageParser {
 			else if (contents.toLowerCase().startsWith("race"))
 				character.setRace(contents.substring(contents.lastIndexOf("=") + 1).trim());
 			else if (contents.toLowerCase().startsWith("join=")) {
-				matcher = joinPattern.matcher(contents.substring(contents.lastIndexOf("=") + 1).trim());
+				matcher = RegEx.joinPattern.matcher(contents.substring(contents.lastIndexOf("=") + 1).trim());
 				if (matcher.find()) {
 					character.setObtainableFrom(new String[] { matcher.group(1), doc.select("a[title=\""+ matcher.group(1) +"\"]").attr("abs:href")});
 				}

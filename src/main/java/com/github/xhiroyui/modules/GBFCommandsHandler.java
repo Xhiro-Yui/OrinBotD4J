@@ -4,9 +4,10 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import com.github.xhiroyui.bean.GBFCharacter;
+import com.github.xhiroyui.constant.BotConstant;
 import com.github.xhiroyui.constant.FunctionConstant;
 import com.github.xhiroyui.util.Command;
-import com.github.xhiroyui.util.WebPageParser;
+import com.github.xhiroyui.util.GBFWikiParser;
 
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
@@ -17,12 +18,10 @@ import sx.blah.discord.util.RateLimitException;
 
 public class GBFCommandsHandler extends ModuleHandler {
 
-	private GBFCommands module;
-	private WebPageParser gbfWikiParser = new WebPageParser();
-	private final String faviconUrl = "https://gbf.wiki/images/favicon.ico";
+	private GBFWikiParser gbfWikiParser = new GBFWikiParser();
+//	private final String faviconUrl = "https://gbf.wiki/images/favicon.ico";
 
-	public GBFCommandsHandler(GBFCommands _module) {
-		module = _module;
+	public GBFCommandsHandler() {
 		createCommands();
 	}
 
@@ -56,7 +55,7 @@ public class GBFCommandsHandler extends ModuleHandler {
 	@EventSubscriber
 	public void OnMesageEvent(MessageReceivedEvent event)
 			throws RateLimitException, DiscordException, MissingPermissionsException, IOException {
-		if (event.getMessage().getContent().startsWith(module.getPrefix())) {
+		if (event.getMessage().getContent().startsWith(BotConstant.PREFIX)) {
 			executeCommand(event);
 		}
 	}
@@ -132,7 +131,7 @@ public class GBFCommandsHandler extends ModuleHandler {
 				embed.withColor(135, 0, 255);
 				break;
 			}
-			embed.withFooterIcon(faviconUrl);
+//			embed.withFooterIcon(this.getClass().getResource("GBFWikiIcon.jpg"));
 			sendEmbed(embed, event);
 		}
 		catch (IllegalArgumentException e) {

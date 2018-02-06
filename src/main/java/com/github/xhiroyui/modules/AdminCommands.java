@@ -1,36 +1,25 @@
 package com.github.xhiroyui.modules;
 
-import com.github.xhiroyui.util.ModuleList;
-import com.github.xhiroyui.util.UserWhitelist;
-
 import sx.blah.discord.api.IDiscordClient;
+import sx.blah.discord.modules.IModule;
 
-public class AdminCommands implements IModules{
+public class AdminCommands implements IModule{
 
     private String moduleName = "AdminCommands";
     private String moduleVersion = "1.0";
     private String moduleMinimumVersion = "2.3.0";
     private String author = "Xhiro Yui / Rhestia";
-    private String prefix = "!";
-    public static IDiscordClient client;
-    private UserWhitelist whitelist;
-    private ModuleList moduleList;
     
-    public AdminCommands(UserWhitelist _whitelist, ModuleList _moduleList, IDiscordClient _client) {
-		whitelist = _whitelist;
-		client = _client;
-		moduleList = _moduleList;
-	}
-
-	public void disable() {
+    public void disable() {
         //Disabled. This module should never be disabled.
     }
 
-    public boolean enable() {
-        client.getDispatcher().registerListener(new AdminCommandsHandler(this, whitelist, moduleList));
-        return true;
-    }
-
+	@Override
+	public boolean enable(IDiscordClient client) {
+		client.getDispatcher().registerListener(new AdminCommandsHandler());
+		return false;
+	}
+	
     public String getAuthor() {
         return author;
     }
@@ -46,20 +35,4 @@ public class AdminCommands implements IModules{
     public String getVersion() {
         return moduleVersion;
     }
-
-	public String getPrefix() {
-		return prefix;
-	}
-
-	public void setPrefix(String prefix) {
-		this.prefix = prefix;
-	}
-
-	public String getModuleName() {
-		return moduleName;
-	}
-
-	public void setModuleName(String moduleName) {
-		this.moduleName = moduleName;
-	}
 }

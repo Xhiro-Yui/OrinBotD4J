@@ -2,6 +2,7 @@ package com.github.xhiroyui.modules;
 
 import java.io.IOException;
 
+import com.github.xhiroyui.constant.BotConstant;
 import com.github.xhiroyui.constant.FunctionConstant;
 import com.github.xhiroyui.util.Command;
 import sx.blah.discord.api.events.EventSubscriber;
@@ -13,10 +14,7 @@ import sx.blah.discord.util.RateLimitException;
 
 public class GeneralCommandsHandler extends ModuleHandler {
 
-	private GeneralCommands module;
-
-	public GeneralCommandsHandler(GeneralCommands _module) {
-		module = _module;
+	public GeneralCommandsHandler() {
 		createCommands();
 	}
 
@@ -51,7 +49,7 @@ public class GeneralCommandsHandler extends ModuleHandler {
 	@EventSubscriber
 	public void OnMesageEvent(MessageReceivedEvent event)
 			throws RateLimitException, DiscordException, MissingPermissionsException, IOException {
-		if (event.getMessage().getContent().startsWith(module.getPrefix())) {
+		if (event.getMessage().getContent().startsWith(BotConstant.PREFIX)) {
 			executeCommand(event);
 		}
 	}

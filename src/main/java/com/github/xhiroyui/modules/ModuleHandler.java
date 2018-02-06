@@ -4,12 +4,10 @@ import java.util.ArrayList;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.github.xhiroyui.DiscordClient;
 import com.github.xhiroyui.util.Command;
 
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
-import sx.blah.discord.handle.obj.IGuild;
-import sx.blah.discord.handle.obj.IUser;
-import sx.blah.discord.handle.obj.Permissions;
 import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.EmbedBuilder;
 import sx.blah.discord.util.MessageBuilder;
@@ -26,18 +24,11 @@ public class ModuleHandler {
 		return command;
 	}
 	
-	protected boolean adminCheck(IUser user, IGuild guild) {
-		for (Permissions perm : user.getPermissionsForGuild(guild)) {
-			if (perm.toString().equalsIgnoreCase("administrator")) {
-				return true;
-			}
-		}
-		return false;
-	}  
+	
 	
 	protected void sendMessage(String message, MessageReceivedEvent event)
 			throws RateLimitException, DiscordException, MissingPermissionsException {
-		new MessageBuilder(AdminCommands.client).appendContent(message).withChannel(event.getMessage().getChannel())
+		new MessageBuilder(DiscordClient.getClient()).appendContent(message).withChannel(event.getMessage().getChannel())
 				.build();
 	}
 	
