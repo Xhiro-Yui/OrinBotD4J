@@ -2,6 +2,11 @@ package com.github.xhiroyui.constant;
 
 public class FunctionConstant {
 	// Admin Module
+	public static final String ADMIN_PING = "ADMIN_PING";
+	public static final String ADMIN_ADD_TO_WL = "ADMIN_ADD_TO_WL";
+	public static final String ADMIN_REMOVE_FROM_WL = "ADMIN_REMOVE_FROM_WL";
+	public static final String ADMIN_ENABLE_MODULE = "ADMIN_ENABLE_MODULE";
+	public static final String ADMIN_DISABLE_MODULE = "ADMIN_DISABLE_MODULE";
 	
 	// General Module
 	public static final String GEN_PING = "GEN_PING";

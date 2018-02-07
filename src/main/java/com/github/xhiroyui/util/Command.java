@@ -2,13 +2,16 @@ package com.github.xhiroyui.util;
 
 import java.util.ArrayList;
 
+import com.github.xhiroyui.constant.BotConstant;
+
 public class Command {
 	private String commandName;
 	private String commandDescription;
 	private ArrayList<String> commandCallers = new ArrayList<String>();
 	private final String commandCode;
 	private int maximumArgs;
-	private String[] example;
+	private ArrayList<String[]> params = new ArrayList<String[]>();
+	private StringBuilder example = new StringBuilder();
 
 	public Command(String commandCode) {
 		this.commandCode = commandCode;
@@ -33,9 +36,9 @@ public class Command {
 	public ArrayList<String> getCommandCallers() {
 		return commandCallers;
 	}
-
-	public void setCommandCallers(ArrayList<String> commandCallers) {
-		this.commandCallers = commandCallers;
+	
+	public void setCommandCallers(String commandCallers) {
+		this.commandCallers.add(commandCallers);
 	}
 
 	public String getCommandCode() {
@@ -50,11 +53,24 @@ public class Command {
 		this.maximumArgs = maximumArgs;
 	}
 
-	public String[] getExample() {
+	public ArrayList<String[]> getParams() {
+		return params;
+	}
+	
+	public void setParams(String[] params) {
+		this.params.add(params);
+	}
+
+	public StringBuilder getExample() {
+		if (example.length() == 0) 
+			 this.example.append(BotConstant.PREFIX).append(this.commandCallers.get(0)).append(" ");
 		return example;
 	}
 
-	public void setExample(String[] example) {
-		this.example = example;
+	public void setExample(String example) {
+		if (this.example.length() == 0) 
+			 this.example.append(BotConstant.PREFIX).append(this.commandCallers.get(0)).append(" ");
+		this.example.append(example);
 	}
+
 }

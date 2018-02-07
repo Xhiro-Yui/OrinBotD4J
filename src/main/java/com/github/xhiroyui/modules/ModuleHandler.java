@@ -1,6 +1,7 @@
 package com.github.xhiroyui.modules;
 
 import java.util.ArrayList;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -16,22 +17,20 @@ import sx.blah.discord.util.RateLimitException;
 import sx.blah.discord.util.RequestBuffer;
 
 public class ModuleHandler {
-	
+
 	protected ArrayList<Command> commandList = new ArrayList<Command>();
-	
+
 	public String[] parseMessage(String message) {
 		String[] command = StringUtils.split(message.toLowerCase(), ' ');
 		return command;
 	}
-	
-	
-	
+
 	protected void sendMessage(String message, MessageReceivedEvent event)
 			throws RateLimitException, DiscordException, MissingPermissionsException {
-		new MessageBuilder(DiscordClient.getClient()).appendContent(message).withChannel(event.getMessage().getChannel())
-				.build();
+		new MessageBuilder(DiscordClient.getClient()).appendContent(message)
+				.withChannel(event.getMessage().getChannel()).build();
 	}
-	
+
 	protected Command getCommandObj(String command) {
 		for (int i = 0; i < commandList.size(); i++) {
 			for (int j = 0; j < commandList.get(i).getCommandCallers().size(); j++) {
@@ -45,45 +44,74 @@ public class ModuleHandler {
 	}
 
 	protected void helpEmbed(Command command, MessageReceivedEvent event) {
-		EmbedBuilder builder = new EmbedBuilder();
-		builder.withAuthorName(command.getCommandName());
-		builder.withDesc(command.getCommandDescription());
-		builder.appendField("Maximum Arguments", Integer.toString(command.getMaximumArgs()), true);
-//		builder.appendField("fieldTitleInline2", "fieldContentInline2", true);
-		builder.appendField("Alternative command calls", "Ill put the loop later", false);
-		builder.withColor(255, 0, 0);
+		StringBuilder param = new StringBuilder();
+		int paramCount = 0;
+		for (String[] params : command.getParams()) {
+			paramCount++;
+			if (params.length > 1) {
+				for (int i = 0; i < params.length; i++) {
+					if (i == 0)
+						param.append(paramCount + " : " + params[i]);
+					else
+						param.append(" / ").append(params[i]);
+				}
+			}
+			else
+				param.append("\n" + paramCount + " : ");
+		}
+		if (param.length() == 0)
+			param.append("None");
+		StringBuilder caller = new StringBuilder();
+		for (int i = 0; i < command.getCommandCallers().size(); i++) {
+			if (i == 0)
+				caller.append(command.getCommandCallers().get(i));
+			else
+				caller.append(" | ").append(command.getCommandCallers().get(i));
+		}
 
-		builder.withFooterIcon("http://i.imgur.com/Ch0wy1e.png");
-		builder.withFooterText("by Rhestia :3");
-		builder.withFooterIcon("http://i.imgur.com/TELh8OT.png");
-		RequestBuffer.request(() -> event.getChannel().sendMessage(builder.build()));
+		EmbedBuilder builder = new EmbedBuilder();
+		builder.withAuthorName(command.getCommandCode());
+		builder.withTitle("*" + command.getCommandName() + "*");
+		builder.withDesc(command.getCommandDescription());
+		builder.appendField("Params", param.toString(), true);
+		builder.appendField("Maximum Arguments", Integer.toString(command.getMaximumArgs()), true);
+		builder.appendField("Example Use", command.getExample().toString(), false);
+		builder.appendField("Alternative command calls", caller.toString(), false);
+		builder.withColor(ThreadLocalRandom.current().nextInt(0, 255 + 1),
+				ThreadLocalRandom.current().nextInt(0, 255 + 1), ThreadLocalRandom.current().nextInt(0, 255 + 1));
+
+		builder.withFooterText("OrinBot by Rhestia :3");
+		sendEmbed(builder, event);
 	}
-	
 
 	protected void invalidArgsLength(Command commandObj, MessageReceivedEvent event) {
-		String error = "Too many arguments given for the command `"+ commandObj.getCommandName() + "`.";
-		sendMessage(error,event);
+		String error = "Too many arguments given for the command `" + commandObj.getCommandName() + "`. \n"
+				+ "Maximum arguments allowed is `" + commandObj.getMaximumArgs() + "`.";
+		sendMessage(error, event);
 	}
-	
+
 	protected String validateCommand(MessageReceivedEvent event, String[] command) {
 		Command commandObj = getCommandObj(command[0]);
 		if (commandObj != null) {
 			if (command.length > 1 && command[1].equalsIgnoreCase("help")) {
-				sendMessage(commandObj.getCommandDescription(), event);
 				helpEmbed(commandObj, event);
 			} else {
 				if (command.length - 1 > commandObj.getMaximumArgs()) {
 					invalidArgsLength(commandObj, event);
-				}
-				else {
-					return commandObj.getCommandCode();	
+				} else {
+					return commandObj.getCommandCode();
 				}
 			}
 		}
 		return null;
 	}
-	
+
 	protected void sendEmbed(EmbedBuilder embed, MessageReceivedEvent event) {
 		RequestBuffer.request(() -> event.getChannel().sendMessage(embed.build()));
+	}
+
+	protected void throwError(String command, Exception e, MessageReceivedEvent event) {
+		sendMessage("Command **" + command + "** faced an error `" + e.getClass().getName()
+				+ "`.\nPlease contact the bot author to solve this error.", event);
 	}
 }
