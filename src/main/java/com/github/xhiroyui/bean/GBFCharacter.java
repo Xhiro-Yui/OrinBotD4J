@@ -18,7 +18,7 @@ public class GBFCharacter {
 	private String element;
 	private String style;
 	private String race;
-	private String[] voiceActor;
+	private ArrayList<String[]> voiceActor = new ArrayList<String[]>();
 	private String[] obtainableFrom;
 	private String[] recruitmentWeapon;
 	private String specialty;
@@ -119,11 +119,11 @@ public class GBFCharacter {
 	public void setRace(String race) {
 		this.race = race;
 	}
-	public String[] getVoiceActor() {
+	public ArrayList<String[]> getVoiceActor() {
 		return voiceActor;
 	}
 	public void setVoiceActor(String[] voiceActor) {
-		this.voiceActor = voiceActor;
+		this.voiceActor.add(voiceActor);
 	}
 	public String[] getObtainableFrom() {
 		return obtainableFrom;

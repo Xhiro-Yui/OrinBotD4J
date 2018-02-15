@@ -1,8 +1,10 @@
 package com.github.xhiroyui.modules;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Map;
 
-import com.github.xhiroyui.constant.BotConstant;
+import com.github.xhiroyui.ModuleLoader;
 import com.github.xhiroyui.constant.FunctionConstant;
 import com.github.xhiroyui.util.Command;
 import sx.blah.discord.api.events.EventSubscriber;
@@ -35,7 +37,7 @@ public class GeneralCommandsHandler extends ModuleHandler {
 		command.getCommandCallers().add("pingembed");
 		command.setMaximumArgs(0);
 		commandList.add(command);
-		
+
 		command = new Command(FunctionConstant.GEN_BOT_AUTHOR);
 		command.setCommandName("Bot Author");
 		command.setCommandDescription("Displays the original Bot Author.");
@@ -44,19 +46,25 @@ public class GeneralCommandsHandler extends ModuleHandler {
 		command.setMaximumArgs(0);
 		commandList.add(command);
 
+		command = new Command(FunctionConstant.GEN_GET_AVAILABLE_COMMANDS);
+		command.setCommandName("Get Available Commands");
+		command.setCommandDescription("Displays all commands available, sorted by Modules.");
+		command.getCommandCallers().add("commands");
+		command.setMaximumArgs(0);
+		commandList.add(command);
+
 	}
 
 	@EventSubscriber
 	public void OnMesageEvent(MessageReceivedEvent event)
 			throws RateLimitException, DiscordException, MissingPermissionsException, IOException {
-		if (event.getMessage().getContent().startsWith(BotConstant.PREFIX)) {
-			executeCommand(event);
+		String[] command = processCommand(event);
+		if (command != null) {
+			executeCommand(event, command);
 		}
 	}
 
-	public void executeCommand(MessageReceivedEvent event) throws IOException {
-		String[] command = parseMessage(
-				event.getMessage().getContent().substring(1, event.getMessage().getContent().length()));
+	public void executeCommand(MessageReceivedEvent event, String[] command) throws IOException {
 		String commandCode = validateCommand(event, command);
 		if (commandCode != null) {
 			switch (commandCode) {
@@ -68,6 +76,9 @@ public class GeneralCommandsHandler extends ModuleHandler {
 				break;
 			case FunctionConstant.GEN_BOT_AUTHOR:
 				botAuthor(event);
+				break;
+			case FunctionConstant.GEN_GET_AVAILABLE_COMMANDS:
+				getAvailableCommands(event);
 				break;
 
 			}
@@ -85,10 +96,10 @@ public class GeneralCommandsHandler extends ModuleHandler {
 		embed.appendField("Thumbnail Credits",
 				"[Thumbnail Credits to @TouhouFanarts](https://twitter.com/TouhouFanarts)", false);
 		embed.withDesc("Pong");
-		
+
 		sendEmbed(embed, event);
 	}
-	
+
 	public void botAuthor(MessageReceivedEvent event) {
 		EmbedBuilder embed = new EmbedBuilder();
 		embed.withAuthorName("Rhestia");
@@ -100,7 +111,30 @@ public class GeneralCommandsHandler extends ModuleHandler {
 		embed.appendField("Thumbnail Credits",
 				"[Thumbnail Credits to @TouhouFanarts](https://twitter.com/TouhouFanarts)", false);
 		embed.withDesc("Pong");
-		
+
 		sendEmbed(embed, event);
+	}
+
+	private void getAvailableCommands(MessageReceivedEvent event) {
+		StringBuilder commandString = new StringBuilder();
+		commandString.append("__**List of Available Commands**__\n\n");
+		for (Map.Entry<String, ArrayList<Command>> entry : ModuleLoader.getModuleLoader().getModuleCommands()
+				.entrySet()) {
+			commandString.append("__Module : **" + entry.getKey() + "**__\n");
+			for (Command each : entry.getValue()) {
+				commandString.append(each.getCommandName() + " : ");
+				for (int i = 0; i < each.getCommandCallers().size(); i++) {
+					if (i == 0)
+						commandString.append("`" + each.getCommandCallers().get(i) + "`");
+					else
+						commandString.append(", `" + each.getCommandCallers().get(i) + "`");
+				}
+				commandString.append("\n");
+			}
+			commandString.append("\n\n");
+		}
+		commandString.append("Type `!<command> help` to get more information about specific commands.");
+		
+		sendMessage(commandString.toString(), event);
 	}
 }

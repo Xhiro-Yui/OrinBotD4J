@@ -9,13 +9,13 @@ import org.apache.commons.lang3.mutable.MutableBoolean;
 import com.github.xhiroyui.modules.AdminCommands;
 import com.github.xhiroyui.modules.GBFCommands;
 import com.github.xhiroyui.modules.GeneralCommands;
-
-import sx.blah.discord.modules.IModule;
+import com.github.xhiroyui.util.Command;
+import com.github.xhiroyui.util.IModuleExtended;
 
 public class ModuleLoader {
 	
 	private static ModuleLoader moduleLoader;
-	private HashMap<IModule, MutableBoolean> moduleList = new HashMap<IModule, MutableBoolean>();
+	private HashMap<IModuleExtended, MutableBoolean> moduleList = new HashMap<IModuleExtended, MutableBoolean>();
 	
 	public static ModuleLoader getModuleLoader() {
 		if (moduleLoader == null)
@@ -31,7 +31,7 @@ public class ModuleLoader {
 	
 	public ArrayList<String> getAllModules() {
 		ArrayList<String> modules = new ArrayList<String>();
-		for (Map.Entry<IModule, MutableBoolean> entry : moduleList.entrySet()) {
+		for (Map.Entry<IModuleExtended, MutableBoolean> entry : moduleList.entrySet()) {
 			if (entry.getValue().isTrue())
 				modules.add(entry.getKey().getName() + " | Enabled");
 			else
@@ -41,10 +41,22 @@ public class ModuleLoader {
 	}
 	
 	public void enableModules() {
-		for (Map.Entry<IModule, MutableBoolean> entry : moduleList.entrySet()) {
+		for (Map.Entry<IModuleExtended, MutableBoolean> entry : moduleList.entrySet()) {
 			if (entry.getValue().isTrue())
 				entry.getKey().enable(DiscordClient.getClient());
 		}
+	}
+	
+	public HashMap<String, ArrayList<Command>> getModuleCommands() {
+		HashMap<String, ArrayList<Command>> moduleCommands = new HashMap<String, ArrayList<Command>>();
+		for (IModuleExtended modules : moduleList.keySet()) {
+			ArrayList<Command> command = new ArrayList<Command>();
+			for ( Command commands : modules.getModuleCommands() ) {
+				command.add(commands);
+			}
+			moduleCommands.put(modules.getName(), command);
+		}
+		return moduleCommands;
 	}
 	
 }

@@ -1,7 +1,8 @@
 package com.github.xhiroyui.modules;
 
+import java.io.IOException;
+
 import com.github.xhiroyui.UserWhitelist;
-import com.github.xhiroyui.constant.BotConstant;
 import com.github.xhiroyui.constant.FunctionConstant;
 import com.github.xhiroyui.util.Command;
 
@@ -53,13 +54,14 @@ public class AdminCommandsHandler extends ModuleHandler {
 
 	@EventSubscriber
 	public void OnMesageEvent(MessageReceivedEvent event)
-			throws RateLimitException, DiscordException, MissingPermissionsException {
-		if (event.getMessage().getContent().startsWith(BotConstant.PREFIX)) {
+			throws RateLimitException, DiscordException, MissingPermissionsException, IOException {
+		String[] command = processCommand(event);
+		if (command != null) {
 			if (!adminCheck(event.getAuthor(), event.getGuild())) {
 				// System.out.println("Admin check failed");
 				if (UserWhitelist.getWhitelist().validateUser(event.getAuthor().getStringID())) {
 					// System.out.println("User is Whitelisted");
-					executeCommand(event);
+					executeCommand(event, command);
 				} else {
 					// System.out.println("Whitelist check failed");
 					sendMessage(event.getAuthor().getDisplayName(event.getGuild())
@@ -67,15 +69,12 @@ public class AdminCommandsHandler extends ModuleHandler {
 				}
 			} else {
 				// System.out.println("User is Admin");
-				executeCommand(event);
+				executeCommand(event, command);
 			}
 		}
 	}
 
-	public void executeCommand(MessageReceivedEvent event) {
-		String[] command = parseMessage(
-				event.getMessage().getContent().substring(1, event.getMessage().getContent().length()));
-
+	public void executeCommand(MessageReceivedEvent event, String[] command) {
 		String commandCode = validateCommand(event, command);
 		if (commandCode != null) {
 			switch (commandCode) {

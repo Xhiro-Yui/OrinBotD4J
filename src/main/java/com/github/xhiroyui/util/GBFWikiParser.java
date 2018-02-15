@@ -103,7 +103,8 @@ public class GBFWikiParser {
 		Element content = doc.getElementById("content");
 		character.setImageUrl(content.select("[title=\"Base Art\"] img[src]").attr("abs:src"));
 		character.setRarityImageUrl(content.select("img[alt^=\"Rarity\"]").attr("abs:src"));
-		character.setVoiceActor(new String[] {doc.select("a.extiw").text(), doc.select("a.extiw").attr("abs:href")});
+		for (Element node : doc.select("a.extiw"))
+			character.setVoiceActor(new String[] {node.text(), node.attr("abs:href")});
 		
 		// Json Part
 		URL jsonurl = new URL(baseJsonUrl + URLEncoder.encode(doc.select("h1#firstHeading").text(), "UTF-8"));

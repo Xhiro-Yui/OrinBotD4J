@@ -6,6 +6,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import org.apache.commons.lang3.StringUtils;
 
 import com.github.xhiroyui.DiscordClient;
+import com.github.xhiroyui.constant.BotConstant;
 import com.github.xhiroyui.util.Command;
 
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
@@ -113,5 +114,30 @@ public class ModuleHandler {
 	protected void throwError(String command, Exception e, MessageReceivedEvent event) {
 		sendMessage("Command **" + command + "** faced an error `" + e.getClass().getName()
 				+ "`.\nPlease contact the bot author to solve this error.", event);
+	}
+	
+	protected boolean checkCommands(String command) {
+		for (Command commands : commandList) {
+			for (String commandCaller : commands.getCommandCallers()) {
+				if (commandCaller.equalsIgnoreCase(command))
+					return true;
+			}
+		}
+		return false;
+	}
+	
+	protected String[] processCommand(MessageReceivedEvent event) {
+		if (event.getMessage().getContent().startsWith(BotConstant.PREFIX)) {
+			String[] command = parseMessage(
+					event.getMessage().getContent().substring(1, event.getMessage().getContent().length()));
+			if (checkCommands(command[0])) {
+				return command;
+			}
+		}
+		return null;
+	}
+	
+	public ArrayList<Command> getModuleCommands() {
+		return commandList;
 	}
 }

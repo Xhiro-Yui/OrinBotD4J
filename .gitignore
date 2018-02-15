@@ -26,3 +26,6 @@ build/
 bin/
 /.settings/
 !gradle-wrapper.jar
+
+# Program files
+whitelist.json

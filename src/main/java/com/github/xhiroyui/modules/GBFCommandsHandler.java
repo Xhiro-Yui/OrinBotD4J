@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import com.github.xhiroyui.bean.GBFCharacter;
-import com.github.xhiroyui.constant.BotConstant;
 import com.github.xhiroyui.constant.FunctionConstant;
 import com.github.xhiroyui.util.Command;
 import com.github.xhiroyui.util.GBFWikiParser;
@@ -48,14 +47,13 @@ public class GBFCommandsHandler extends ModuleHandler {
 	@EventSubscriber
 	public void OnMesageEvent(MessageReceivedEvent event)
 			throws RateLimitException, DiscordException, MissingPermissionsException, IOException {
-		if (event.getMessage().getContent().startsWith(BotConstant.PREFIX)) {
-			executeCommand(event);
+		String[] command = processCommand(event);
+		if (command != null) {
+			executeCommand(event, command);
 		}
 	}
 
-	public void executeCommand(MessageReceivedEvent event) throws IOException {
-		String[] command = parseMessage(
-				event.getMessage().getContent().substring(1, event.getMessage().getContent().length()));
+	public void executeCommand(MessageReceivedEvent event, String[] command) throws IOException {
 		String commandCode = validateCommand(event, command);
 		if (commandCode != null) {
 			switch (commandCode) {
@@ -95,15 +93,33 @@ public class GBFCommandsHandler extends ModuleHandler {
 			embed.appendField("Specialty", character.getSpecialty(), true);
 			embed.withImage(character.getImageUrl());
 			embed.withFooterText("Data obtained from GBF Wiki");
-			embed.appendField("Voice Actor", "["+character.getVoiceActor()[0]+"]("+character.getVoiceActor()[1]+")", true);
+			StringBuilder voiceActorSB = new StringBuilder();
+			for (String[] voiceActor : character.getVoiceActor()) {
+				voiceActorSB.append("["+voiceActor[0]+"]("+voiceActor[1]+") ");
+			}
+			embed.appendField("Voice Actor(s)", voiceActorSB.toString(), true);
 			embed.appendField("How to Obtain", "["+character.getObtainableFrom()[0]+"]("+character.getObtainableFrom()[1]+")", true);
 			if (character.getRecruitmentWeapon()!=null) 
 			{ embed.appendField("Recruitment Weapon", "["+character.getRecruitmentWeapon()[0]+"]("+character.getRecruitmentWeapon()[1]+")", true); }
-			if (character.getBonusAtk()!=null)
-				embed.appendField("Atk (MIN | MAX | FLB [Fate])", character.getMinAtk() + " | " + character.getMaxAtk() + " | " + character.getFlbAtk() + " | (+" + character.getBonusAtk() + ")", true);
+			
+			if (character.getBonusAtk()!=null && character.getFlbAtk()!=null)
+				embed.appendField("Atk (MIN | MAX | FLB | Fate)", character.getMinAtk() + " | " + character.getMaxAtk() + " | " + character.getFlbAtk() + " | (+" + character.getBonusAtk() + ")", true);
+			else if (character.getBonusAtk()==null && character.getFlbAtk()!=null)
+				embed.appendField("Atk (MIN | MAX | FLB )", character.getMinAtk() + " | " + character.getMaxAtk() + " | " + character.getFlbAtk(), true);
+			else if (character.getBonusAtk()!=null && character.getFlbAtk()==null)
+				embed.appendField("Atk (MIN | MAX | Fate)", character.getMinAtk() + " | " + character.getMaxAtk()  + " | (+" + character.getBonusAtk() + ")", true);
 			else
-				embed.appendField("Atk (MIN | MAX | FLB)", character.getMinAtk() + " | " + character.getMaxAtk() + " | " + character.getFlbAtk() + " | (+" + character.getBonusAtk() + ")", true);
-			embed.appendField("HP (MIN | MAX | FLB [Fate])", character.getMinHp() + " | " + character.getMaxHp() + " | " + character.getFlbHp() + " | (+" + character.getBonusHp() + ")", true);
+				embed.appendField("Atk (MIN | MAX)", character.getMinAtk() + " | " + character.getMaxAtk(), true);
+
+			if (character.getBonusHp()!=null && character.getFlbHp()!=null)
+				embed.appendField("HP (MIN | MAX | FLB | Fate)", character.getMinHp() + " | " + character.getMaxHp() + " | " + character.getFlbHp() + " | (+" + character.getBonusHp() + ")", true);
+			else if (character.getBonusHp()==null && character.getFlbHp()!=null)
+				embed.appendField("HP (MIN | MAX | FLB )", character.getMinHp() + " | " + character.getMaxHp() + " | " + character.getFlbHp(), true);
+			else if (character.getBonusHp()!=null && character.getFlbHp()==null)
+				embed.appendField("HP (MIN | MAX | Fate)", character.getMinHp() + " | " + character.getMaxHp()  + " | (+" + character.getBonusHp() + ")", true);
+			else
+				embed.appendField("HP (MIN | MAX)", character.getMinHp() + " | " + character.getMaxHp(), true);
+			
 			switch (character.getElement().toLowerCase()) {
 			case "fire":
 				embed.withColor(255, 0, 35);
