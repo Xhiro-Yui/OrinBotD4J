@@ -9,8 +9,9 @@ import org.apache.commons.lang3.mutable.MutableBoolean;
 import com.github.xhiroyui.modules.AdminCommands;
 import com.github.xhiroyui.modules.GBFCommands;
 import com.github.xhiroyui.modules.GeneralCommands;
+import com.github.xhiroyui.modules.IModuleExtended;
+import com.github.xhiroyui.modules.ModerationCommands;
 import com.github.xhiroyui.util.Command;
-import com.github.xhiroyui.util.IModuleExtended;
 
 public class ModuleLoader {
 	
@@ -27,6 +28,7 @@ public class ModuleLoader {
 		moduleList.put(new AdminCommands(), new MutableBoolean(true));
 		moduleList.put(new GeneralCommands(), new MutableBoolean(true));
 		moduleList.put(new GBFCommands(), new MutableBoolean(true));
+		moduleList.put(new ModerationCommands(), new MutableBoolean(true));
 	}
 	
 	public ArrayList<String> getAllModules() {

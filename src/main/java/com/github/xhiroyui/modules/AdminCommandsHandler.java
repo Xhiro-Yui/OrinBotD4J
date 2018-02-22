@@ -8,9 +8,6 @@ import com.github.xhiroyui.util.Command;
 
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
-import sx.blah.discord.handle.obj.IGuild;
-import sx.blah.discord.handle.obj.IUser;
-import sx.blah.discord.handle.obj.Permissions;
 import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.RateLimitException;
@@ -108,15 +105,6 @@ public class AdminCommandsHandler extends ModuleHandler {
 			}
 
 		}
-	}
-
-	private boolean adminCheck(IUser user, IGuild guild) {
-		for (Permissions perm : user.getPermissionsForGuild(guild)) {
-			if (perm.toString().equalsIgnoreCase("administrator")) {
-				return true;
-			}
-		}
-		return false;
 	}
 	
 	// Command functions are placed below here

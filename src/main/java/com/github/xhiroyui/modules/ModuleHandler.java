@@ -8,8 +8,10 @@ import org.apache.commons.lang3.StringUtils;
 import com.github.xhiroyui.DiscordClient;
 import com.github.xhiroyui.constant.BotConstant;
 import com.github.xhiroyui.util.Command;
-
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
+import sx.blah.discord.handle.obj.IGuild;
+import sx.blah.discord.handle.obj.IUser;
+import sx.blah.discord.handle.obj.Permissions;
 import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.EmbedBuilder;
 import sx.blah.discord.util.MessageBuilder;
@@ -56,9 +58,10 @@ public class ModuleHandler {
 					else
 						param.append(" / ").append(params[i]);
 				}
+				param.append("\n");
 			}
 			else
-				param.append("\n" + paramCount + " : ");
+				param.append(paramCount + " : " + params[0] + "\n");
 		}
 		if (param.length() == 0)
 			param.append("None");
@@ -139,5 +142,13 @@ public class ModuleHandler {
 	
 	public ArrayList<Command> getModuleCommands() {
 		return commandList;
+	}
+	
+	protected boolean adminCheck(IUser user, IGuild guild) {
+		return user.getPermissionsForGuild(guild).contains(Permissions.ADMINISTRATOR);
+	}
+	
+	protected boolean moderatorCheck(IUser user, IGuild guild) {
+		return user.getPermissionsForGuild(guild).contains(Permissions.MANAGE_SERVER);
 	}
 }

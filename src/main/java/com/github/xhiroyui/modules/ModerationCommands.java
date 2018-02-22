@@ -7,21 +7,21 @@ import com.github.xhiroyui.util.Command;
 
 import sx.blah.discord.api.IDiscordClient;
 
-public class AdminCommands implements IModuleExtended{
+public class ModerationCommands implements IModuleExtended{
 
-    private String moduleName = "AdminCommands";
+    private String moduleName = "ModerationCommands";
     private String moduleVersion = "1.0";
     private String moduleMinimumVersion = "2.3.0";
     private String author = "Xhiro Yui / Rhestia";
-    AdminCommandsHandler adminCommandsHandler = new AdminCommandsHandler();
+    ModerationCommandsHandler moderationCommandsHandler = new ModerationCommandsHandler();
     
     public void disable() {
-    	DiscordClient.getClient().getDispatcher().unregisterListener(adminCommandsHandler);
+    	DiscordClient.getClient().getDispatcher().unregisterListener(moderationCommandsHandler);
     }
 
 	@Override
 	public boolean enable(IDiscordClient client) {
-		client.getDispatcher().registerListener(adminCommandsHandler);
+		client.getDispatcher().registerListener(moderationCommandsHandler);
 		return true;
 	}
 	
@@ -42,6 +42,6 @@ public class AdminCommands implements IModuleExtended{
     }
     
     public ArrayList<Command> getModuleCommands() {
-    	return adminCommandsHandler.getModuleCommands();
+    	return moderationCommandsHandler.getModuleCommands();
     }
 }

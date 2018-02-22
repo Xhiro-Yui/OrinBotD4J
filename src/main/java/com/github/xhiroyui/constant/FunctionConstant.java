@@ -17,4 +17,6 @@ public class FunctionConstant {
 	// GBF Module
 	public static final String GBF_GET_CHARACTER = "GBF_GET_CHARACTER";
 
+	// Moderation Module
+	public static final String MOD_FLAG_CHANNEL = "MOD_FLAG_CHANNEL";
 }

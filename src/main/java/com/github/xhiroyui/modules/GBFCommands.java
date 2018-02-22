@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import com.github.xhiroyui.DiscordClient;
 import com.github.xhiroyui.util.Command;
-import com.github.xhiroyui.util.IModuleExtended;
 
 import sx.blah.discord.api.IDiscordClient;
 

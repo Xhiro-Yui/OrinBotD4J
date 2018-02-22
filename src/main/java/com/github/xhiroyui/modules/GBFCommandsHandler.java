@@ -32,7 +32,9 @@ public class GBFCommandsHandler extends ModuleHandler {
 		command.setCommandDescription("Displays a GBF character with info");
 		command.getCommandCallers().add("char");
 		command.getCommandCallers().add("character");
+		command.setParams(new String[] { "Character name" });
 		command.setMaximumArgs(5);
+		command.setExample("Vajra");
 		commandList.add(command);
 		
 //		command = new Command("SEARCH_GBF_WIKI");
