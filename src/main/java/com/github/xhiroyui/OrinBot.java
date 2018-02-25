@@ -12,10 +12,11 @@ public class OrinBot {
 		}
 		else {
 			DiscordClient.buildClient(args[0]);
+			db_cstring = args[1]; // For testing
+			db_userid = args[2]; // For testing
+			db_pw = args[3]; // For testing
 		}
-		db_cstring = args[1]; // For testing
-		db_userid = args[2]; // For testing
-		db_pw = args[3]; // For testing
+		
 		
 		ModuleLoader.getModuleLoader().initModules();
 		ModuleLoader.getModuleLoader().enableModules();
