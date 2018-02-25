@@ -44,6 +44,121 @@ public class DBConnection {
 		return dbConnection;
 	}
 	
+	public String selectQuerySingleResult(String sql) {
+		Connection connection = null;
+		PreparedStatement statement = null;
+		ResultSet rs = null;
+		String result = null;
+		try {
+			connection = hikariDS.getConnection();
+			statement = connection.prepareStatement(sql);
+			rs = statement.executeQuery();
+			if (!rs.isBeforeFirst()) {
+				// Empty results
+			}
+			else {
+				while (rs.next()) { 
+					result = rs.getString(1);
+				}
+			}
+		} catch (Exception e) {
+			
+		} finally {
+			try {
+				rs.close();
+			} catch (Exception e) {
+			}
+			try {
+				statement.close();
+			} catch (Exception e) {
+			}
+			try {
+				connection.close();
+			} catch (Exception e) {
+			}
+		}
+		return result;	
+	}
+	
+	public ArrayList<String> selectQuerySingleColumnMultipleResults(String sql) {
+		Connection connection = null;
+		PreparedStatement statement = null;
+		ResultSet rs = null;
+		ArrayList<String> result = null;
+		try {
+			connection = hikariDS.getConnection();
+			statement = connection.prepareStatement(sql);
+			rs = statement.executeQuery();
+			if (!rs.isBeforeFirst()) {
+				// Empty results
+			}
+			else {
+				result = new ArrayList<String>();
+				while (rs.next()) { 
+					result.add(rs.getString(1));
+				}
+			}
+		} catch (Exception e) {
+			
+		} finally {
+			try {
+				rs.close();
+			} catch (Exception e) {
+			}
+			try {
+				statement.close();
+			} catch (Exception e) {
+			}
+			try {
+				connection.close();
+			} catch (Exception e) {
+			}
+		}
+		return result;	
+	}
+	
+	public ArrayList<String[]> selectQueryMultipleColumnMultipleResults(String sql) {
+		Connection connection = null;
+		PreparedStatement statement = null;
+		ResultSet rs = null;
+		ArrayList<String[]> result = null;
+		try {
+			connection = hikariDS.getConnection();
+			statement = connection.prepareStatement(sql);
+			rs = statement.executeQuery();
+			if (!rs.isBeforeFirst()) {
+				// Empty results
+			}
+			else {
+				result = new ArrayList<String[]>();
+				int size = rs.getMetaData().getColumnCount();
+				while (rs.next()) {
+					String[] row = new String[size];
+					for (int i = 1; i < size+1; i++) {
+						row[i-1] = rs.getString(i);
+					}
+					result.add(row);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				rs.close();
+			} catch (Exception e) {
+			}
+			try {
+				statement.close();
+			} catch (Exception e) {
+			}
+			try {
+				connection.close();
+			} catch (Exception e) {
+			}
+		}
+		return result;	
+	}
+	
 	public void insertQuery(String sql) {
 		Connection connection = null;
 		PreparedStatement statement = null;
@@ -88,26 +203,17 @@ public class DBConnection {
 		
 	}
 	
-	public ArrayList<String> refreshChannelMonitorSettings(String sql) {
+	// Its a copy of updateQuery, if I find no use of this will eventually remove it
+	public void deleteQuery(String sql) {
 		Connection connection = null;
 		PreparedStatement statement = null;
-		ResultSet rs = null;
-		ArrayList<String> parameters = new ArrayList<String>();
 		try {
 			connection = hikariDS.getConnection();
 			statement = connection.prepareStatement(sql);
-			rs = statement.executeQuery();
-			rs.first();
-			parameters.add(rs.getString("flags"));
-			parameters.add(rs.getString("post_amount"));
-			parameters.add(rs.getString("duration"));
+			statement.execute();
 		} catch (Exception e) {
-			System.out.println("Refresh channel monitor settings error | " + e.getMessage());
+			System.out.println("Error executing SQL statement : " + sql);
 		} finally {
-			try {
-				rs.close();
-			} catch (Exception e) {
-			}
 			try {
 				statement.close();
 			} catch (Exception e) {
@@ -116,103 +222,6 @@ public class DBConnection {
 				connection.close();
 			} catch (Exception e) {
 			}
-		}
-		return parameters;	
+		}	
 	}
-	
-	public int channelPostCount(long userID, long channelID) {
-		Connection connection = null;
-		PreparedStatement statement = null;
-		ResultSet rs = null;
-		int postCount = -1;
-		try {
-			connection = hikariDS.getConnection();
-			statement = connection.prepareStatement("select count(post_id) as count from channel_monitor where user_id = '" + userID + "' and channel_id = '" + channelID + "'");
-			rs = statement.executeQuery();
-			rs.first();
-			postCount = rs.getInt("count");
-		} catch (Exception e) {
-			
-		} finally {
-			try {
-				rs.close();
-			} catch (Exception e) {
-			}
-			try {
-				statement.close();
-			} catch (Exception e) {
-			}
-			try {
-				connection.close();
-			} catch (Exception e) {
-			}
-		}
-		return postCount;
-	}
-	
-	public long getOldestPost(long userID, long channelID) {
-		Connection connection = null;
-		PreparedStatement statement = null;
-		ResultSet rs = null;
-		String sql = "select * from channel_monitor where user_id = '" + userID + "' and channel_id = '" + channelID + "' order by 'datetime_of_post' ASC LIMIT 1";
-		long postID = -1;
-		try {
-			connection = hikariDS.getConnection();
-			statement = connection.prepareStatement(sql);
-			rs = statement.executeQuery();
-			rs.first();
-			postID = rs.getLong("post_id");
-		} catch (Exception e) {
-
-		} finally {
-			try {
-				rs.close();
-			} catch (Exception e) {
-			}
-			try {
-				statement.close();
-			} catch (Exception e) {
-			}
-			try {
-				connection.close();
-			} catch (Exception e) {
-			}
-		}
-		return postID;
-	}
-	
-	public ArrayList<Long> getChannelsWithFlags(String flag) {
-		ArrayList<Long> channels = new ArrayList<Long>();
-		Connection connection = null;
-		PreparedStatement statement = null;
-		ResultSet rs = null;
-		String sql = "select * from channel_flags where flags = '" + flag + "'";
-		try {
-			connection = hikariDS.getConnection();
-			statement = connection.prepareStatement(sql);
-			rs = statement.executeQuery();		
-			while (rs.next()) {
-				channels.add(Long.parseLong(rs.getString("channel_id")));
-			}
-			
-		} catch (Exception e) {
-
-		} finally {
-			try {
-				rs.close();
-			} catch (Exception e) {
-			}
-			try {
-				statement.close();
-			} catch (Exception e) {
-			}
-			try {
-				connection.close();
-			} catch (Exception e) {
-			}
-		}
-		return channels;
-	}
-	
-	
 }

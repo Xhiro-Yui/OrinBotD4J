@@ -24,11 +24,15 @@ public class TaskLoader {
 
 	public void initTasks() {
 		// Channel Monitors
-		ArrayList<Long> channelList = DBConnection.getDBConnection().getChannelsWithFlags(BotConstant.FUNC_FLAG_LIMITED);
-		for (Long each : channelList) {
-			taskList.put(new ChannelMonitor(each), new MutableBoolean(true));
+		ArrayList<String> channelList = DBConnection.getDBConnection().selectQuerySingleColumnMultipleResults("SELECT DISTINCT channel_id FROM " + BotConstant.DB_CHANNEL_FLAGS_TABLE);
+		if (channelList == null) {
+			
+		} else {
+			for (String each : channelList) {
+				taskList.put(new ChannelMonitor(Long.parseLong(each)), new MutableBoolean(true));
+			}
+			
 		}
-		
 		// Other type of tasks below (currently none)
 		
 	}
@@ -46,7 +50,6 @@ public class TaskLoader {
 		
 	}
 	
-
 	// Only called when Bot is booted up
 	public void enableAllTasks() {
 		for (Map.Entry<ITask, MutableBoolean> entry : taskList.entrySet()) {
@@ -64,6 +67,15 @@ public class TaskLoader {
 	}
 
 	// Task specific functions
+	// Channel Monitors!
+	public boolean checkMonitors(Long channelID) {
+		for (ITask entry : taskList.keySet()) {
+			if (channelID.compareTo(entry.getChannelID()) == 0) {
+				return true; // A monitor exists for this channel
+			}
+		}
+		return false;
+	}
 	
 	public void addMonitor(long channelID) {
 		ChannelMonitor newChannelMonitor = new ChannelMonitor(channelID);
@@ -71,6 +83,51 @@ public class TaskLoader {
 		enableTask(newChannelMonitor);
 	}
 	
+	public void removeMonitor(Long channelID) {
+		ITask placeholder = null;
+		for (ITask entry : taskList.keySet()) {
+			if (channelID.compareTo(entry.getChannelID()) == 0) {
+				placeholder = entry;
+			}
+		}
+		disableTask(placeholder);
+		taskList.remove(placeholder);
+		System.out.println("Monitor for channel " + channelID + " has been shut down.");
+	}
 	
+	public ArrayList<String> getMonitorFlags(Long channelID) {
+		for (ITask entry : taskList.keySet()) {
+			if (channelID.compareTo(entry.getChannelID()) == 0) {
+				return ((ChannelMonitor)entry).getMonitorFlags();
+			}
+		}
+		return null;
+	}
+	
+	public ArrayList<String> getMonitorSettings(Long channelID) {
+		for (ITask entry : taskList.keySet()) {
+			if (channelID.compareTo(entry.getChannelID()) == 0) {
+				return entry.getSettings();
+			}
+		}
+		return null;
+	}
+	
+	public ITask getMonitor(Long channelID) {
+		for (ITask entry : taskList.keySet()) {
+			if (channelID.compareTo(entry.getChannelID()) == 0) {
+				return entry;
+			}
+		}
+		return null;
+	}
+	
+	public void refreshMonitorSettings(Long channelID) {
+		for (ITask entry : taskList.keySet()) {
+			if (channelID.compareTo(entry.getChannelID()) == 0) {
+				entry.refreshSettings();
+			}
+		}
+	}
 }
 

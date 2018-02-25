@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.apache.commons.lang3.StringUtils;
+//import org.apache.http.client.methods.RequestBuilder;
 
 import com.github.xhiroyui.DiscordClient;
 import com.github.xhiroyui.constant.BotConstant;
@@ -16,7 +17,6 @@ import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.EmbedBuilder;
 import sx.blah.discord.util.MessageBuilder;
 import sx.blah.discord.util.MissingPermissionsException;
-import sx.blah.discord.util.RateLimitException;
 import sx.blah.discord.util.RequestBuffer;
 
 public class ModuleHandler {
@@ -29,9 +29,11 @@ public class ModuleHandler {
 	}
 
 	protected void sendMessage(String message, MessageReceivedEvent event)
-			throws RateLimitException, DiscordException, MissingPermissionsException {
-		new MessageBuilder(DiscordClient.getClient()).appendContent(message)
-				.withChannel(event.getMessage().getChannel()).build();
+			throws DiscordException, MissingPermissionsException {
+		RequestBuffer.request(() -> {
+			new MessageBuilder(DiscordClient.getClient()).appendContent(message)
+			.withChannel(event.getMessage().getChannel()).build();
+			});	
 	}
 
 	protected Command getCommandObj(String command) {
@@ -117,6 +119,7 @@ public class ModuleHandler {
 	protected void throwError(String command, Exception e, MessageReceivedEvent event) {
 		sendMessage("Command **" + command + "** faced an error `" + e.getClass().getName()
 				+ "`.\nPlease contact the bot author to solve this error.", event);
+		e.printStackTrace();
 	}
 	
 	protected boolean checkCommands(String command) {

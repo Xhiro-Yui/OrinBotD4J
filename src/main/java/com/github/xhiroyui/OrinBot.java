@@ -20,8 +20,9 @@ public class OrinBot {
 		ModuleLoader.getModuleLoader().initModules();
 		ModuleLoader.getModuleLoader().enableModules();
 		
+		DiscordClient.getClient().login();
+		
 		TaskLoader.getTaskLoader().initTasks();
 		TaskLoader.getTaskLoader().enableAllTasks();
-		DiscordClient.getClient().login();
 	}
 }
