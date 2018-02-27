@@ -22,4 +22,5 @@ public class FunctionConstant {
 	public static final String MOD_UNFLAG_CHANNEL = "MOD_UNFLAG_CHANNEL";
 	public static final String MOD_CHECK_CHANNEL_FLAGS = "MOD_CHECK_CHANNEL_FLAGS";
 	public static final String MOD_LIST_FLAGS =	"MOD_LIST_FLAGS";
+	public static final String MOD_MESSAGE_PURGE = "MOD_MESSAGE_PURGE";
 }

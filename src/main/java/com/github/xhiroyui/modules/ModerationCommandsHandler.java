@@ -1,6 +1,8 @@
 package com.github.xhiroyui.modules;
 
 import java.io.IOException;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 
 import com.github.xhiroyui.TaskLoader;
@@ -16,6 +18,7 @@ import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedE
 import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.RateLimitException;
+import sx.blah.discord.util.RequestBuffer;
 
 public class ModerationCommandsHandler extends ModuleHandler {
 	public ModerationCommandsHandler() {
@@ -57,7 +60,17 @@ public class ModerationCommandsHandler extends ModuleHandler {
 		command.setCommandCallers("listflags");
 		command.setMaximumArgs(0);
 		commandList.add(command);
-
+		
+		command = new Command(FunctionConstant.MOD_MESSAGE_PURGE);
+		command.setCommandName("Purge Message (Minutes)");
+		command.setCommandDescription("Purge Messages less than {minutes} old.\n*Note : this command does not purge messages older then 2 weeks.");
+		command.setCommandCallers("purge");
+		command.setParams(new String[] { "Denomination (Days / Hours / Minutes)" });
+		command.setParams(new String[] { "Amount by denomination" });
+		command.setMaximumArgs(2);
+		command.setExample("HOURS 2");
+		commandList.add(command);
+		
 	}
 
 	@EventSubscriber
@@ -112,6 +125,13 @@ public class ModerationCommandsHandler extends ModuleHandler {
 					throwError(FunctionConstant.MOD_LIST_FLAGS, e, event);
 				}
 				break;
+			case FunctionConstant.MOD_MESSAGE_PURGE:
+				try {
+					purgeMessages(command, event);
+				} catch (Exception e) {
+					throwError(FunctionConstant.MOD_MESSAGE_PURGE, e, event);
+				}
+				break;
 			}
 		}
 	}
@@ -153,6 +173,12 @@ public class ModerationCommandsHandler extends ModuleHandler {
 			else
 				sendMessage("Missing parameter. The parameters for `" + BotConstant.FUNC_FLAG_LIMITED
 						+ "` flag is :\n**Post Limit** : {amount}", event);
+		else if (command[1].equalsIgnoreCase("LIMITED"))
+			if (command.length == 3) 
+				setChannelLogFlag(BotConstant.FUNC_FLAG_LOGCHANNEL, event, command[2]);
+			else
+				sendMessage("Missing parameter. The parameters for `" + BotConstant.FUNC_FLAG_LOGCHANNEL
+						+ "` flag is :\n**#selectedChannel** *channel mention*", event);
 		else if (command[1].equalsIgnoreCase("DURATION"))
 			if (command.length == 3)
 				setDurationFlag(BotConstant.FUNC_FLAG_DURATION, event, command[2]);	
@@ -260,6 +286,19 @@ public class ModerationCommandsHandler extends ModuleHandler {
 			sendMessage(flagsSB.toString(), event);
 		}
 		
+	}
+	
+	private void purgeMessages(String[] command, MessageReceivedEvent event) {
+		int totalMessagesDeleted = 0;
+		if (MiscUtils.isInteger(command[2])) {
+			if (command[1].equalsIgnoreCase("min") || command[1].equalsIgnoreCase("minute") || command[1].equalsIgnoreCase("minutes"))
+					totalMessagesDeleted = RequestBuffer.request(() -> (Integer) event.getChannel().getMessageHistoryTo(Instant.now().minus(Integer.parseInt(command[2]), ChronoUnit.MINUTES)).bulkDelete().size()).get();					
+			else if (command[1].equalsIgnoreCase("hour") || command[1].equalsIgnoreCase("hours"))
+					totalMessagesDeleted = RequestBuffer.request(() -> (Integer) event.getChannel().getMessageHistoryTo(Instant.now().minus(Integer.parseInt(command[2]), ChronoUnit.HOURS)).bulkDelete().size()).get();				 
+			else if (command[1].equalsIgnoreCase("day") || command[1].equalsIgnoreCase("days")) 
+					totalMessagesDeleted = RequestBuffer.request(() -> (Integer) event.getChannel().getMessageHistoryTo(Instant.now().minus(Integer.parseInt(command[2]), ChronoUnit.DAYS)).bulkDelete().size()).get();
+		}
+		sendMessage("Deleted a total of " + totalMessagesDeleted + " message(s) ~!", event);
 	}
 
 	private void createUpdateMonitor(long channelID) {
