@@ -62,8 +62,8 @@ public class ModerationCommandsHandler extends ModuleHandler {
 		commandList.add(command);
 		
 		command = new Command(FunctionConstant.MOD_MESSAGE_PURGE);
-		command.setCommandName("Purge Message (Minutes)");
-		command.setCommandDescription("Purge Messages less than {minutes} old.\n*Note : this command does not purge messages older then 2 weeks.");
+		command.setCommandName("Purge Message");
+		command.setCommandDescription("Purge Messages less than 14 days old based on parameters. \nMessages older then 14 days are not affected by this command.");
 		command.setCommandCallers("purge");
 		command.setParams(new String[] { "Denomination (Days / Hours / Minutes)" });
 		command.setParams(new String[] { "Amount by denomination" });
@@ -297,6 +297,9 @@ public class ModerationCommandsHandler extends ModuleHandler {
 					totalMessagesDeleted = RequestBuffer.request(() -> (Integer) event.getChannel().getMessageHistoryTo(Instant.now().minus(Integer.parseInt(command[2]), ChronoUnit.HOURS)).bulkDelete().size()).get();				 
 			else if (command[1].equalsIgnoreCase("day") || command[1].equalsIgnoreCase("days")) 
 					totalMessagesDeleted = RequestBuffer.request(() -> (Integer) event.getChannel().getMessageHistoryTo(Instant.now().minus(Integer.parseInt(command[2]), ChronoUnit.DAYS)).bulkDelete().size()).get();
+			else 
+				sendMessage("Invalid denomination. Please use either `minutes`, `hours` or `days`.", event);
+				return;
 		}
 		sendMessage("Deleted a total of " + totalMessagesDeleted + " message(s) ~!", event);
 	}
