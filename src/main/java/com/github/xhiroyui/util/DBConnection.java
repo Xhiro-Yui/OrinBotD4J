@@ -24,16 +24,18 @@ public class DBConnection {
 				config.setJdbcUrl(cstring);
 				config.setUsername(userid);
 				config.setPassword(pw);
+				config.setMaximumPoolSize(8);
 			}
 			else {
 				config.setJdbcUrl(OrinBot.db_cstring);
 				config.setUsername(OrinBot.db_userid);
 				config.setPassword(OrinBot.db_pw);
+				config.setMaximumPoolSize(2);
 			}
 			config.addDataSourceProperty("cachePrepStmts", true);
 			config.addDataSourceProperty("prepStmtCacheSize", "250");
 			config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
-			config.setMaximumPoolSize(3);
+			
 			hikariDS = new HikariDataSource(config);
 		}
 	}
