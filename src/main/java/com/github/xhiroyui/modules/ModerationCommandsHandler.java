@@ -35,7 +35,7 @@ public class ModerationCommandsHandler extends ModuleHandler {
 		command.setParams(new String[] { "Flag (not case-sensitive)" });
 		command.setParams(new String[] { "Additional arguments based on flag. Check with List Flags" });
 		command.setMaximumArgs(2);
-		command.setExample(BotConstant.FUNC_FLAG_LIMITED + " 1");
+		command.setExample("flag " + BotConstant.FUNC_FLAG_FIFO + " 1");
 		commandList.add(command);
 		
 		command = new Command(FunctionConstant.MOD_UNFLAG_CHANNEL);
@@ -142,12 +142,23 @@ public class ModerationCommandsHandler extends ModuleHandler {
 		StringBuilder listFlagsSB = new StringBuilder();
 		listFlagsSB.append("__**List of all available Flags**__\n\n");
 		
-		listFlagsSB.append("**" + BotConstant.FUNC_FLAG_LIMITED + "** : ");
+		listFlagsSB.append("**" + BotConstant.FUNC_FLAG_FIFO + "** : ");
 		listFlagsSB.append("Limits the amount of posts per user in the channel. \n");
 		listFlagsSB.append("Accepts a single variable {postAmount} in integer. \n");
-		listFlagsSB.append("Example : `" + BotConstant.PREFIX + "flag " + BotConstant.FUNC_FLAG_LIMITED + " 1` \n");
+		listFlagsSB.append("Keeps the newest message in memory. \n");
+		listFlagsSB.append("Example : `" + BotConstant.PREFIX + "flag " + BotConstant.FUNC_FLAG_FIFO + " 1` \n");
 		listFlagsSB.append("*NOTE : Decreasing the {postAmount} on an already flagged channel will delete all stored records\n"
-				+ "As such, it is advisable to purge all messages from the channel before doing so.* \n\n");
+				+ "As such, it is advisable to purge all messages from the channel before doing so.\n"
+				+ "*" + BotConstant.FUNC_FLAG_FIFO + " is mutually exclusive with " + BotConstant.FUNC_FLAG_LIFO + "*\n\n");
+		
+		listFlagsSB.append("**" + BotConstant.FUNC_FLAG_LIFO + "** : ");
+		listFlagsSB.append("Limits the amount of posts per user in the channel. \n");
+		listFlagsSB.append("Accepts a single variable {postAmount} in integer. \n");
+		listFlagsSB.append("Keeps the oldest message in memory. \n");
+		listFlagsSB.append("Example : `" + BotConstant.PREFIX + "flag " + BotConstant.FUNC_FLAG_LIFO + " 1` \n");
+		listFlagsSB.append("*NOTE : Decreasing the {postAmount} on an already flagged channel will delete all stored records\n"
+				+ "As such, it is advisable to purge all messages from the channel before doing so.\n"
+				+ "*" + BotConstant.FUNC_FLAG_LIFO + " is mutually exclusive with " + BotConstant.FUNC_FLAG_FIFO + "*\n\n");
 		
 		listFlagsSB.append("**" + BotConstant.FUNC_FLAG_DURATION+ "** : ");
 		listFlagsSB.append("Deletes posts older than the specified amount of time in hours. \n");
@@ -167,17 +178,17 @@ public class ModerationCommandsHandler extends ModuleHandler {
 	private void flag_channel(String[] command, MessageReceivedEvent event) {
 		if (command[1].equalsIgnoreCase("NONE"))
 			removeAllFlags(event.getChannel().getLongID());
-		else if (command[1].equalsIgnoreCase("LIMITED"))
+		else if (command[1].equalsIgnoreCase("KEEP_OLDEST") || command[1].equalsIgnoreCase("KEEPOLDEST") || command[1].equalsIgnoreCase("LIFO"))
 			if (command.length == 3)
-				setLimitedFlag(BotConstant.FUNC_FLAG_LIMITED, event, command[2]);
+				setLIFOorFIFOFlag(BotConstant.FUNC_FLAG_LIFO, event, command[2]);
 			else
-				sendMessage("Missing parameter. The parameters for `" + BotConstant.FUNC_FLAG_LIMITED
+				sendMessage("Missing parameter. The parameters for `" + BotConstant.FUNC_FLAG_FIFO
 						+ "` flag is :\n**Post Limit** : {amount}", event);
-		else if (command[1].equalsIgnoreCase("LIMITED"))
+		else if (command[1].equalsIgnoreCase("KEEP_NEWEST") || command[1].equalsIgnoreCase("KEEPNEWEST") || command[1].equalsIgnoreCase("FIFO"))
 			if (command.length == 3) 
-				setChannelLogFlag(BotConstant.FUNC_FLAG_LOGCHANNEL, event, command[2]);
+				setLIFOorFIFOFlag(BotConstant.FUNC_FLAG_FIFO, event, command[2]);
 			else
-				sendMessage("Missing parameter. The parameters for `" + BotConstant.FUNC_FLAG_LOGCHANNEL
+				sendMessage("Missing parameter. The parameters for `" + BotConstant.FUNC_FLAG_FIFO
 						+ "` flag is :\n**#selectedChannel** *channel mention*", event);
 		else if (command[1].equalsIgnoreCase("DURATION"))
 			if (command.length == 3)
@@ -193,28 +204,44 @@ public class ModerationCommandsHandler extends ModuleHandler {
 						+ "` flag is :\n**#selectedChannel** *channel mention*", event);
 		else
 			sendMessage("Invalid flag. Please check list of available flags using the List Flags command", event);	
-		printFlagsForCurrentChannel(event);
 	}
 
 	private void removeAllFlags(long channelID) {
 		DBConnection.getDBConnection().deleteQuery("DELETE FROM " + BotConstant.DB_CHANNEL_FLAGS_TABLE + " WHERE channel_id = '" + channelID + "'");
+		DBConnection.getDBConnection().deleteQuery("DELETE FROM " + BotConstant.DB_CHANNEL_MONITOR_TABLE + " WHERE channel_id = '" + channelID + "'");
 		TaskLoader.getTaskLoader().getMonitor(channelID).shutdown();
 	}
 
-	private void setLimitedFlag(String flag, MessageReceivedEvent event, String amount) {
+	private void setLIFOorFIFOFlag(String flag, MessageReceivedEvent event, String amount) {
 		if (MiscUtils.isInteger(amount) && Integer.parseInt(amount) >= 0) {
 			ArrayList<String> monitorFlags = TaskLoader.getTaskLoader().getMonitorFlags(event.getChannel().getLongID());
-			if ((monitorFlags == null || !(monitorFlags.contains(BotConstant.FUNC_FLAG_LIMITED))) && Integer.parseInt(amount) > 0) {
+			if ((monitorFlags == null || !(monitorFlags.contains(BotConstant.FUNC_FLAG_FIFO) || monitorFlags.contains(BotConstant.FUNC_FLAG_LIFO))) && Integer.parseInt(amount) > 0) {
 				DBConnection.getDBConnection()
 						.insertQuery("INSERT INTO " + BotConstant.DB_CHANNEL_FLAGS_TABLE + " (`channel_id`, `flags`, `post_amount`) VALUES ('"
 								+ event.getChannel().getLongID() + "', '" + flag + "', '" + amount + "') ");
 			} else if (Integer.parseInt(amount) == 0) {
-				DBConnection.getDBConnection().deleteQuery("DELETE FROM " + BotConstant.DB_CHANNEL_FLAGS_TABLE + " WHERE channel_id = '" + event.getChannel().getLongID() + "' AND flags = '" + BotConstant.FUNC_FLAG_LIMITED + "'");
-			} else {
-				DBConnection.getDBConnection()
-						.updateQuery("UPDATE " + BotConstant.DB_CHANNEL_FLAGS_TABLE + " SET post_amount = '" + amount + "' WHERE channel_id = '"
-								+ event.getChannel().getLongID() + "' AND flags = '" + BotConstant.FUNC_FLAG_LIMITED
-								+ "'");				
+				DBConnection.getDBConnection().deleteQuery("DELETE FROM " + BotConstant.DB_CHANNEL_FLAGS_TABLE + " WHERE channel_id = '" + event.getChannel().getLongID() + "' AND flags = '" + flag + "'");
+			} else { 
+				if (monitorFlags.contains(BotConstant.FUNC_FLAG_FIFO) && flag.equalsIgnoreCase(BotConstant.FUNC_FLAG_FIFO))
+					DBConnection.getDBConnection()
+					.updateQuery("UPDATE " + BotConstant.DB_CHANNEL_FLAGS_TABLE + " SET post_amount = '" + amount + "' WHERE channel_id = '"
+							+ event.getChannel().getLongID() + "' AND flags = '" + BotConstant.FUNC_FLAG_FIFO
+							+ "'");
+				if (monitorFlags.contains(BotConstant.FUNC_FLAG_FIFO) && flag.equalsIgnoreCase(BotConstant.FUNC_FLAG_LIFO))
+					DBConnection.getDBConnection()
+					.updateQuery("UPDATE " + BotConstant.DB_CHANNEL_FLAGS_TABLE + " SET post_amount = '" + amount + "', flags = '" + BotConstant.FUNC_FLAG_FIFO + "' WHERE channel_id = '"
+							+ event.getChannel().getLongID() + "' AND flags = '" + BotConstant.FUNC_FLAG_LIFO
+							+ "'");
+				if (monitorFlags.contains(BotConstant.FUNC_FLAG_LIFO) && flag.equalsIgnoreCase(BotConstant.FUNC_FLAG_LIFO))
+					DBConnection.getDBConnection()
+					.updateQuery("UPDATE " + BotConstant.DB_CHANNEL_FLAGS_TABLE + " SET post_amount = '" + amount + "' WHERE channel_id = '"
+							+ event.getChannel().getLongID() + "' AND flags = '" + BotConstant.FUNC_FLAG_LIFO
+							+ "'");
+				if (monitorFlags.contains(BotConstant.FUNC_FLAG_LIFO) && flag.equalsIgnoreCase(BotConstant.FUNC_FLAG_FIFO))
+					DBConnection.getDBConnection()
+					.updateQuery("UPDATE " + BotConstant.DB_CHANNEL_FLAGS_TABLE + " SET post_amount = '" + amount + "', flags = '" + BotConstant.FUNC_FLAG_LIFO + "' WHERE channel_id = '"
+							+ event.getChannel().getLongID() + "' AND flags = '" + BotConstant.FUNC_FLAG_FIFO
+							+ "'");				
 			}
 			createUpdateMonitor(event.getChannel().getLongID());
 		} else {

@@ -27,13 +27,15 @@ import sx.blah.discord.util.MessageBuilder;
 import sx.blah.discord.util.MessageHistory;
 import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.RateLimitException;
+import sx.blah.discord.util.RequestBuffer;
 
 public class ChannelMonitor implements ITask{
 
 	private IChannel channel;
 	private IChannel logChannel = null;
 	private Long channelID;
-	private MutableBoolean limitedFlag = new MutableBoolean();
+	private MutableBoolean fifoFlag = new MutableBoolean();
+	private MutableBoolean lifoFlag = new MutableBoolean();
 	private int postLimit;
 	private MutableBoolean durationFlag = new MutableBoolean();
 	private int duration;
@@ -51,13 +53,13 @@ public class ChannelMonitor implements ITask{
 	@EventSubscriber
 	public void OnMesageEvent(MessageReceivedEvent event)
 			throws RateLimitException, DiscordException, MissingPermissionsException, IOException {
-		if (this.limitedFlag.booleanValue()) {
+		if (this.fifoFlag.booleanValue()) {
 			if (channelID.compareTo(event.getChannel().getLongID()) == 0) {
 				if (getChannelPostCount(event.getAuthor().getLongID(), event.getChannel().getLongID()) >= postLimit) {
 					long messageIDtoDelete = getOldestPostID(event.getAuthor().getLongID(), event.getChannel().getLongID());
 					System.out.println(messageIDtoDelete);
 					String timeString = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date.from(event.getChannel().fetchMessage(messageIDtoDelete).getTimestamp()));					
-					logEvent(BotConstant.FUNC_FLAG_LIMITED, event.getAuthor().mention(), timeString);
+					logEvent(BotConstant.FUNC_FLAG_FIFO, event.getAuthor().mention(), timeString);
 					try {
 						event.getChannel().fetchMessage(messageIDtoDelete).delete();
 					} catch (Exception e) {
@@ -66,7 +68,17 @@ public class ChannelMonitor implements ITask{
 					updateRowEntry(messageIDtoDelete, event.getMessage().getLongID());
 					
 				} else {
-					logToDB(event.getAuthor().getLongID(), event.getChannel().getLongID(), event.getMessage().getLongID(), new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date.from(Instant.now())));	
+					logToDB(event.getAuthor().getLongID(), event.getChannel().getLongID(), event.getMessage().getLongID(), new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date.from(event.getMessage().getTimestamp())));	
+				}
+			}
+		}
+		if (this.lifoFlag.booleanValue()) {
+			if (channelID.compareTo(event.getChannel().getLongID()) == 0) {
+				if (getChannelPostCount(event.getAuthor().getLongID(), event.getChannel().getLongID()) == postLimit) {
+					RequestBuffer.request( () -> event.getMessage().delete() );
+					logEvent(BotConstant.FUNC_FLAG_LIFO, event.getAuthor().mention(), new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date.from(event.getMessage().getTimestamp())) );
+				} else {
+					logToDB(event.getAuthor().getLongID(), event.getChannel().getLongID(), event.getMessage().getLongID(), new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date.from(event.getMessage().getTimestamp())));	
 				}
 			}
 		}
@@ -104,8 +116,10 @@ public class ChannelMonitor implements ITask{
 	
 	public ArrayList<String> getMonitorFlags() {
 		ArrayList<String> currentFlags = new ArrayList<String>();
-		if (limitedFlag.isTrue())
-			currentFlags.add(BotConstant.FUNC_FLAG_LIMITED);
+		if (lifoFlag.isTrue())
+			currentFlags.add(BotConstant.FUNC_FLAG_LIFO);
+		if (fifoFlag.isTrue())
+			currentFlags.add(BotConstant.FUNC_FLAG_FIFO);
 		if (durationFlag.isTrue())
 			currentFlags.add(BotConstant.FUNC_FLAG_DURATION);
 		if (logChannel != null)
@@ -150,29 +164,37 @@ public class ChannelMonitor implements ITask{
 			shutdown();
 		} else {
 			this.logChannel = null;
-			this.limitedFlag.setFalse();
+			this.lifoFlag.setFalse();
+			this.fifoFlag.setFalse();
 			this.durationFlag.setFalse();
 			
 			// Due to parameters being column sensitive, if there are any changes to column structure in the db, the below code breaks
 			for (String[] flags : parameters) {
-				if (flags[1].equalsIgnoreCase("limited")) {
+				if (flags[1].equalsIgnoreCase(BotConstant.FUNC_FLAG_LIFO)) {
 					if (postLimit > Integer.parseInt(flags[2])) {
 						deleteChannelLogs();
 					}
 					postLimit = Integer.parseInt(flags[2]);
 					if (postLimit > 0) 
-						this.limitedFlag.setTrue();
+						this.lifoFlag.setTrue();
 				}
-				if (flags[1].equalsIgnoreCase("duration")) {
+				if (flags[1].equalsIgnoreCase(BotConstant.FUNC_FLAG_FIFO)) {
+					if (postLimit > Integer.parseInt(flags[2])) {
+						deleteChannelLogs();
+					}
+					postLimit = Integer.parseInt(flags[2]);
+					if (postLimit > 0) 
+						this.fifoFlag.setTrue();
+				}
+				if (flags[1].equalsIgnoreCase(BotConstant.FUNC_FLAG_DURATION)) {
 					duration = Integer.parseInt(flags[3]);
 					if (duration > 0) {					
 						createTimeMonitor(duration);
 						this.durationFlag.setTrue();
 					}
 				}
-				if (flags[1].equalsIgnoreCase("logchannel")) {				
+				if (flags[1].equalsIgnoreCase(BotConstant.FUNC_FLAG_DURATION)) {				
 					logChannel = DiscordClient.getClient().getChannelByID(Long.parseLong(flags[4]));
-					System.out.println("Setting logger for channel " + channel.getName() + " at " + logChannel.getName());
 				}
 			}
 		}
@@ -181,8 +203,12 @@ public class ChannelMonitor implements ITask{
 	@Override
 	public ArrayList<String> getSettings() {
 		ArrayList<String> settings = new ArrayList<String>();
-		if (this.limitedFlag.isTrue()) {
-			settings.add(BotConstant.FUNC_FLAG_LIMITED);
+		if (this.fifoFlag.isTrue()) {
+			settings.add(BotConstant.FUNC_FLAG_FIFO);
+			settings.add(Integer.toString(this.postLimit) + " post(s)");
+		}
+		if (this.lifoFlag.isTrue()) {
+			settings.add(BotConstant.FUNC_FLAG_LIFO);
 			settings.add(Integer.toString(this.postLimit) + " post(s)");
 		}
 		if (this.durationFlag.isTrue()) {
@@ -211,8 +237,11 @@ public class ChannelMonitor implements ITask{
 		if (!(logChannel == null)) {
 			StringBuilder logSB = new StringBuilder();
 			logSB.append("**LOG** -> ");
-			if (eventFlag.equalsIgnoreCase(BotConstant.FUNC_FLAG_LIMITED)) {
-				logSB.append("Flag `" + BotConstant.FUNC_FLAG_LIMITED + "` : Message by " + args[0] + " at " + args[1] + " is deleted");
+			if (eventFlag.equalsIgnoreCase(BotConstant.FUNC_FLAG_LIFO)) {
+				logSB.append("Flag `" + BotConstant.FUNC_FLAG_LIFO + "` : Message by " + args[0] + " at " + args[1] + " is deleted");
+			}
+			if (eventFlag.equalsIgnoreCase(BotConstant.FUNC_FLAG_FIFO)) {
+				logSB.append("Flag `" + BotConstant.FUNC_FLAG_FIFO + "` : Message by " + args[0] + " at " + args[1] + " is deleted");
 			}
 			if (eventFlag.equalsIgnoreCase(BotConstant.FUNC_FLAG_DURATION)) {
 				logSB.append("Flag `" + BotConstant.FUNC_FLAG_DURATION + "` : Messages older than " + args[0] + " is deleted");
