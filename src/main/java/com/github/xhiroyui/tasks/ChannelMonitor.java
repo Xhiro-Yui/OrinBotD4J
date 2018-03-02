@@ -39,6 +39,7 @@ public class ChannelMonitor implements ITask{
 	private int postLimit;
 	private MutableBoolean durationFlag = new MutableBoolean();
 	private int duration;
+	private MutableBoolean allowDelete = new MutableBoolean();
 	private ScheduledExecutorService scheduledExecutorService = null;
 	private ScheduledFuture<?> scheduledFuture = null;
 
@@ -84,7 +85,7 @@ public class ChannelMonitor implements ITask{
 	
 	@EventSubscriber
 	public void OnMessageDeleteEvent(MessageDeleteEvent event) { 
-		if (channelID.compareTo(event.getChannel().getLongID()) == 0)
+		if (this.allowDelete.isTrue() && channelID.compareTo(event.getChannel().getLongID()) == 0)
 			deleteRowEntry(event.getMessageID());
 	}
 	
@@ -165,7 +166,7 @@ public class ChannelMonitor implements ITask{
 			this.lifoFlag.setFalse();
 			this.fifoFlag.setFalse();
 			this.durationFlag.setFalse();
-			
+
 			// Due to parameters being column sensitive, if there are any changes to column structure in the db, the below code breaks
 			for (String[] flags : parameters) {
 				if (flags[1].equalsIgnoreCase(BotConstant.FUNC_FLAG_LIFO)) {
@@ -191,8 +192,15 @@ public class ChannelMonitor implements ITask{
 						this.durationFlag.setTrue();
 					}
 				}
-				if (flags[1].equalsIgnoreCase(BotConstant.FUNC_FLAG_DURATION)) {				
+				if (flags[1].equalsIgnoreCase(BotConstant.FUNC_FLAG_LOGCHANNEL)) {	
 					logChannel = DiscordClient.getClient().getChannelByID(Long.parseLong(flags[4]));
+				}
+				if (flags[1].equalsIgnoreCase(BotConstant.FUNC_FLAG_ALLOW_DELETE)) {
+					System.out.println("Kasha : Testing phase for Flag Allow Delete -> " + flags[5] );
+					if (flags[5].equalsIgnoreCase("0"))
+						this.allowDelete.setFalse();
+					if (flags[5].equalsIgnoreCase("1"))
+						this.allowDelete.setTrue();
 				}
 			}
 		}
@@ -216,6 +224,10 @@ public class ChannelMonitor implements ITask{
 		if (!(logChannel == null)) {
 			settings.add(BotConstant.FUNC_FLAG_LOGCHANNEL);
 			settings.add("<#" + String.valueOf(logChannel.getLongID()) + ">");
+		}
+		if (this.allowDelete.isTrue()) {
+			settings.add(BotConstant.FUNC_FLAG_ALLOW_DELETE);
+			settings.add("True");
 		}
 		return settings;
 	}

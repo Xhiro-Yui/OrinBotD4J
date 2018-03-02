@@ -158,6 +158,12 @@ public class DBConnection {
 			} catch (Exception e) {
 			}
 		}
+//		System.out.println("Kasha : Results of DB Query");
+//		for (String[] each : result) {
+//			System.out.println("======");
+//			for (int i = 0; i < each.length; i++) 
+//				System.out.println(i + " : " + each[i]);
+//		}
 		return result;	
 	}
 	
