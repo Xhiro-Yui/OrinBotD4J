@@ -22,6 +22,7 @@ import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageDeleteEvent;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.obj.IChannel;
+import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.MessageBuilder;
 import sx.blah.discord.util.MessageHistory;
@@ -135,7 +136,9 @@ public class ChannelMonitor implements ITask{
 						Instant timeMinusHoursSet = Instant.now().minus(hours, ChronoUnit.HOURS);
 						MessageHistory mh = channel.getMessageHistoryFrom(timeMinusHoursSet);
 						if (mh.size() > 0) {
-							RequestBuffer.request( () -> mh.bulkDelete() );
+							for (IMessage msg : mh) { 
+								RequestBuffer.request( () -> msg.delete() );
+							}
 							logEvent(BotConstant.FUNC_FLAG_DURATION, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date.from(timeMinusHoursSet)));
 							DBConnection.getDBConnection().deleteQuery("DELETE FROM " + BotConstant.DB_CHANNEL_MONITOR_TABLE + " WHERE channel_id = '" + channel.getLongID() + "' AND datetime_of_post < '" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date.from(Instant.now())) + "';");
 						}
