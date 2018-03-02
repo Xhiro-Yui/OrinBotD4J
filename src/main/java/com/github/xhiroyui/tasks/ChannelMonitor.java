@@ -196,7 +196,6 @@ public class ChannelMonitor implements ITask{
 					logChannel = DiscordClient.getClient().getChannelByID(Long.parseLong(flags[4]));
 				}
 				if (flags[1].equalsIgnoreCase(BotConstant.FUNC_FLAG_ALLOW_DELETE)) {
-					System.out.println("Kasha : Testing phase for Flag Allow Delete -> " + flags[5] );
 					if (flags[5].equalsIgnoreCase("0"))
 						this.allowDelete.setFalse();
 					if (flags[5].equalsIgnoreCase("1"))
