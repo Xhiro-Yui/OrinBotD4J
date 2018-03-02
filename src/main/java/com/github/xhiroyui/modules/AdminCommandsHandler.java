@@ -90,17 +90,11 @@ public class AdminCommandsHandler extends ModuleHandler {
 				}
 				break;
 			case FunctionConstant.ADMIN_REMOVE_FROM_WL:
-				if (UserWhitelist.getWhitelist().validateUser(command[1])) {
-					if (UserWhitelist.getWhitelist().validateUser(command[1]))
-					sendMessage("User " + event.getGuild().getUserByID(Long.parseLong(command[1]))
-									.getNicknameForGuild(event.getGuild())
-									+ " added to whitelist.\\nReminder : Whitelist is persistant across servers.",
-							event);
-					else
-						sendMessage("Error updating whitelist. Please contact bot author to rectify this issue", event);
+				try {
+					removeFromWhitelist(command[1], event);
+				} catch (Exception e) {
+					throwError(FunctionConstant.ADMIN_REMOVE_FROM_WL, e, event);
 				}
-				else
-					sendMessage("User not found in whitelist. No actions were taken.", event);
 				break;
 			}
 
@@ -125,5 +119,9 @@ public class AdminCommandsHandler extends ModuleHandler {
 		}
 		else
 			sendMessage("User already in whitelist. No actions were taken.", event);
+	}
+	
+	private void removeFromWhitelist(String userID, MessageReceivedEvent event) {
+		sendMessage("Command under construction. Tehepero XP", event);
 	}
 }

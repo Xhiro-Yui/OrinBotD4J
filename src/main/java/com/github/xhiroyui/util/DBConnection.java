@@ -24,7 +24,7 @@ public class DBConnection {
 				config.setJdbcUrl(cstring);
 				config.setUsername(userid);
 				config.setPassword(pw);
-				config.setMaximumPoolSize(8);
+				config.setMaximumPoolSize(5);
 			}
 			else {
 				config.setJdbcUrl(OrinBot.db_cstring);

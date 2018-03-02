@@ -57,22 +57,20 @@ public class ChannelMonitor implements ITask{
 			if (channelID.compareTo(event.getChannel().getLongID()) == 0) {
 				if (getChannelPostCount(event.getAuthor().getLongID(), event.getChannel().getLongID()) >= postLimit) {
 					long messageIDtoDelete = getOldestPostID(event.getAuthor().getLongID(), event.getChannel().getLongID());
-					System.out.println(messageIDtoDelete);
 					String timeString = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date.from(event.getChannel().fetchMessage(messageIDtoDelete).getTimestamp()));					
-					logEvent(BotConstant.FUNC_FLAG_FIFO, event.getAuthor().mention(), timeString);
 					try {
-						event.getChannel().fetchMessage(messageIDtoDelete).delete();
+						RequestBuffer.request( () -> event.getChannel().fetchMessage(messageIDtoDelete).delete() );
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
 					updateRowEntry(messageIDtoDelete, event.getMessage().getLongID());
-					
+					logEvent(BotConstant.FUNC_FLAG_FIFO, event.getAuthor().mention(), timeString);
 				} else {
 					logToDB(event.getAuthor().getLongID(), event.getChannel().getLongID(), event.getMessage().getLongID(), new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date.from(event.getMessage().getTimestamp())));	
 				}
 			}
 		}
-		if (this.lifoFlag.booleanValue()) {
+		else if (this.lifoFlag.booleanValue()) {
 			if (channelID.compareTo(event.getChannel().getLongID()) == 0) {
 				if (getChannelPostCount(event.getAuthor().getLongID(), event.getChannel().getLongID()) == postLimit) {
 					RequestBuffer.request( () -> event.getMessage().delete() );
@@ -136,7 +134,7 @@ public class ChannelMonitor implements ITask{
 						Instant timeMinusHoursSet = Instant.now().minus(hours, ChronoUnit.HOURS);
 						MessageHistory mh = channel.getMessageHistoryFrom(timeMinusHoursSet);
 						if (mh.size() > 0) {
-							mh.bulkDelete();
+							RequestBuffer.request( () -> mh.bulkDelete() );
 							logEvent(BotConstant.FUNC_FLAG_DURATION, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date.from(timeMinusHoursSet)));
 							DBConnection.getDBConnection().deleteQuery("DELETE FROM " + BotConstant.DB_CHANNEL_MONITOR_TABLE + " WHERE channel_id = '" + channel.getLongID() + "' AND datetime_of_post < '" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date.from(Instant.now())) + "';");
 						}
@@ -245,10 +243,8 @@ public class ChannelMonitor implements ITask{
 			}
 			if (eventFlag.equalsIgnoreCase(BotConstant.FUNC_FLAG_DURATION)) {
 				logSB.append("Flag `" + BotConstant.FUNC_FLAG_DURATION + "` : Messages older than " + args[0] + " is deleted");
-			}
-			
-			
-			new MessageBuilder(DiscordClient.getClient()).appendContent(logSB.toString()).withChannel(logChannel).build();
+			}			
+			RequestBuffer.request( () -> new MessageBuilder(DiscordClient.getClient()).appendContent(logSB.toString()).withChannel(logChannel).build() );			
 		}
 	}
 }
