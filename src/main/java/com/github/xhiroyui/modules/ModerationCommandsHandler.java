@@ -238,21 +238,25 @@ public class ModerationCommandsHandler extends ModuleHandler {
 					.updateQuery("UPDATE " + BotConstant.DB_CHANNEL_FLAGS_TABLE + " SET post_amount = '" + amount + "' WHERE channel_id = '"
 							+ event.getChannel().getLongID() + "' AND flags = '" + BotConstant.FUNC_FLAG_FIFO
 							+ "'");
-				if (monitorFlags.contains(BotConstant.FUNC_FLAG_FIFO) && flag.equalsIgnoreCase(BotConstant.FUNC_FLAG_LIFO))
+				if (monitorFlags.contains(BotConstant.FUNC_FLAG_FIFO) && flag.equalsIgnoreCase(BotConstant.FUNC_FLAG_LIFO)) {
 					DBConnection.getDBConnection()
-					.updateQuery("UPDATE " + BotConstant.DB_CHANNEL_FLAGS_TABLE + " SET post_amount = '" + amount + "', flags = '" + BotConstant.FUNC_FLAG_FIFO + "' WHERE channel_id = '"
-							+ event.getChannel().getLongID() + "' AND flags = '" + BotConstant.FUNC_FLAG_LIFO
+					.updateQuery("UPDATE " + BotConstant.DB_CHANNEL_FLAGS_TABLE + " SET post_amount = '" + amount + "', flags = '" + BotConstant.FUNC_FLAG_LIFO + "' WHERE channel_id = '"
+							+ event.getChannel().getLongID() + "' AND flags = '" + BotConstant.FUNC_FLAG_FIFO
 							+ "'");
+					DBConnection.getDBConnection().deleteQuery("DELETE FROM " + BotConstant.DB_CHANNEL_MONITOR_TABLE + " WHERE channel_id = '" + event.getChannel().getLongID() + "'");
+				}
 				if (monitorFlags.contains(BotConstant.FUNC_FLAG_LIFO) && flag.equalsIgnoreCase(BotConstant.FUNC_FLAG_LIFO))
 					DBConnection.getDBConnection()
 					.updateQuery("UPDATE " + BotConstant.DB_CHANNEL_FLAGS_TABLE + " SET post_amount = '" + amount + "' WHERE channel_id = '"
 							+ event.getChannel().getLongID() + "' AND flags = '" + BotConstant.FUNC_FLAG_LIFO
 							+ "'");
-				if (monitorFlags.contains(BotConstant.FUNC_FLAG_LIFO) && flag.equalsIgnoreCase(BotConstant.FUNC_FLAG_FIFO))
+				if (monitorFlags.contains(BotConstant.FUNC_FLAG_LIFO) && flag.equalsIgnoreCase(BotConstant.FUNC_FLAG_FIFO)) {
 					DBConnection.getDBConnection()
-					.updateQuery("UPDATE " + BotConstant.DB_CHANNEL_FLAGS_TABLE + " SET post_amount = '" + amount + "', flags = '" + BotConstant.FUNC_FLAG_LIFO + "' WHERE channel_id = '"
-							+ event.getChannel().getLongID() + "' AND flags = '" + BotConstant.FUNC_FLAG_FIFO
-							+ "'");				
+					.updateQuery("UPDATE " + BotConstant.DB_CHANNEL_FLAGS_TABLE + " SET post_amount = '" + amount + "', flags = '" + BotConstant.FUNC_FLAG_FIFO + "' WHERE channel_id = '"
+							+ event.getChannel().getLongID() + "' AND flags = '" + BotConstant.FUNC_FLAG_LIFO
+							+ "'");	
+					DBConnection.getDBConnection().deleteQuery("DELETE FROM " + BotConstant.DB_CHANNEL_MONITOR_TABLE + " WHERE channel_id = '" + event.getChannel().getLongID() + "'");
+				}
 			}
 			createUpdateMonitor(event.getChannel().getLongID());
 		} else {
