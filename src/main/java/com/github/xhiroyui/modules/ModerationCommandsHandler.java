@@ -4,11 +4,13 @@ import java.io.IOException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
 import com.github.xhiroyui.TaskLoader;
 import com.github.xhiroyui.UserWhitelist;
 import com.github.xhiroyui.constant.BotConstant;
 import com.github.xhiroyui.constant.FunctionConstant;
+import com.github.xhiroyui.util.BotCache;
 import com.github.xhiroyui.util.Command;
 import com.github.xhiroyui.util.DBConnection;
 import com.github.xhiroyui.util.MiscUtils;
@@ -27,6 +29,24 @@ public class ModerationCommandsHandler extends ModuleHandler {
 
 	private void createCommands() {
 		Command command;
+
+		command = new Command(FunctionConstant.MOD_SETUP_MUTE_ROLE);
+		command.setCommandName("Setup Mute Role");
+		command.setCommandDescription("Assigns the muted role for this guild.");
+		command.setCommandCallers("setupmute");
+		command.setParams(new String[] { "@Role" });
+		command.setMaximumArgs(1);
+		command.setExample("setupmute @Muted");
+		commandList.add(command);
+		
+		command = new Command(FunctionConstant.MOD_MUTE_USER);
+		command.setCommandName("Mute User");
+		command.setCommandDescription("Gives the user the Muted role. Muted role is obtained from " + FunctionConstant.MOD_SETUP_MUTE_ROLE);
+		command.setCommandCallers("mute");
+		command.setParams(new String[] { "@User" });
+		command.setMaximumArgs(1);
+		command.setExample("mute @User");
+		commandList.add(command);
 
 		command = new Command(FunctionConstant.MOD_FLAG_CHANNEL);
 		command.setCommandName("Flag Channel");
@@ -95,14 +115,27 @@ public class ModerationCommandsHandler extends ModuleHandler {
 		String commandCode = validateCommand(event, command);
 		if (commandCode != null) {
 			switch (commandCode) {
-			case FunctionConstant.MOD_FLAG_CHANNEL:
+			case FunctionConstant.MOD_SETUP_MUTE_ROLE:
 				try {
-					flag_channel(command, event);
+					setupMuteRole(event);
 				} catch (Exception e) {
 					throwError(FunctionConstant.MOD_FLAG_CHANNEL, e, event);
 				}
 				break;
-
+			case FunctionConstant.MOD_MUTE_USER:
+				try {
+					muteUser(event);
+				} catch (Exception e) {
+					throwError(FunctionConstant.MOD_MUTE_USER, e, event);
+				}
+				break;
+			case FunctionConstant.MOD_FLAG_CHANNEL:
+				try {
+					flagChannel(command, event);
+				} catch (Exception e) {
+					throwError(FunctionConstant.MOD_FLAG_CHANNEL, e, event);
+				}
+				break;
 			case FunctionConstant.MOD_UNFLAG_CHANNEL:
 				try {
 					removeAllFlags(event.getChannel().getLongID());
@@ -137,6 +170,31 @@ public class ModerationCommandsHandler extends ModuleHandler {
 	}
 
 	// Command functions are placed below here
+	
+	private void setupMuteRole(MessageReceivedEvent event) {
+		if (event.getMessage().getRoleMentions().size() < 1)
+			sendMessage("Please mention a role for mute role setup.", event);
+		else {
+			if (Integer.parseInt(DBConnection.getDBConnection().selectQuerySingleResult("SELECT COUNT(role_id) FROM " + BotConstant.DB_GUILD_MUTE_TABLE + " WHERE guild_id = '" + event.getGuild().getLongID() + "'"))==0)
+				DBConnection.getDBConnection().insertQuery("INSERT INTO " + BotConstant.DB_GUILD_MUTE_TABLE + " (guild_id, role_id) VALUES ('"+ event.getGuild().getLongID() +"','"+ event.getMessage().getRoleMentions().get(0).getLongID() +"')");
+			else {
+				DBConnection.getDBConnection().insertQuery("UPDATE " + BotConstant.DB_GUILD_MUTE_TABLE + " SET role_id = '" + event.getMessage().getRoleMentions().get(0).getLongID() + "' WHERE guild_id = '" + event.getGuild().getLongID() + "'");
+				BotCache.mutedRoleIDCache.refresh(event.getGuild().getLongID());
+			}
+		}		
+	}
+	
+	private void muteUser(MessageReceivedEvent event) throws ExecutionException {
+		if (event.getMessage().getMentions().size() < 1)
+			sendMessage("Please mention a user to mute.", event);
+		else {
+			if (Integer.parseInt(DBConnection.getDBConnection().selectQuerySingleResult("SELECT COUNT(role_id) FROM " + BotConstant.DB_GUILD_MUTE_TABLE + " WHERE guild_id = '" + event.getGuild().getLongID() + "'"))==0)
+				sendMessage("Mute role not setup for current guild. Please setup the mute role using the " + FunctionConstant.MOD_SETUP_MUTE_ROLE + " command.", event);
+			else {
+				event.getMessage().getMentions().get(0).addRole(event.getGuild().getRoleByID(BotCache.mutedRoleIDCache.get(event.getGuild().getLongID())));
+			}	
+		}
+	}
 		
 	private void printAvailableFlags(MessageReceivedEvent event) {
 		StringBuilder listFlagsSB = new StringBuilder();
@@ -180,7 +238,7 @@ public class ModerationCommandsHandler extends ModuleHandler {
 		sendMessage(listFlagsSB.toString(), event);
 	}
 
-	private void flag_channel(String[] command, MessageReceivedEvent event) {
+	private void flagChannel(String[] command, MessageReceivedEvent event) {
 		if (command[1].equalsIgnoreCase("NONE"))
 			removeAllFlags(event.getChannel().getLongID());
 		else if (command[1].equalsIgnoreCase("KEEP_OLDEST") || command[1].equalsIgnoreCase("KEEPOLDEST") || command[1].equalsIgnoreCase("LIFO"))

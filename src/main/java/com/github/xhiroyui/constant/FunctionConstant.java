@@ -11,6 +11,15 @@ public class FunctionConstant {
 	// Admin Module
 	public static final String ADMIN_PING = "ADMIN_PING";
 	
+	// Moderation Module
+	public static final String MOD_FLAG_CHANNEL = "MOD_FLAG_CHANNEL";
+	public static final String MOD_UNFLAG_CHANNEL = "MOD_UNFLAG_CHANNEL";
+	public static final String MOD_CHECK_CHANNEL_FLAGS = "MOD_CHECK_CHANNEL_FLAGS";
+	public static final String MOD_LIST_FLAGS =	"MOD_LIST_FLAGS";
+	public static final String MOD_MESSAGE_PURGE = "MOD_MESSAGE_PURGE";
+	public static final String MOD_SETUP_MUTE_ROLE = "MOD_SETUP_MUTE_ROLE";
+	public static final String MOD_MUTE_USER = "MOD_MUTE_USER";
+
 	// General Module
 	public static final String GEN_PING = "GEN_PING";
 	public static final String GEN_EMBED_PING = "GEN_EMBED_PING";
@@ -20,10 +29,4 @@ public class FunctionConstant {
 	// GBF Module
 	public static final String GBF_GET_CHARACTER = "GBF_GET_CHARACTER";
 
-	// Moderation Module
-	public static final String MOD_FLAG_CHANNEL = "MOD_FLAG_CHANNEL";
-	public static final String MOD_UNFLAG_CHANNEL = "MOD_UNFLAG_CHANNEL";
-	public static final String MOD_CHECK_CHANNEL_FLAGS = "MOD_CHECK_CHANNEL_FLAGS";
-	public static final String MOD_LIST_FLAGS =	"MOD_LIST_FLAGS";
-	public static final String MOD_MESSAGE_PURGE = "MOD_MESSAGE_PURGE";
 }

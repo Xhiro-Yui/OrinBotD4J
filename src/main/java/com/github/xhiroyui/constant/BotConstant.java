@@ -11,5 +11,6 @@ public class BotConstant {
 
 	public static final String DB_CHANNEL_MONITOR_TABLE = "channel_monitor";
 	public static final String DB_CHANNEL_FLAGS_TABLE = "channel_flags";
+	public static final String DB_GUILD_MUTE_TABLE = "guild_mute";
 	// Error messages
 }
