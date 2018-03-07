@@ -220,7 +220,11 @@ public class ModerationCommandsHandler extends ModuleHandler {
 	private void removeAllFlags(long channelID) {
 		DBConnection.getDBConnection().deleteQuery("DELETE FROM " + BotConstant.DB_CHANNEL_FLAGS_TABLE + " WHERE channel_id = '" + channelID + "'");
 		DBConnection.getDBConnection().deleteQuery("DELETE FROM " + BotConstant.DB_CHANNEL_MONITOR_TABLE + " WHERE channel_id = '" + channelID + "'");
-		TaskLoader.getTaskLoader().getMonitor(channelID).shutdown();
+		try {
+			TaskLoader.getTaskLoader().getMonitor(channelID).shutdown(); // Returns null if no monitor found
+		} catch (NullPointerException e) {
+			// No monitor found. Doesn't do anything.
+		}
 	}
 
 	private void setLIFOorFIFOFlag(String flag, MessageReceivedEvent event, String amount) {
