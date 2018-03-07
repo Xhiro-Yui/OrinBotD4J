@@ -6,6 +6,7 @@ public class FunctionConstant {
 	public static final String OWNER_REMOVE_FROM_WL = "OWNER_REMOVE_FROM_WL";
 	public static final String OWNER_ENABLE_MODULE = "OWNER_ENABLE_MODULE";
 	public static final String OWNER_DISABLE_MODULE = "OWNER_DISABLE_MODULE";
+	public static final String OWNER_KILL_REQUEST_BUFFER = "OWNER_KILL_REQUEST_BUFFER";
 	
 	// Admin Module
 	public static final String ADMIN_PING = "ADMIN_PING";

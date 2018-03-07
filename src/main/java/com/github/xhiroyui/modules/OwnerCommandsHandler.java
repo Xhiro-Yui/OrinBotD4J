@@ -5,13 +5,14 @@ import java.io.IOException;
 import com.github.xhiroyui.DiscordClient;
 import com.github.xhiroyui.UserWhitelist;
 import com.github.xhiroyui.constant.FunctionConstant;
-//import com.github.xhiroyui.util.Command;
+import com.github.xhiroyui.util.Command;
 
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.RateLimitException;
+import sx.blah.discord.util.RequestBuffer;
 
 public class OwnerCommandsHandler extends ModuleHandler {
 	public OwnerCommandsHandler() {
@@ -19,7 +20,15 @@ public class OwnerCommandsHandler extends ModuleHandler {
 	}
 
 	private void createCommands() {
-//		Command command;
+		Command command;
+		
+		command = new Command(FunctionConstant.OWNER_KILL_REQUEST_BUFFER);
+		command.setCommandName("Kill Request Buffer");
+		command.setCommandDescription("Kills the request buffer");
+		command.setCommandCallers("krb");
+		command.setCommandCallers("kill");
+		command.setMaximumArgs(0);
+		commandList.add(command);
 
 //		command = new Command(FunctionConstant.OWNER_ADD_TO_WL);
 //		command.setCommandName("Add to Whitelist");
@@ -60,6 +69,13 @@ public class OwnerCommandsHandler extends ModuleHandler {
 		String commandCode = validateCommand(event, command);
 		if (commandCode != null) {
 			switch (commandCode) {
+			case FunctionConstant.OWNER_KILL_REQUEST_BUFFER:
+				try {
+					sendMessage(Integer.toString(killRequestBuffer()) + " requests killed. Merciless ;)", event);
+				} catch (Exception e) {
+					throwError(FunctionConstant.OWNER_ADD_TO_WL, e, event);
+				}
+				break;
 			case FunctionConstant.OWNER_ADD_TO_WL:
 				try {
 					addToWhitelist(command[1], event);
@@ -86,6 +102,10 @@ public class OwnerCommandsHandler extends ModuleHandler {
 	}
 	
 	// Command functions are placed below here
+	
+	private int killRequestBuffer() {
+		return RequestBuffer.killAllRequests();
+	}
 	
 	private void addToWhitelist(String userID, MessageReceivedEvent event) {
 //		sendMessage(userID, event);

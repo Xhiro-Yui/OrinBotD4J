@@ -23,7 +23,6 @@ import sx.blah.discord.handle.impl.events.guild.channel.message.MessageDeleteEve
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IMessage;
-import sx.blah.discord.handle.obj.Permissions;
 import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.MessageBuilder;
 import sx.blah.discord.util.MessageHistory;
@@ -84,8 +83,6 @@ public class ChannelMonitor implements ITask{
 					logToDB(event.getAuthor().getLongID(), event.getChannel().getLongID(), event.getMessage().getLongID(), new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date.from(event.getMessage().getTimestamp())));	
 				}
 			}
-		} else if (channelID.equals(event.getChannel().getLongID()) && event.getMessage().getContent().startsWith(BotConstant.PREFIX + "forcestop") && event.getAuthor().getPermissionsForGuild(event.getGuild()).contains(Permissions.ADMINISTRATOR)) {
-			rf.cancel(true);
 		}
 	}
 	
