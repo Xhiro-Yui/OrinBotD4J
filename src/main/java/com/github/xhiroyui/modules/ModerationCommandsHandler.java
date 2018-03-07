@@ -191,7 +191,11 @@ public class ModerationCommandsHandler extends ModuleHandler {
 			if (Integer.parseInt(DBConnection.getDBConnection().selectQuerySingleResult("SELECT COUNT(role_id) FROM " + BotConstant.DB_GUILD_MUTE_TABLE + " WHERE guild_id = '" + event.getGuild().getLongID() + "'"))==0)
 				sendMessage("Mute role not setup for current guild. Please setup the mute role using the " + FunctionConstant.MOD_SETUP_MUTE_ROLE + " command.", event);
 			else {
-				event.getMessage().getMentions().get(0).addRole(event.getGuild().getRoleByID(BotCache.mutedRoleIDCache.get(event.getGuild().getLongID())));
+				try {
+					event.getMessage().getMentions().get(0).addRole(event.getGuild().getRoleByID(BotCache.mutedRoleIDCache.get(event.getGuild().getLongID())));
+				} catch (NullPointerException e) {
+					sendMessage("Role not found. Has the role been deleted? Please setup a new role using the " + FunctionConstant.MOD_SETUP_MUTE_ROLE + " command.", event);
+				}
 			}	
 		}
 	}
