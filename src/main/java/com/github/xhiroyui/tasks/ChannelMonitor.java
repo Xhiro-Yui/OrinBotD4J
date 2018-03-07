@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.mutable.MutableBoolean;
@@ -43,7 +42,6 @@ public class ChannelMonitor implements ITask{
 	private int duration;
 	private MutableBoolean allowDelete = new MutableBoolean();
 	private ScheduledExecutorService scheduledExecutorService = null;
-	private ScheduledFuture<?> scheduledFuture = null;
 	volatile RequestFuture<Void> rf;
 
 	public ChannelMonitor(long channelID) {
@@ -131,7 +129,7 @@ public class ChannelMonitor implements ITask{
 	
 	private void createTimeMonitor(int hours) {
 		scheduledExecutorService = Executors.newScheduledThreadPool(0);
-		scheduledFuture = scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
+		scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
 				@Override
 				public void run() {
 					try {
@@ -149,13 +147,12 @@ public class ChannelMonitor implements ITask{
 					}
 				}
 		},1, 60 * 60 , TimeUnit.SECONDS); // Runs every hour
-//		},1, 10 , TimeUnit.SECONDS); // Runs every 10secs
 		
 	}
-	
+
 	public void stopTimeMonitor() {
-		if (scheduledFuture != null) {
-			scheduledFuture.cancel(true);
+		if (scheduledExecutorService != null) {
+			System.out.println("Shutting down Time monitor for channel " + channelID);
 			scheduledExecutorService.shutdown();
 			scheduledExecutorService = null;
 		}

@@ -9,6 +9,8 @@ import org.apache.commons.lang3.mutable.MutableBoolean;
 import com.github.xhiroyui.constant.BotConstant;
 import com.github.xhiroyui.tasks.ChannelMonitor;
 import com.github.xhiroyui.tasks.ITask;
+import com.github.xhiroyui.tasks.Unmuter;
+import com.github.xhiroyui.util.BotCache;
 import com.github.xhiroyui.util.DBConnection;
 
 public class TaskLoader {
@@ -22,6 +24,7 @@ public class TaskLoader {
 		return taskLoader;
 	}
 
+	// Only called when Bot is booted up
 	public void initTasks() {
 		// Channel Monitors
 		ArrayList<String> channelList = DBConnection.getDBConnection().selectQuerySingleColumnMultipleResults("SELECT DISTINCT channel_id FROM " + BotConstant.DB_CHANNEL_FLAGS_TABLE);
@@ -34,9 +37,13 @@ public class TaskLoader {
 			
 		}
 		// Other type of tasks below (currently none)
+		if (BotCache.refreshMutedUsersCache() > 0)
+			taskList.put(new Unmuter(), new MutableBoolean(true));
 		
+		enableAllTasks();
 	}
 	
+	// Not used atm, redundant. Will remove if no further use of it is found
 	public void updateTask(Long channelID, boolean flag) {
 		for (Map.Entry<ITask, MutableBoolean> entry : taskList.entrySet()) {
 			if (channelID.compareTo(entry.getKey().getChannelID()) == 0) {
@@ -50,7 +57,7 @@ public class TaskLoader {
 		
 	}
 	
-	// Only called when Bot is booted up
+
 	public void enableAllTasks() {
 		for (Map.Entry<ITask, MutableBoolean> entry : taskList.entrySet()) {
 			if (entry.getValue().isTrue())

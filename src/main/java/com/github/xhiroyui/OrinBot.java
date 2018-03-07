@@ -1,5 +1,7 @@
 package com.github.xhiroyui;
 
+import com.github.xhiroyui.util.BotCache;
+
 public class OrinBot {
 	public static String db_cstring; // For testing
 	public static String db_userid; // For testing
@@ -22,8 +24,7 @@ public class OrinBot {
 		ModuleLoader.getModuleLoader().enableModules();
 		
 		DiscordClient.getClient().login();
-		
+		BotCache.refreshMutedUsersCache();
 		TaskLoader.getTaskLoader().initTasks();
-		TaskLoader.getTaskLoader().enableAllTasks();
 	}
 }
