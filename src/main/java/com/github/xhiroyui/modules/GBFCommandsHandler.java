@@ -76,6 +76,10 @@ public class GBFCommandsHandler extends ModuleHandler {
 		try {
 			EmbedBuilder embed = new EmbedBuilder();
 			GBFCharacter character = gbfWikiParser.parseGbfCharacter(webUrl);
+			if (character == null) {
+				sendMessage("Character not found.", event);
+				return;
+			}
 			if (!character.getTitle().isEmpty())
 				embed.withAuthorName("[" + character.getTitle() +"]");
 			else
@@ -147,6 +151,7 @@ public class GBFCommandsHandler extends ModuleHandler {
 		}
 		catch (IllegalArgumentException e) {
 			sendMessage("ERROR : Failed to create embed.", event);
+			e.printStackTrace();
 		}
 		
 	}

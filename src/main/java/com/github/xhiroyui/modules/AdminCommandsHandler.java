@@ -26,27 +26,6 @@ public class AdminCommandsHandler extends ModuleHandler {
 		command.setCommandCallers("aping");
 		command.setMaximumArgs(0);
 		commandList.add(command);
-
-		command = new Command(FunctionConstant.ADMIN_ADD_TO_WL);
-		command.setCommandName("Add to Whitelist");
-		command.setCommandDescription("Adds a user to whitelist");
-		command.setCommandCallers("wl");
-		command.setCommandCallers("whitelist");
-		command.setParams(new String[] { "User ID", "@Mention" });
-		command.setMaximumArgs(1);
-		command.setExample("@Rhestia");
-		commandList.add(command);
-
-		command = new Command(FunctionConstant.ADMIN_REMOVE_FROM_WL);
-		command.setCommandName("Remove from Whitelist");
-		command.setCommandDescription("Removes a user from the whitelist");
-		command.setCommandCallers("removewl");
-		command.setCommandCallers("removewhitelist");
-		command.setParams(new String[] { "User ID", "@Mention" });
-		command.setMaximumArgs(1);
-		command.setExample("@Rhestia");
-		commandList.add(command);
-
 	}
 
 	@EventSubscriber
@@ -55,17 +34,13 @@ public class AdminCommandsHandler extends ModuleHandler {
 		String[] command = processCommand(event);
 		if (command != null) {
 			if (!adminCheck(event.getAuthor(), event.getGuild())) {
-				// System.out.println("Admin check failed");
 				if (UserWhitelist.getWhitelist().validateUser(event.getAuthor().getStringID())) {
-					// System.out.println("User is Whitelisted");
 					executeCommand(event, command);
 				} else {
-					// System.out.println("Whitelist check failed");
 					sendMessage(event.getAuthor().getDisplayName(event.getGuild())
 							+ " is not an admin or whitelisted and is unable to use this command!", event);
 				}
 			} else {
-				// System.out.println("User is Admin");
 				executeCommand(event, command);
 			}
 		}
@@ -82,20 +57,7 @@ public class AdminCommandsHandler extends ModuleHandler {
 					throwError(FunctionConstant.ADMIN_PING, e, event);
 				}
 				break;
-			case FunctionConstant.ADMIN_ADD_TO_WL:
-				try {
-					addToWhitelist(command[1], event);
-				} catch (Exception e) {
-					throwError(FunctionConstant.ADMIN_ADD_TO_WL, e, event);
-				}
-				break;
-			case FunctionConstant.ADMIN_REMOVE_FROM_WL:
-				try {
-					removeFromWhitelist(command[1], event);
-				} catch (Exception e) {
-					throwError(FunctionConstant.ADMIN_REMOVE_FROM_WL, e, event);
-				}
-				break;
+			
 			}
 
 		}
@@ -107,21 +69,4 @@ public class AdminCommandsHandler extends ModuleHandler {
 		sendMessage("PONG", event);
 	}
 	
-	private void addToWhitelist(String userID, MessageReceivedEvent event) {
-		if (!UserWhitelist.getWhitelist().validateUser(userID)) {
-			if (UserWhitelist.getWhitelist().addUserToWhitelist(userID))
-			sendMessage("User " + event.getGuild().getUserByID(Long.parseLong(userID))
-							.getNicknameForGuild(event.getGuild())
-							+ " added to whitelist.\\nReminder : Whitelist is persistant across servers.",
-					event);
-			else
-				sendMessage("Error updating whitelist. Please contact bot author to rectify this issue", event);
-		}
-		else
-			sendMessage("User already in whitelist. No actions were taken.", event);
-	}
-	
-	private void removeFromWhitelist(String userID, MessageReceivedEvent event) {
-		sendMessage("Command under construction. Tehepero XP", event);
-	}
 }

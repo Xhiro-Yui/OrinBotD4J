@@ -23,12 +23,14 @@ import sx.blah.discord.handle.impl.events.guild.channel.message.MessageDeleteEve
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IMessage;
+import sx.blah.discord.handle.obj.Permissions;
 import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.MessageBuilder;
 import sx.blah.discord.util.MessageHistory;
 import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.RateLimitException;
 import sx.blah.discord.util.RequestBuffer;
+import sx.blah.discord.util.RequestBuffer.RequestFuture;
 
 public class ChannelMonitor implements ITask{
 
@@ -43,6 +45,7 @@ public class ChannelMonitor implements ITask{
 	private MutableBoolean allowDelete = new MutableBoolean();
 	private ScheduledExecutorService scheduledExecutorService = null;
 	private ScheduledFuture<?> scheduledFuture = null;
+	volatile RequestFuture<Void> rf;
 
 	public ChannelMonitor(long channelID) {
 		this.channelID = channelID;
@@ -81,6 +84,8 @@ public class ChannelMonitor implements ITask{
 					logToDB(event.getAuthor().getLongID(), event.getChannel().getLongID(), event.getMessage().getLongID(), new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date.from(event.getMessage().getTimestamp())));	
 				}
 			}
+		} else if (channelID.equals(event.getChannel().getLongID()) && event.getMessage().getContent().startsWith(BotConstant.PREFIX + "forcestop") && event.getAuthor().getPermissionsForGuild(event.getGuild()).contains(Permissions.ADMINISTRATOR)) {
+			rf.cancel(true);
 		}
 	}
 	
@@ -137,7 +142,7 @@ public class ChannelMonitor implements ITask{
 						MessageHistory mh = channel.getMessageHistoryFrom(timeMinusHoursSet);
 						if (mh.size() > 0) {
 							for (IMessage msg : mh) { 
-								RequestBuffer.request( () -> msg.delete() );
+								rf = RequestBuffer.request( () -> msg.delete() );
 							}
 							logEvent(BotConstant.FUNC_FLAG_DURATION, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date.from(timeMinusHoursSet)));
 							DBConnection.getDBConnection().deleteQuery("DELETE FROM " + BotConstant.DB_CHANNEL_MONITOR_TABLE + " WHERE channel_id = '" + channel.getLongID() + "' AND datetime_of_post < '" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date.from(Instant.now())) + "';");

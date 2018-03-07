@@ -9,8 +9,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-
 import com.github.xhiroyui.bean.GBFCharacter;
 import com.google.gson.JsonParser;
 
@@ -32,71 +30,23 @@ public class GBFWikiParser {
 		return name;
 	}
 	
-	public GBFCharacter parseGbfCharacterOld(String url) throws IOException {
-		GBFCharacter character = new GBFCharacter();
-		Document doc = Jsoup.connect(url).get();
-		character.setBaseUri(doc.baseUri());
-		
-		Element content = doc.getElementById("content");
-		
-		Elements h1 = content.select("h1#firstHeading");
-		character.setName(h1.text());
-
-		Elements baseArt = content.select("[title=\"Base Art\"] img[src]");	
-		character.setImageUrl(baseArt.attr("abs:src"));
-		
-		Elements thumbnail = content.select("div#mw-content-text a[title=\""+h1.text()+"\"] img");		
-		character.setThumbnailUrl(thumbnail.attr("abs:src"));
-		
-//		Elements spriteArt = content.select("[title$=\"Sprite\"] img[src]");	
-//		for (Element sprites : spriteArt) {
-//			character.setThumbnailUrl(sprites.attr("abs:src"));
-//		}
-		
-		Elements table = content.select("[class^=\"wikitable character\"]");
-		for (Element tablerow : table) {
-			Elements tablecontents = tablerow.select("tr");
-			for (Element trcontents : tablecontents) {
-				if (trcontents.text().toLowerCase().contains("element".toLowerCase())) {
-					Elements td = trcontents.select("img");
-					if (td.toString().toLowerCase().contains("label".toLowerCase())) {
-						character.setElement(td.attr("alt").substring(14, td.attr("alt").length() - 4));
-					}
-				}
-				if (trcontents.text().toLowerCase().contains("race".toLowerCase())) {
-					Elements td = trcontents.select("img");
-					if (td.toString().toLowerCase().contains("label".toLowerCase())) {
-						character.setRace(td.attr("alt").substring(11, td.attr("alt").length() - 4));
-					}
-				}
-				if (trcontents.text().toLowerCase().contains("style".toLowerCase())) {
-					Elements td = trcontents.select("img");
-					if (td.toString().toLowerCase().contains("label".toLowerCase())) {
-						character.setStyle(td.attr("alt").substring(11, td.attr("alt").length() - 4));
-					}
-				}
-				if (trcontents.text().toLowerCase().contains("gender".toLowerCase())) {
-					Elements td = trcontents.select("td");
-					character.setGender(td.text());
-				}
-				if (trcontents.text().toLowerCase().contains("specialty".toLowerCase())) {
-					Elements td = trcontents.select("img");
-					if (td.toString().toLowerCase().contains("label".toLowerCase())) {
-//						character.getSpecialty().add(td.attr("alt").substring(13, td.attr("alt").length() - 4));
-					}
-				}
-			}
-
-		}
-		return character;
-	}
-
 	public GBFCharacter parseGbfCharacter(String url) throws IOException {
-		// Web part
-		GBFCharacter character = new GBFCharacter();
-//		System.out.println("Starting jsoup connect : " + LocalTime.now().truncatedTo(ChronoUnit.SECONDS));
+		// Web Connection
 		Document doc = Jsoup.connect(url).get();
-//		System.out.println("Jsoup received : " + LocalTime.now().truncatedTo(ChronoUnit.SECONDS));
+		
+		// Json Connection
+		URL jsonurl = new URL(baseJsonUrl + URLEncoder.encode(doc.select("h1#firstHeading").text(), "UTF-8"));
+		InputStreamReader reader = new InputStreamReader(jsonurl.openStream());
+		JsonParser jsonParser = new JsonParser();
+		String jsonContent = jsonParser.parse(reader).getAsJsonObject().get("query").getAsJsonObject().get("pages")
+				.getAsJsonArray().get(0).getAsJsonObject().get("revisions").getAsJsonArray().get(0).getAsJsonObject()
+				.get("content").getAsString();
+		if (StringUtils.indexOfIgnoreCase(jsonContent, "{{Character") == -1)
+			return null;
+		String[] values = jsonContent.split("\\\n\\|");
+		
+		// Building char object
+		GBFCharacter character = new GBFCharacter();
 		character.setBaseUri(doc.baseUri());
 		character.setThumbnailUrl(doc.select("meta[property=\"og:image\"]").attr("content"));
 		character.setDescription(doc.select("meta[name=\"description\"]").attr("content"));
@@ -106,14 +56,7 @@ public class GBFWikiParser {
 		for (Element node : doc.select("a.extiw"))
 			character.setVoiceActor(new String[] {node.text(), node.attr("abs:href")});
 		
-		// Json Part
-		URL jsonurl = new URL(baseJsonUrl + URLEncoder.encode(doc.select("h1#firstHeading").text(), "UTF-8"));
-		InputStreamReader reader = new InputStreamReader(jsonurl.openStream());
-		JsonParser jsonParser = new JsonParser();
-		String jsonContent = jsonParser.parse(reader).getAsJsonObject().get("query").getAsJsonObject().get("pages")
-				.getAsJsonArray().get(0).getAsJsonObject().get("revisions").getAsJsonArray().get(0).getAsJsonObject()
-				.get("content").getAsString();
-		String[] values = jsonContent.split("\\\n\\|");
+		
 		for (String contents : values) {
 			if (contents.toLowerCase().startsWith("id"))
 				character.setId(contents.substring(contents.lastIndexOf("=") + 1).trim());
