@@ -1,5 +1,6 @@
 package com.github.xhiroyui.tasks;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -13,8 +14,18 @@ import com.github.xhiroyui.util.DBConnection;
 
 public class Unmuter implements ITask {
 	private ScheduledExecutorService unmuterService = null;
+	
+	private static Unmuter unmuter;
+	
+	private Unmuter() {}
+	
+	public static Unmuter getUnmuter() {
+		if (unmuter == null)
+			unmuter = new Unmuter();
+		return unmuter;
+	}
 
-	public Unmuter() {
+	private void startUnmuter() {
 		System.out.println("Initializing Unmuter.");
 		unmuterService = Executors.newScheduledThreadPool(0);
 		unmuterService.scheduleAtFixedRate(new Runnable() {
@@ -22,12 +33,14 @@ public class Unmuter implements ITask {
 			public void run() {
 				try {
 					for (MutedUser user : BotCache.mutedUsersCache) {
-						if (Integer.parseInt(user.getTimeStamp()) > 100) {
+						if (Instant.now().compareTo(Instant.parse(user.getTimeStamp())) > 0 ) {
 							DiscordClient.getClient().fetchUser(user.getUserID()).removeRole(DiscordClient.getClient()
 									.getRoleByID(BotCache.mutedRoleIDCache.get(user.getGuildID())));
 							DBConnection.getDBConnection().deleteQuery(
 									"DELETE FROM " + BotConstant.DB_MUTED_USERS_TABLE + " WHERE guild_id = '"
 											+ user.getGuildID() + "' AND user_id = '" + user.getUserID() + "'");
+							DiscordClient.getClient().getOrCreatePMChannel(DiscordClient.getClient().fetchUser(user.getUserID()))
+							.sendMessage("You have been unmuted in " + DiscordClient.getClient().getGuildByID(user.getGuildID()).getName() + ".");
 						}
 
 					}
@@ -43,9 +56,13 @@ public class Unmuter implements ITask {
 			}
 		}, 1, 5 * 60, TimeUnit.SECONDS); // Runs every 5 minutes
 	}
-
+	
 	@Override
 	public void refreshSettings() {
+		if (BotCache.refreshMutedUsersCache() > 0) 
+			startUnmuter();
+		else 
+			shutdown();
 	}
 
 	@Override

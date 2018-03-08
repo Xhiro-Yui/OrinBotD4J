@@ -1,11 +1,9 @@
 package com.github.xhiroyui.modules;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.concurrent.ExecutionException;
 
 import com.github.xhiroyui.DiscordClient;
@@ -201,7 +199,9 @@ public class ModerationCommandsHandler extends ModuleHandler {
 
 	private void muteUser(String[] command, MessageReceivedEvent event) throws ExecutionException {
 		if (command.length != 3)
-			sendMessage("Missing parameters. Please consult the help function for the required parameters for using this command", event);
+			sendMessage(
+					"Missing parameters. Please consult the help function for the required parameters for using this command",
+					event);
 		else if (event.getMessage().getMentions().size() < 1)
 			sendMessage("Please mention a user to mute.", event);
 		else if (!MiscUtils.isInteger(command[2]))
@@ -216,16 +216,15 @@ public class ModerationCommandsHandler extends ModuleHandler {
 				try {
 					event.getMessage().getMentions().get(0).addRole(
 							event.getGuild().getRoleByID(BotCache.mutedRoleIDCache.get(event.getGuild().getLongID())));
+					DBConnection.getDBConnection().insertQuery("INSERT INTO " + BotConstant.DB_MUTED_USERS_TABLE
+							+ " (user_id, guild_id, duration) VALUES ('"
+							+ event.getMessage().getMentions().get(0).getLongID() + "','" + event.getGuild().getLongID()
+							+ "','" + Instant.now().plus(Long.parseLong(command[2]), ChronoUnit.MINUTES).toString()
+							+ "')");
 					DiscordClient.getClient().getOrCreatePMChannel(event.getMessage().getMentions().get(0))
-							.sendMessage("You have been muted in " + event.getGuild().getName() + " for X hours.");
-					DBConnection.getDBConnection()
-							.insertQuery("INSERT INTO " + BotConstant.DB_MUTED_USERS_TABLE
-									+ " (user_id, guild_id, duration) VALUES ('"
-									+ event.getMessage().getMentions().get(0).getLongID() + "','"
-									+ event.getGuild().getLongID() + "','"
-									+ new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(
-											Date.from(Instant.now().plus(Long.parseLong(command[2]), ChronoUnit.MINUTES)))
-									+ "')");
+					.sendMessage("You have been muted in " + event.getGuild().getName() + " for " + command[2]
+							+ " minute(s).");
+					TaskLoader.getTaskLoader().refreshUnmuter();
 				} catch (NullPointerException e) {
 					sendMessage("Role not found. Has the role been deleted? Please setup a new role using the **"
 							+ FunctionConstant.MOD_SETUP_MUTE_ROLE + "** command.", event);
@@ -327,12 +326,7 @@ public class ModerationCommandsHandler extends ModuleHandler {
 		DBConnection.getDBConnection().deleteQuery(
 				"DELETE FROM " + BotConstant.DB_CHANNEL_MONITOR_TABLE + " WHERE channel_id = '" + channelID + "'");
 		try {
-			TaskLoader.getTaskLoader().getMonitor(channelID).shutdown(); // Returns
-																			// null
-																			// if
-																			// no
-																			// monitor
-																			// found
+			TaskLoader.getTaskLoader().getMonitor(channelID).shutdown();
 		} catch (NullPointerException e) {
 			// No monitor found. Doesn't do anything.
 		}

@@ -36,10 +36,12 @@ public class TaskLoader {
 			}
 			
 		}
-		// Other type of tasks below (currently none)
+
+		// Unmuter
 		if (BotCache.refreshMutedUsersCache() > 0)
-			taskList.put(new Unmuter(), new MutableBoolean(true));
+			refreshUnmuter();
 		
+		// Other type of tasks below (currently none)
 		enableAllTasks();
 	}
 	
@@ -135,6 +137,12 @@ public class TaskLoader {
 				entry.refreshSettings();
 			}
 		}
+	}
+	
+	// Unmuter call
+	public void refreshUnmuter() {
+		if (BotCache.refreshMutedUsersCache() > 0)
+			Unmuter.getUnmuter().refreshSettings();
 	}
 }
 

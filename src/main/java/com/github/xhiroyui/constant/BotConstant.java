@@ -2,6 +2,7 @@ package com.github.xhiroyui.constant;
 
 public class BotConstant {
 	public static final String PREFIX = "!";
+	public static final String INSTANCE_DATE_FORMAT = "uuuu-MM-DD HH:mm:ss";
 	
 	public static final String FUNC_FLAG_DURATION = "DURATION";
 	public static final String FUNC_FLAG_LIFO = "LIFO";

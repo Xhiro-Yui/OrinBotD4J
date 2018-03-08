@@ -1,11 +1,9 @@
 package com.github.xhiroyui.tasks;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -59,7 +57,7 @@ public class ChannelMonitor implements ITask{
 			if (channelID.compareTo(event.getChannel().getLongID()) == 0) {
 				if (getChannelPostCount(event.getAuthor().getLongID(), event.getChannel().getLongID()) >= postLimit) {
 					long messageIDtoDelete = getOldestPostID(event.getAuthor().getLongID(), event.getChannel().getLongID());
-					String timeString = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date.from(event.getChannel().fetchMessage(messageIDtoDelete).getTimestamp()));					
+					String timeString = event.getChannel().fetchMessage(messageIDtoDelete).getTimestamp().toString();					
 					try {
 						RequestBuffer.request( () -> event.getChannel().fetchMessage(messageIDtoDelete).delete() );
 					} catch (Exception e) {
@@ -68,7 +66,7 @@ public class ChannelMonitor implements ITask{
 					updateRowEntry(messageIDtoDelete, event.getMessage().getLongID());
 					logEvent(BotConstant.FUNC_FLAG_FIFO, event.getAuthor().mention(), timeString);
 				} else {
-					logToDB(event.getAuthor().getLongID(), event.getChannel().getLongID(), event.getMessage().getLongID(), new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date.from(event.getMessage().getTimestamp())));	
+					logToDB(event.getAuthor().getLongID(), event.getChannel().getLongID(), event.getMessage().getLongID(), event.getMessage().getTimestamp().toString());	
 				}
 			}
 		}
@@ -76,9 +74,10 @@ public class ChannelMonitor implements ITask{
 			if (channelID.compareTo(event.getChannel().getLongID()) == 0) {
 				if (getChannelPostCount(event.getAuthor().getLongID(), event.getChannel().getLongID()) == postLimit) {
 					RequestBuffer.request( () -> event.getMessage().delete() );
-					logEvent(BotConstant.FUNC_FLAG_LIFO, event.getAuthor().mention(), new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date.from(event.getMessage().getTimestamp())) );
+					logEvent(BotConstant.FUNC_FLAG_LIFO, event.getAuthor().mention(), event.getMessage().getTimestamp().toString());
 				} else {
-					logToDB(event.getAuthor().getLongID(), event.getChannel().getLongID(), event.getMessage().getLongID(), new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date.from(event.getMessage().getTimestamp())));	
+					logToDB(event.getAuthor().getLongID(), event.getChannel().getLongID(), event.getMessage().getLongID(), event.getMessage().getTimestamp().toString());
+					
 				}
 			}
 		}
@@ -139,8 +138,8 @@ public class ChannelMonitor implements ITask{
 							for (IMessage msg : mh) { 
 								rf = RequestBuffer.request( () -> msg.delete() );
 							}
-							logEvent(BotConstant.FUNC_FLAG_DURATION, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date.from(timeMinusHoursSet)));
-							DBConnection.getDBConnection().deleteQuery("DELETE FROM " + BotConstant.DB_CHANNEL_MONITOR_TABLE + " WHERE channel_id = '" + channel.getLongID() + "' AND datetime_of_post < '" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date.from(Instant.now())) + "';");
+							logEvent(BotConstant.FUNC_FLAG_DURATION, timeMinusHoursSet.toString());
+							DBConnection.getDBConnection().deleteQuery("DELETE FROM " + BotConstant.DB_CHANNEL_MONITOR_TABLE + " WHERE channel_id = '" + channel.getLongID() + "' AND datetime_of_post < '" + Instant.now().toString() + "'");
 						}
 					} catch (Exception e) {
 						e.printStackTrace();
