@@ -39,6 +39,16 @@ public class ModerationCommandsHandler extends ModuleHandler {
 		command.setMaximumArgs(1);
 		command.setExample("setupmute @Muted");
 		commandList.add(command);
+		
+		command = new Command(FunctionConstant.MOD_SETUP_LOG_CHANNEL);
+		command.setCommandName("Setup Log Channel");
+		command.setCommandDescription("Assigns the log channel for this guild.");
+		command.setCommandCallers("setuplog");
+		command.setCommandCallers("setuplogchannel");
+		command.setParams(new String[] { "#channel" });
+		command.setMaximumArgs(1);
+		command.setExample("setuplog #channel");
+		commandList.add(command);
 
 		command = new Command(FunctionConstant.MOD_MUTE_USER);
 		command.setCommandName("Mute User");
@@ -127,6 +137,14 @@ public class ModerationCommandsHandler extends ModuleHandler {
 					throwError(FunctionConstant.MOD_FLAG_CHANNEL, e, event);
 				}
 				break;
+			case FunctionConstant.MOD_SETUP_LOG_CHANNEL:
+				try {
+					setupLogChannelForGuild(event);
+				} catch (Exception e) {
+					throwError(FunctionConstant.MOD_SETUP_LOG_CHANNEL, e, event);
+				}
+				break;
+				
 			case FunctionConstant.MOD_MUTE_USER:
 				try {
 					muteUser(command, event);
@@ -196,6 +214,27 @@ public class ModerationCommandsHandler extends ModuleHandler {
 			}
 		}
 	}
+	
+	private void setupLogChannelForGuild(MessageReceivedEvent event) {
+		if (event.getMessage().getChannelMentions().size() < 1)
+			sendMessage("Please mention a channel to designate as the log channel for this guild.", event);
+		else {
+			if (Integer.parseInt(DBConnection.getDBConnection()
+					.selectQuerySingleResult("SELECT COUNT(channel_id) FROM " + BotConstant.DB_GUILD_LOG_CHANNEL_TABLE
+							+ " WHERE guild_id = '" + event.getGuild().getLongID() + "'")) == 0)
+				DBConnection.getDBConnection()
+						.insertQuery("INSERT INTO " + BotConstant.DB_GUILD_LOG_CHANNEL_TABLE + " (guild_id, channel_id) VALUES ('"
+								+ event.getGuild().getLongID() + "','"
+								+ event.getMessage().getChannelMentions().get(0).getLongID() + "')");
+			else {
+				DBConnection.getDBConnection()
+						.insertQuery("UPDATE " + BotConstant.DB_GUILD_LOG_CHANNEL_TABLE + " SET channel_id = '"
+								+ event.getMessage().getChannelMentions().get(0).getLongID() + "' WHERE guild_id = '"
+								+ event.getGuild().getLongID() + "'");
+				BotCache.guildLogChannelIDCache.refresh(event.getGuild().getLongID());
+			}
+		}
+	}
 
 	private void muteUser(String[] command, MessageReceivedEvent event) throws ExecutionException {
 		if (command.length != 3)
@@ -221,9 +260,12 @@ public class ModerationCommandsHandler extends ModuleHandler {
 							+ event.getMessage().getMentions().get(0).getLongID() + "','" + event.getGuild().getLongID()
 							+ "','" + Instant.now().plus(Long.parseLong(command[2]), ChronoUnit.MINUTES).toString()
 							+ "')");
-					DiscordClient.getClient().getOrCreatePMChannel(event.getMessage().getMentions().get(0))
-					.sendMessage("You have been muted in " + event.getGuild().getName() + " for " + command[2]
-							+ " minute(s).");
+					RequestBuffer.request( () -> DiscordClient.getClient().getOrCreatePMChannel(event.getMessage().getMentions().get(0))
+						.sendMessage("You have been muted in " + event.getGuild().getName() + " for " + command[2]
+								+ " minute(s).") );
+					Long logChannelID = BotCache.guildLogChannelIDCache.get(event.getGuild().getLongID());
+					if (logChannelID.compareTo(0L) != 0) 
+						RequestBuffer.request( () -> sendLogMessage("User " + event.getMessage().getMentions().get(0).mention() + " has been muted for " + command[2] + " minute(s).", logChannelID) );	
 					TaskLoader.getTaskLoader().refreshUnmuter();
 				} catch (NullPointerException e) {
 					sendMessage("Role not found. Has the role been deleted? Please setup a new role using the **"

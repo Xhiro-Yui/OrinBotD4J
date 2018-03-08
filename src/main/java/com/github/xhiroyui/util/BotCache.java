@@ -19,6 +19,20 @@ public class BotCache {
 					}
 			});	
 	
+	// Cache guild log channel IDs
+	public static LoadingCache<Long, Long> guildLogChannelIDCache = CacheBuilder.newBuilder().recordStats().maximumSize(100)
+			.build(new CacheLoader<Long, Long>() {
+				public Long load(Long guildID) throws Exception { 
+					System.out.println("Guild log channel ID not found. Obtaining from DB");
+					String channelID = DBConnection.getDBConnection().selectQuerySingleResult("SELECT channel_id FROM " + BotConstant.DB_GUILD_LOG_CHANNEL_TABLE + " WHERE guild_id = '" + guildID + "'");
+					if (channelID == null) 
+						return 0L;
+					else
+						return Long.parseLong(channelID);
+					}
+			});	
+	
+
 	// Cache of muted users by the bot to automatically remove the mute by a scheduled task
 	public static ArrayList<MutedUser> mutedUsersCache;
 	

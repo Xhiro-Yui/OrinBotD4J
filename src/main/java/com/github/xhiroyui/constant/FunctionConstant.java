@@ -19,6 +19,7 @@ public class FunctionConstant {
 	public static final String MOD_MESSAGE_PURGE = "MOD_MESSAGE_PURGE";
 	public static final String MOD_SETUP_MUTE_ROLE = "MOD_SETUP_MUTE_ROLE";
 	public static final String MOD_MUTE_USER = "MOD_MUTE_USER";
+	public static final String MOD_SETUP_LOG_CHANNEL = "MOD_SETUP_LOG_CHANNEL";
 
 	// General Module
 	public static final String GEN_PING = "GEN_PING";

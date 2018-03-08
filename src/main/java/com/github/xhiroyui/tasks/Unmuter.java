@@ -12,13 +12,16 @@ import com.github.xhiroyui.constant.BotConstant;
 import com.github.xhiroyui.util.BotCache;
 import com.github.xhiroyui.util.DBConnection;
 
+import sx.blah.discord.util.RequestBuffer;
+
 public class Unmuter implements ITask {
 	private ScheduledExecutorService unmuterService = null;
-	
+
 	private static Unmuter unmuter;
-	
-	private Unmuter() {}
-	
+
+	private Unmuter() {
+	}
+
 	public static Unmuter getUnmuter() {
 		if (unmuter == null)
 			unmuter = new Unmuter();
@@ -33,14 +36,20 @@ public class Unmuter implements ITask {
 			public void run() {
 				try {
 					for (MutedUser user : BotCache.mutedUsersCache) {
-						if (Instant.now().compareTo(Instant.parse(user.getTimeStamp())) > 0 ) {
+						if (Instant.now().compareTo(Instant.parse(user.getTimeStamp())) > 0) {
 							DiscordClient.getClient().fetchUser(user.getUserID()).removeRole(DiscordClient.getClient()
 									.getRoleByID(BotCache.mutedRoleIDCache.get(user.getGuildID())));
 							DBConnection.getDBConnection().deleteQuery(
 									"DELETE FROM " + BotConstant.DB_MUTED_USERS_TABLE + " WHERE guild_id = '"
 											+ user.getGuildID() + "' AND user_id = '" + user.getUserID() + "'");
-							DiscordClient.getClient().getOrCreatePMChannel(DiscordClient.getClient().fetchUser(user.getUserID()))
-							.sendMessage("You have been unmuted in " + DiscordClient.getClient().getGuildByID(user.getGuildID()).getName() + ".");
+							RequestBuffer.request(() -> DiscordClient.getClient()
+									.getOrCreatePMChannel(DiscordClient.getClient().fetchUser(user.getUserID()))
+									.sendMessage("You have been unmuted in "
+											+ DiscordClient.getClient().getGuildByID(user.getGuildID()).getName()
+											+ "."));
+							Long logChannelID = BotCache.guildLogChannelIDCache.get(user.getGuildID());
+							if (logChannelID.compareTo(0L) != 0)
+								RequestBuffer.request(() -> DiscordClient.getClient().getChannelByID(logChannelID).sendMessage(DiscordClient.getClient().fetchUser(user.getUserID()).mention() + " has been unmuted.") );
 						}
 
 					}
@@ -54,14 +63,14 @@ public class Unmuter implements ITask {
 					e.printStackTrace();
 				}
 			}
-		}, 1, 5 * 60, TimeUnit.SECONDS); // Runs every 5 minutes
+		}, 1, 1 * 60, TimeUnit.SECONDS); // Runs every 5 minutes
 	}
-	
+
 	@Override
 	public void refreshSettings() {
-		if (BotCache.refreshMutedUsersCache() > 0) 
+		if (BotCache.refreshMutedUsersCache() > 0)
 			startUnmuter();
-		else 
+		else
 			shutdown();
 	}
 

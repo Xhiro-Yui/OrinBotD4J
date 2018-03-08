@@ -10,6 +10,7 @@ import com.github.xhiroyui.DiscordClient;
 import com.github.xhiroyui.constant.BotConstant;
 import com.github.xhiroyui.util.Command;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
+import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.Permissions;
@@ -33,6 +34,22 @@ public class ModuleHandler {
 		RequestBuffer.request(() -> {
 			new MessageBuilder(DiscordClient.getClient()).appendContent(message)
 			.withChannel(event.getMessage().getChannel()).build();
+			});	
+	}
+	
+	protected void sendLogMessage(String message, Long channelID)
+			throws DiscordException, MissingPermissionsException {
+		RequestBuffer.request(() -> {
+			new MessageBuilder(DiscordClient.getClient()).appendContent(message)
+			.withChannel(DiscordClient.getClient().getChannelByID(channelID)).build();
+			});	
+	}
+
+	protected void sendLogMessage(String message, IChannel channel)
+			throws DiscordException, MissingPermissionsException {
+		RequestBuffer.request(() -> {
+			new MessageBuilder(DiscordClient.getClient()).appendContent(message)
+			.withChannel(channel).build();
 			});	
 	}
 
