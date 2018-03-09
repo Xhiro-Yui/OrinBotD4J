@@ -57,7 +57,7 @@ public class OwnerCommandsHandler extends ModuleHandler {
 		command.setCommandDescription("Changes the Bot's Status");
 		command.setCommandCallers("changestatus");
 		command.setParams(new String[] { "Status text" });
-		command.setMaximumArgs(1);
+		command.setMaximumArgs(10);
 		commandList.add(command);
 		// command = new Command(FunctionConstant.OWNER_ADD_TO_WL);
 		// command.setCommandName("Add to Whitelist");
@@ -162,14 +162,18 @@ public class OwnerCommandsHandler extends ModuleHandler {
 				|| command[1].substring(command[1].length() - 3, command[1].length()).equalsIgnoreCase("png")))
 			sendMessage("Image URL must end with PNG or JPG", event);
 		else
-			DiscordClient.getClient().changeAvatar(Image.forUrl(command[1].substring(command[1].length() - 3, command[1].length()), command[1]));
+			RequestBuffer.request(() -> DiscordClient.getClient().changeAvatar(Image.forUrl(command[1].substring(command[1].length() - 3, command[1].length()), command[1])));
 	}
 	
 	private void changeStatus(String[] command, MessageReceivedEvent event) {
 		if (command.length < 2)
 			sendMessage("Status message cannot be left blank.", event);
-		else 
-			DiscordClient.getClient().changePresence(StatusType.ONLINE, ActivityType.PLAYING, command[1]);
+		else {
+			StringBuilder status = new StringBuilder();
+			for (int i = 1; i < command.length; i++) 
+				status.append(command[i] + " ");
+			RequestBuffer.request(() -> DiscordClient.getClient().changePresence(StatusType.ONLINE, ActivityType.PLAYING, status.toString()) );
+		}
 	}
 
 	private int killRequestBuffer() {

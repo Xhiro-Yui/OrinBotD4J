@@ -254,18 +254,18 @@ public class ModerationCommandsHandler extends ModuleHandler {
 					DBConnection.getDBConnection().insertQuery(
 							"INSERT INTO " + BotConstant.DB_MUTED_USERS_TABLE + " (user_id, guild_id, muted_until) VALUES (?,?,?)",
 							event.getMessage().getMentions().get(0).getLongID(), event.getGuild().getLongID(),
-							Instant.now().plus(Long.parseLong(command[2]), ChronoUnit.MINUTES).toEpochMilli());
+							Instant.now().plus(Long.parseLong(command[2]), ChronoUnit.HOURS).toEpochMilli());
 					RequestBuffer.request(() -> DiscordClient.getClient()
 							.getOrCreatePMChannel(event.getMessage().getMentions().get(0))
 							.sendMessage("You have been muted in " + event.getGuild().getName() + " for " + command[2]
-									+ " minute(s)."));
+									+ " hour(s)."));
 					Long logChannelID = BotCache.guildLogChannelIDCache.get(event.getGuild().getLongID());
 					if (logChannelID.compareTo(0L) != 0)
 						RequestBuffer
 								.request(
 										() -> sendLogMessage(
 												"User " + event.getMessage().getMentions().get(0).mention()
-														+ " has been muted for " + command[2] + " minute(s).",
+														+ " has been muted for " + command[2] + " hour(s).",
 												logChannelID));
 					TaskLoader.getTaskLoader().refreshUnmuter();
 				} catch (NullPointerException e) {
