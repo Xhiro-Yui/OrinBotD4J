@@ -8,6 +8,8 @@ public class FunctionConstant {
 	public static final String OWNER_DISABLE_MODULE = "OWNER_DISABLE_MODULE";
 	public static final String OWNER_KILL_REQUEST_BUFFER = "OWNER_KILL_REQUEST_BUFFER";
 	public static final String OWNER_CHANNEL_MONITOR_LOOKUP = "OWNER_CHANNEL_MONITOR_LOOKUP";
+	public static final String OWNER_CHANGE_DISPLAY_PICTURE = "OWNER_CHANGE_DISPLAY_PICTURE";
+	public static final String OWNER_CHANGE_STATUS = "OWNER_CHANGE_STATUS";
 	
 	// Admin Module
 	public static final String ADMIN_PING = "ADMIN_PING";

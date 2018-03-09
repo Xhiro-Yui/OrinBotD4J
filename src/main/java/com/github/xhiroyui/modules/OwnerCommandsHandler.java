@@ -11,8 +11,11 @@ import com.github.xhiroyui.util.Command;
 
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
+import sx.blah.discord.handle.obj.ActivityType;
 import sx.blah.discord.handle.obj.IChannel;
+import sx.blah.discord.handle.obj.StatusType;
 import sx.blah.discord.util.DiscordException;
+import sx.blah.discord.util.Image;
 import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.RateLimitException;
 import sx.blah.discord.util.RequestBuffer;
@@ -24,7 +27,7 @@ public class OwnerCommandsHandler extends ModuleHandler {
 
 	private void createCommands() {
 		Command command;
-		
+
 		command = new Command(FunctionConstant.OWNER_KILL_REQUEST_BUFFER);
 		command.setCommandName("Kill Request Buffer");
 		command.setCommandDescription("Kills the request buffer");
@@ -32,7 +35,7 @@ public class OwnerCommandsHandler extends ModuleHandler {
 		command.setCommandCallers("kill");
 		command.setMaximumArgs(0);
 		commandList.add(command);
-		
+
 		command = new Command(FunctionConstant.OWNER_CHANNEL_MONITOR_LOOKUP);
 		command.setCommandName("Monitor Lookup");
 		command.setCommandDescription("Searches for all monitors being run by Orin.");
@@ -40,25 +43,41 @@ public class OwnerCommandsHandler extends ModuleHandler {
 		command.setMaximumArgs(0);
 		commandList.add(command);
 
-//		command = new Command(FunctionConstant.OWNER_ADD_TO_WL);
-//		command.setCommandName("Add to Whitelist");
-//		command.setCommandDescription("Adds a user to whitelist");
-//		command.setCommandCallers("wl");
-//		command.setCommandCallers("whitelist");
-//		command.setParams(new String[] { "User ID", "@Mention" });
-//		command.setMaximumArgs(1);
-//		command.setExample("@Rhestia");
-//		commandList.add(command);
-//
-//		command = new Command(FunctionConstant.OWNER_REMOVE_FROM_WL);
-//		command.setCommandName("Remove from Whitelist");
-//		command.setCommandDescription("Removes a user from the whitelist");
-//		command.setCommandCallers("removewl");
-//		command.setCommandCallers("removewhitelist");
-//		command.setParams(new String[] { "User ID", "@Mention" });
-//		command.setMaximumArgs(1);
-//		command.setExample("@Rhestia");
-//		commandList.add(command);
+		command = new Command(FunctionConstant.OWNER_CHANGE_DISPLAY_PICTURE);
+		command.setCommandName("Change Avatar");
+		command.setCommandDescription("Changes the Bot's Display Picture");
+		command.setCommandCallers("changedp");
+		command.setCommandCallers("changeavatar");
+		command.setParams(new String[] { "Image Type" });
+		command.setMaximumArgs(1);
+		commandList.add(command);
+
+		command = new Command(FunctionConstant.OWNER_CHANGE_STATUS);
+		command.setCommandName("Change Status");
+		command.setCommandDescription("Changes the Bot's Status");
+		command.setCommandCallers("changestatus");
+		command.setParams(new String[] { "Status text" });
+		command.setMaximumArgs(1);
+		commandList.add(command);
+		// command = new Command(FunctionConstant.OWNER_ADD_TO_WL);
+		// command.setCommandName("Add to Whitelist");
+		// command.setCommandDescription("Adds a user to whitelist");
+		// command.setCommandCallers("wl");
+		// command.setCommandCallers("whitelist");
+		// command.setParams(new String[] { "User ID", "@Mention" });
+		// command.setMaximumArgs(1);
+		// command.setExample("@Rhestia");
+		// commandList.add(command);
+		//
+		// command = new Command(FunctionConstant.OWNER_REMOVE_FROM_WL);
+		// command.setCommandName("Remove from Whitelist");
+		// command.setCommandDescription("Removes a user from the whitelist");
+		// command.setCommandCallers("removewl");
+		// command.setCommandCallers("removewhitelist");
+		// command.setParams(new String[] { "User ID", "@Mention" });
+		// command.setMaximumArgs(1);
+		// command.setExample("@Rhestia");
+		// commandList.add(command);
 
 	}
 
@@ -70,7 +89,8 @@ public class OwnerCommandsHandler extends ModuleHandler {
 			if (ownerCheck(event.getAuthor().getLongID())) {
 				executeCommand(event, command);
 			} else {
-				sendMessage(event.getAuthor().getDisplayName(event.getGuild()) + " is not the owner and is unable to use the command.", event);
+				sendMessage(event.getAuthor().getDisplayName(event.getGuild())
+						+ " is not the owner and is unable to use the command.", event);
 			}
 		}
 	}
@@ -83,48 +103,79 @@ public class OwnerCommandsHandler extends ModuleHandler {
 				try {
 					sendMessage(Integer.toString(killRequestBuffer()) + " requests killed. Merciless ;)", event);
 				} catch (Exception e) {
-					throwError(FunctionConstant.OWNER_ADD_TO_WL, e, event);
+					throwError(FunctionConstant.OWNER_KILL_REQUEST_BUFFER, e, event);
 				}
 				break;
 			case FunctionConstant.OWNER_CHANNEL_MONITOR_LOOKUP:
 				try {
 					lookForChannelMonitors(event);
 				} catch (Exception e) {
-					throwError(FunctionConstant.OWNER_ADD_TO_WL, e, event);
+					throwError(FunctionConstant.OWNER_CHANNEL_MONITOR_LOOKUP, e, event);
 				}
 				break;
-				
-//			case FunctionConstant.OWNER_ADD_TO_WL:
-//				try {
-//					addToWhitelist(command[1], event);
-//				} catch (Exception e) {
-//					throwError(FunctionConstant.OWNER_ADD_TO_WL, e, event);
-//				}
-//				break;
-//			case FunctionConstant.OWNER_REMOVE_FROM_WL:
-//				try {
-//					removeFromWhitelist(command[1], event);
-//				} catch (Exception e) {
-//					throwError(FunctionConstant.OWNER_REMOVE_FROM_WL, e, event);
-//				}
-//				break;
+			case FunctionConstant.OWNER_CHANGE_DISPLAY_PICTURE:
+				try {
+					changeDisplayPicture(command, event);
+				} catch (Exception e) {
+					throwError(FunctionConstant.OWNER_CHANGE_DISPLAY_PICTURE, e, event);
+				}
+				break;
+			case FunctionConstant.OWNER_CHANGE_STATUS:
+				try {
+					changeStatus(command, event);
+				} catch (Exception e) {
+					throwError(FunctionConstant.OWNER_CHANGE_STATUS, e, event);
+				}
+				break;
+
+			// case FunctionConstant.OWNER_ADD_TO_WL:
+			// try {
+			// addToWhitelist(command[1], event);
+			// } catch (Exception e) {
+			// throwError(FunctionConstant.OWNER_ADD_TO_WL, e, event);
+			// }
+			// break;
+			// case FunctionConstant.OWNER_REMOVE_FROM_WL:
+			// try {
+			// removeFromWhitelist(command[1], event);
+			// } catch (Exception e) {
+			// throwError(FunctionConstant.OWNER_REMOVE_FROM_WL, e, event);
+			// }
+			// break;
 			}
 
 		}
 	}
-	
+
 	public boolean ownerCheck(Long userID) {
-		if (userID.equals(DiscordClient.getClient().getApplicationOwner().getLongID())) 
+		if (userID.equals(DiscordClient.getClient().getApplicationOwner().getLongID()))
 			return true;
 		return false;
 	}
-	
+
 	// Command functions are placed below here
+
+	private void changeDisplayPicture(String[] command, MessageReceivedEvent event) {
+		if (command.length < 2)
+			sendMessage("Image URL cannot be left blank.", event);
+		else if (!(command[1].substring(command[1].length() - 3, command[1].length()).equalsIgnoreCase("jpg")
+				|| command[1].substring(command[1].length() - 3, command[1].length()).equalsIgnoreCase("png")))
+			sendMessage("Image URL must end with PNG or JPG", event);
+		else
+			DiscordClient.getClient().changeAvatar(Image.forUrl(command[1].substring(command[1].length() - 3, command[1].length()), command[1]));
+	}
 	
+	private void changeStatus(String[] command, MessageReceivedEvent event) {
+		if (command.length < 2)
+			sendMessage("Status message cannot be left blank.", event);
+		else 
+			DiscordClient.getClient().changePresence(StatusType.ONLINE, ActivityType.PLAYING, command[1]);
+	}
+
 	private int killRequestBuffer() {
 		return RequestBuffer.killAllRequests();
 	}
-	
+
 	private void lookForChannelMonitors(MessageReceivedEvent event) {
 		StringBuilder monitorSB = new StringBuilder().append("No monitors found.");
 		ArrayList<ITask> monitorList = TaskLoader.getTaskLoader().getAllChannelMonitors();
@@ -135,10 +186,11 @@ public class OwnerCommandsHandler extends ModuleHandler {
 			for (ITask monitors : TaskLoader.getTaskLoader().getAllChannelMonitors()) {
 				ArrayList<String> flags = monitors.getSettings();
 				IChannel monitorChannel = DiscordClient.getClient().getChannelByID(monitors.getChannelID());
-				monitorSB.append("Monitor in Guild __" + monitorChannel.getGuild().getName() + "__ at channel #"  + monitorChannel.getName());
+				monitorSB.append("Monitor in Guild __" + monitorChannel.getGuild().getName() + "__ at channel #"
+						+ monitorChannel.getName());
 				monitorSB.append(" with flags ");
 				for (int i = 0; i < flags.size(); i++) {
-					if (i == 0) 
+					if (i == 0)
 						monitorSB.append(flags.get(i));
 					else if (i % 2 == 0)
 						monitorSB.append(", " + flags.get(i));
@@ -147,25 +199,29 @@ public class OwnerCommandsHandler extends ModuleHandler {
 			}
 			sendMessage(monitorSB.toString(), event);
 		}
-		
+
 	}
-	
-//	private void addToWhitelist(String userID, MessageReceivedEvent event) {
-////		sendMessage(userID, event);
-//		if (!UserWhitelist.getWhitelist().validateUser(userID)) {
-//			if (UserWhitelist.getWhitelist().addUserToWhitelist(userID))
-//			sendMessage("User " + event.getGuild().getUserByID(Long.parseLong(userID))
-//							.getNicknameForGuild(event.getGuild())
-//							+ " added to whitelist.\nReminder : Whitelist is persistant across servers.",
-//					event);
-//			else
-//				sendMessage("Error updating whitelist. Please contact bot author to rectify this issue", event);
-//		}
-//		else
-//			sendMessage("User already in whitelist. No actions were taken.", event);
-//	}
-//	
-//	private void removeFromWhitelist(String userID, MessageReceivedEvent event) {
-//		sendMessage("Command under construction. Tehepero XP", event);
-//	}
+
+	// private void addToWhitelist(String userID, MessageReceivedEvent event) {
+	//// sendMessage(userID, event);
+	// if (!UserWhitelist.getWhitelist().validateUser(userID)) {
+	// if (UserWhitelist.getWhitelist().addUserToWhitelist(userID))
+	// sendMessage("User " +
+	// event.getGuild().getUserByID(Long.parseLong(userID))
+	// .getNicknameForGuild(event.getGuild())
+	// + " added to whitelist.\nReminder : Whitelist is persistant across
+	// servers.",
+	// event);
+	// else
+	// sendMessage("Error updating whitelist. Please contact bot author to
+	// rectify this issue", event);
+	// }
+	// else
+	// sendMessage("User already in whitelist. No actions were taken.", event);
+	// }
+	//
+	// private void removeFromWhitelist(String userID, MessageReceivedEvent
+	// event) {
+	// sendMessage("Command under construction. Tehepero XP", event);
+	// }
 }
