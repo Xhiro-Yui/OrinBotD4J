@@ -3,7 +3,7 @@ package com.github.xhiroyui.bean;
 public class MutedUser {
 	private Long userID;
 	private Long guildID;
-	private String timeStamp;
+	private long timeStamp;
 	
 	public Long getUserID() {
 		return userID;
@@ -17,10 +17,10 @@ public class MutedUser {
 	public void setGuildID(Long guildID) {
 		this.guildID = guildID;
 	}
-	public String getTimeStamp() {
+	public long getTimeStamp() {
 		return timeStamp;
 	}
-	public void setTimeStamp(String timeStamp) {
+	public void setTimeStamp(long timeStamp) {
 		this.timeStamp = timeStamp;
 	}
 	

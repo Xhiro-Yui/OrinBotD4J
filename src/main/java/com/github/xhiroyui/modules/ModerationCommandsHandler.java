@@ -39,7 +39,7 @@ public class ModerationCommandsHandler extends ModuleHandler {
 		command.setMaximumArgs(1);
 		command.setExample("setupmute @Muted");
 		commandList.add(command);
-		
+
 		command = new Command(FunctionConstant.MOD_SETUP_LOG_CHANNEL);
 		command.setCommandName("Setup Log Channel");
 		command.setCommandDescription("Assigns the log channel for this guild.");
@@ -144,7 +144,7 @@ public class ModerationCommandsHandler extends ModuleHandler {
 					throwError(FunctionConstant.MOD_SETUP_LOG_CHANNEL, e, event);
 				}
 				break;
-				
+
 			case FunctionConstant.MOD_MUTE_USER:
 				try {
 					muteUser(command, event);
@@ -198,39 +198,35 @@ public class ModerationCommandsHandler extends ModuleHandler {
 		if (event.getMessage().getRoleMentions().size() < 1)
 			sendMessage("Please mention a role for mute role setup.", event);
 		else {
-			if (Integer.parseInt(DBConnection.getDBConnection()
-					.selectQuerySingleResult("SELECT COUNT(role_id) FROM " + BotConstant.DB_GUILD_MUTE_TABLE
-							+ " WHERE guild_id = '" + event.getGuild().getLongID() + "'")) == 0)
-				DBConnection.getDBConnection()
-						.insertQuery("INSERT INTO " + BotConstant.DB_GUILD_MUTE_TABLE + " (guild_id, role_id) VALUES ('"
-								+ event.getGuild().getLongID() + "','"
-								+ event.getMessage().getRoleMentions().get(0).getLongID() + "')");
+			if (Integer.parseInt(DBConnection.getDBConnection().selectQuerySingleResult(
+					"SELECT COUNT(role_id) FROM " + BotConstant.DB_GUILD_MUTE_TABLE + " WHERE guild_id = ?",
+					event.getGuild().getLongID())) == 0)
+				DBConnection.getDBConnection().insertQuery("INSERT INTO " + BotConstant.DB_GUILD_MUTE_TABLE + " (guild_id, role_id) VALUES (?,?)",
+						event.getGuild().getLongID(),
+						event.getMessage().getRoleMentions().get(0).getLongID());
 			else {
-				DBConnection.getDBConnection()
-						.insertQuery("UPDATE " + BotConstant.DB_GUILD_MUTE_TABLE + " SET role_id = '"
-								+ event.getMessage().getRoleMentions().get(0).getLongID() + "' WHERE guild_id = '"
-								+ event.getGuild().getLongID() + "'");
+				DBConnection.getDBConnection().insertQuery(
+						"UPDATE " + BotConstant.DB_GUILD_MUTE_TABLE + " SET role_id = ? WHERE guild_id = ?", 
+						event.getMessage().getRoleMentions().get(0).getLongID(), event.getGuild().getLongID());
 				BotCache.mutedRoleIDCache.refresh(event.getGuild().getLongID());
 			}
 		}
 	}
-	
+
 	private void setupLogChannelForGuild(MessageReceivedEvent event) {
 		if (event.getMessage().getChannelMentions().size() < 1)
 			sendMessage("Please mention a channel to designate as the log channel for this guild.", event);
 		else {
-			if (Integer.parseInt(DBConnection.getDBConnection()
-					.selectQuerySingleResult("SELECT COUNT(channel_id) FROM " + BotConstant.DB_GUILD_LOG_CHANNEL_TABLE
-							+ " WHERE guild_id = '" + event.getGuild().getLongID() + "'")) == 0)
-				DBConnection.getDBConnection()
-						.insertQuery("INSERT INTO " + BotConstant.DB_GUILD_LOG_CHANNEL_TABLE + " (guild_id, channel_id) VALUES ('"
-								+ event.getGuild().getLongID() + "','"
-								+ event.getMessage().getChannelMentions().get(0).getLongID() + "')");
+			if (Integer.parseInt(DBConnection.getDBConnection().selectQuerySingleResult(
+					"SELECT COUNT(channel_id) FROM " + BotConstant.DB_GUILD_LOG_CHANNEL_TABLE + " WHERE guild_id = ?",
+					event.getGuild().getLongID())) == 0)
+				DBConnection.getDBConnection().insertQuery(
+						"INSERT INTO " + BotConstant.DB_GUILD_LOG_CHANNEL_TABLE + " (guild_id, channel_id) VALUES (?,?)", 
+						event.getGuild().getLongID(), event.getMessage().getChannelMentions().get(0).getLongID());
 			else {
-				DBConnection.getDBConnection()
-						.insertQuery("UPDATE " + BotConstant.DB_GUILD_LOG_CHANNEL_TABLE + " SET channel_id = '"
-								+ event.getMessage().getChannelMentions().get(0).getLongID() + "' WHERE guild_id = '"
-								+ event.getGuild().getLongID() + "'");
+				DBConnection.getDBConnection().insertQuery(
+						"UPDATE " + BotConstant.DB_GUILD_LOG_CHANNEL_TABLE + " SET channel_id = ? WHERE guild_id = ?",
+						event.getMessage().getChannelMentions().get(0).getLongID(), event.getGuild().getLongID());
 				BotCache.guildLogChannelIDCache.refresh(event.getGuild().getLongID());
 			}
 		}
@@ -246,26 +242,31 @@ public class ModerationCommandsHandler extends ModuleHandler {
 		else if (!MiscUtils.isInteger(command[2]))
 			sendMessage("Input a valid integer for the time parameter.", event);
 		else {
-			if (Integer.parseInt(DBConnection.getDBConnection()
-					.selectQuerySingleResult("SELECT COUNT(role_id) FROM " + BotConstant.DB_GUILD_MUTE_TABLE
-							+ " WHERE guild_id = '" + event.getGuild().getLongID() + "'")) == 0)
+			if (Integer.parseInt(DBConnection.getDBConnection().selectQuerySingleResult(
+					"SELECT COUNT(role_id) FROM " + BotConstant.DB_GUILD_MUTE_TABLE + " WHERE guild_id = ?",
+					event.getGuild().getLongID())) == 0)
 				sendMessage("Mute role not setup for current guild. Please setup the mute role using the "
 						+ FunctionConstant.MOD_SETUP_MUTE_ROLE + " command.", event);
 			else {
 				try {
 					event.getMessage().getMentions().get(0).addRole(
 							event.getGuild().getRoleByID(BotCache.mutedRoleIDCache.get(event.getGuild().getLongID())));
-					DBConnection.getDBConnection().insertQuery("INSERT INTO " + BotConstant.DB_MUTED_USERS_TABLE
-							+ " (user_id, guild_id, duration) VALUES ('"
-							+ event.getMessage().getMentions().get(0).getLongID() + "','" + event.getGuild().getLongID()
-							+ "','" + Instant.now().plus(Long.parseLong(command[2]), ChronoUnit.MINUTES).toString()
-							+ "')");
-					RequestBuffer.request( () -> DiscordClient.getClient().getOrCreatePMChannel(event.getMessage().getMentions().get(0))
-						.sendMessage("You have been muted in " + event.getGuild().getName() + " for " + command[2]
-								+ " minute(s).") );
+					DBConnection.getDBConnection().insertQuery(
+							"INSERT INTO " + BotConstant.DB_MUTED_USERS_TABLE + " (user_id, guild_id, muted_until) VALUES (?,?,?)",
+							event.getMessage().getMentions().get(0).getLongID(), event.getGuild().getLongID(),
+							Instant.now().plus(Long.parseLong(command[2]), ChronoUnit.MINUTES).toEpochMilli());
+					RequestBuffer.request(() -> DiscordClient.getClient()
+							.getOrCreatePMChannel(event.getMessage().getMentions().get(0))
+							.sendMessage("You have been muted in " + event.getGuild().getName() + " for " + command[2]
+									+ " minute(s)."));
 					Long logChannelID = BotCache.guildLogChannelIDCache.get(event.getGuild().getLongID());
-					if (logChannelID.compareTo(0L) != 0) 
-						RequestBuffer.request( () -> sendLogMessage("User " + event.getMessage().getMentions().get(0).mention() + " has been muted for " + command[2] + " minute(s).", logChannelID) );	
+					if (logChannelID.compareTo(0L) != 0)
+						RequestBuffer
+								.request(
+										() -> sendLogMessage(
+												"User " + event.getMessage().getMentions().get(0).mention()
+														+ " has been muted for " + command[2] + " minute(s).",
+												logChannelID));
 					TaskLoader.getTaskLoader().refreshUnmuter();
 				} catch (NullPointerException e) {
 					sendMessage("Role not found. Has the role been deleted? Please setup a new role using the **"
@@ -363,10 +364,10 @@ public class ModerationCommandsHandler extends ModuleHandler {
 	}
 
 	private void removeAllFlags(long channelID) {
+		DBConnection.getDBConnection()
+				.deleteQuery("DELETE FROM " + BotConstant.DB_CHANNEL_FLAGS_TABLE + " WHERE channel_id = ?", channelID);
 		DBConnection.getDBConnection().deleteQuery(
-				"DELETE FROM " + BotConstant.DB_CHANNEL_FLAGS_TABLE + " WHERE channel_id = '" + channelID + "'");
-		DBConnection.getDBConnection().deleteQuery(
-				"DELETE FROM " + BotConstant.DB_CHANNEL_MONITOR_TABLE + " WHERE channel_id = '" + channelID + "'");
+				"DELETE FROM " + BotConstant.DB_CHANNEL_MONITOR_TABLE + " WHERE channel_id = ?", channelID);
 		try {
 			TaskLoader.getTaskLoader().getMonitor(channelID).shutdown();
 		} catch (NullPointerException e) {
@@ -379,45 +380,43 @@ public class ModerationCommandsHandler extends ModuleHandler {
 			ArrayList<String> monitorFlags = TaskLoader.getTaskLoader().getMonitorFlags(event.getChannel().getLongID());
 			if ((monitorFlags == null || !(monitorFlags.contains(BotConstant.FUNC_FLAG_FIFO)
 					|| monitorFlags.contains(BotConstant.FUNC_FLAG_LIFO))) && Integer.parseInt(amount) > 0) {
-				DBConnection.getDBConnection()
-						.insertQuery("INSERT INTO " + BotConstant.DB_CHANNEL_FLAGS_TABLE
-								+ " (`channel_id`, `flags`, `post_amount`) VALUES ('" + event.getChannel().getLongID()
-								+ "', '" + flag + "', '" + amount + "') ");
+				DBConnection.getDBConnection().insertQuery(
+						"INSERT INTO " + BotConstant.DB_CHANNEL_FLAGS_TABLE + " (`channel_id`, `flags`, `post_amount`) VALUES (?,?,?)", 
+						event.getChannel().getLongID(), flag, amount);
 			} else if (Integer.parseInt(amount) == 0) {
-				DBConnection.getDBConnection().deleteQuery("DELETE FROM " + BotConstant.DB_CHANNEL_FLAGS_TABLE
-						+ " WHERE channel_id = '" + event.getChannel().getLongID() + "' AND flags = '" + flag + "'");
+				DBConnection.getDBConnection().deleteQuery(
+						"DELETE FROM " + BotConstant.DB_CHANNEL_FLAGS_TABLE + " WHERE channel_id = ? AND flags = ?",
+						event.getChannel().getLongID(), flag);
 			} else {
 				if (monitorFlags.contains(BotConstant.FUNC_FLAG_FIFO)
 						&& flag.equalsIgnoreCase(BotConstant.FUNC_FLAG_FIFO))
-					DBConnection.getDBConnection()
-							.updateQuery("UPDATE " + BotConstant.DB_CHANNEL_FLAGS_TABLE + " SET post_amount = '"
-									+ amount + "' WHERE channel_id = '" + event.getChannel().getLongID()
-									+ "' AND flags = '" + BotConstant.FUNC_FLAG_FIFO + "'");
+					DBConnection.getDBConnection().updateQuery(
+							"UPDATE " + BotConstant.DB_CHANNEL_FLAGS_TABLE + " SET post_amount = ? WHERE channel_id = ? AND flags = ?", 
+							amount, event.getChannel().getLongID(), BotConstant.FUNC_FLAG_FIFO);
 				if (monitorFlags.contains(BotConstant.FUNC_FLAG_FIFO)
 						&& flag.equalsIgnoreCase(BotConstant.FUNC_FLAG_LIFO)) {
-					DBConnection.getDBConnection()
-							.updateQuery("UPDATE " + BotConstant.DB_CHANNEL_FLAGS_TABLE + " SET post_amount = '"
-									+ amount + "', flags = '" + BotConstant.FUNC_FLAG_LIFO + "' WHERE channel_id = '"
-									+ event.getChannel().getLongID() + "' AND flags = '" + BotConstant.FUNC_FLAG_FIFO
-									+ "'");
-					DBConnection.getDBConnection().deleteQuery("DELETE FROM " + BotConstant.DB_CHANNEL_MONITOR_TABLE
-							+ " WHERE channel_id = '" + event.getChannel().getLongID() + "'");
+					DBConnection.getDBConnection().updateQuery(
+							"UPDATE " + BotConstant.DB_CHANNEL_FLAGS_TABLE + " SET post_amount = ?, flags = ? WHERE channel_id = ? AND flags = ?", 
+							amount, BotConstant.FUNC_FLAG_LIFO, event.getChannel().getLongID(),
+							BotConstant.FUNC_FLAG_FIFO);
+					DBConnection.getDBConnection().deleteQuery(
+							"DELETE FROM " + BotConstant.DB_CHANNEL_MONITOR_TABLE + " WHERE channel_id = ?",
+							event.getChannel().getLongID());
 				}
 				if (monitorFlags.contains(BotConstant.FUNC_FLAG_LIFO)
 						&& flag.equalsIgnoreCase(BotConstant.FUNC_FLAG_LIFO))
-					DBConnection.getDBConnection()
-							.updateQuery("UPDATE " + BotConstant.DB_CHANNEL_FLAGS_TABLE + " SET post_amount = '"
-									+ amount + "' WHERE channel_id = '" + event.getChannel().getLongID()
-									+ "' AND flags = '" + BotConstant.FUNC_FLAG_LIFO + "'");
+					DBConnection.getDBConnection().updateQuery(
+							"UPDATE " + BotConstant.DB_CHANNEL_FLAGS_TABLE + " SET post_amount = ? WHERE channel_id = ? AND flags = ?",
+							amount, event.getChannel().getLongID(), BotConstant.FUNC_FLAG_LIFO);
 				if (monitorFlags.contains(BotConstant.FUNC_FLAG_LIFO)
 						&& flag.equalsIgnoreCase(BotConstant.FUNC_FLAG_FIFO)) {
-					DBConnection.getDBConnection()
-							.updateQuery("UPDATE " + BotConstant.DB_CHANNEL_FLAGS_TABLE + " SET post_amount = '"
-									+ amount + "', flags = '" + BotConstant.FUNC_FLAG_FIFO + "' WHERE channel_id = '"
-									+ event.getChannel().getLongID() + "' AND flags = '" + BotConstant.FUNC_FLAG_LIFO
-									+ "'");
-					DBConnection.getDBConnection().deleteQuery("DELETE FROM " + BotConstant.DB_CHANNEL_MONITOR_TABLE
-							+ " WHERE channel_id = '" + event.getChannel().getLongID() + "'");
+					DBConnection.getDBConnection().updateQuery(
+							"UPDATE " + BotConstant.DB_CHANNEL_FLAGS_TABLE + " SET post_amount = ?, flags = ? WHERE channel_id = ? AND flags = ?",
+							amount, BotConstant.FUNC_FLAG_FIFO, event.getChannel().getLongID(),
+							BotConstant.FUNC_FLAG_LIFO);
+					DBConnection.getDBConnection().deleteQuery(
+							"DELETE FROM " + BotConstant.DB_CHANNEL_MONITOR_TABLE + " WHERE channel_id = ?",
+							event.getChannel().getLongID());
 				}
 			}
 			createUpdateMonitor(event.getChannel().getLongID());
@@ -431,20 +430,17 @@ public class ModerationCommandsHandler extends ModuleHandler {
 			ArrayList<String> monitorFlags = TaskLoader.getTaskLoader().getMonitorFlags(event.getChannel().getLongID());
 			if ((monitorFlags == null || !(monitorFlags.contains(BotConstant.FUNC_FLAG_DURATION)))
 					&& Integer.parseInt(duration) > 0) {
-				DBConnection.getDBConnection()
-						.insertQuery("INSERT INTO " + BotConstant.DB_CHANNEL_FLAGS_TABLE
-								+ " (`channel_id`, `flags`, `duration`) VALUES ('" + event.getChannel().getLongID()
-								+ "', '" + flag + "', '" + duration + "') ");
+				DBConnection.getDBConnection().insertQuery(
+						"INSERT INTO " + BotConstant.DB_CHANNEL_FLAGS_TABLE + " (`channel_id`, `flags`, `duration`) VALUES (?,?,?)",
+						event.getChannel().getLongID(), flag, duration);
 			} else if (Integer.parseInt(duration) == 0) {
-				DBConnection.getDBConnection()
-						.deleteQuery("DELETE FROM " + BotConstant.DB_CHANNEL_FLAGS_TABLE + " WHERE channel_id = '"
-								+ event.getChannel().getLongID() + "' AND flags = '" + BotConstant.FUNC_FLAG_DURATION
-								+ "'");
+				DBConnection.getDBConnection().deleteQuery(
+						"DELETE FROM " + BotConstant.DB_CHANNEL_FLAGS_TABLE + " WHERE channel_id = ? AND flags = ?",
+						event.getChannel().getLongID(), BotConstant.FUNC_FLAG_DURATION);
 			} else {
-				DBConnection.getDBConnection()
-						.updateQuery("UPDATE " + BotConstant.DB_CHANNEL_FLAGS_TABLE + " SET duration = '" + duration
-								+ "' WHERE channel_id = '" + event.getChannel().getLongID() + "' AND flags = '"
-								+ BotConstant.FUNC_FLAG_DURATION + "'");
+				DBConnection.getDBConnection().updateQuery(
+						"UPDATE " + BotConstant.DB_CHANNEL_FLAGS_TABLE + " SET duration = ? WHERE channel_id = ? AND flags = ?",
+						duration, event.getChannel().getLongID(), BotConstant.FUNC_FLAG_DURATION);
 			}
 			createUpdateMonitor(event.getChannel().getLongID());
 		} else {
@@ -456,22 +452,21 @@ public class ModerationCommandsHandler extends ModuleHandler {
 		if (!event.getMessage().getChannelMentions().isEmpty()) {
 			ArrayList<String> monitorFlags = TaskLoader.getTaskLoader().getMonitorFlags(event.getChannel().getLongID());
 			if (monitorFlags == null || !(monitorFlags.contains(BotConstant.FUNC_FLAG_LOGCHANNEL))) {
-				DBConnection.getDBConnection().insertQuery("INSERT INTO " + BotConstant.DB_CHANNEL_FLAGS_TABLE
-						+ " (`channel_id`, `flags`, `log_channel_id`) VALUES ('" + event.getChannel().getLongID()
-						+ "', '" + flag + "', '" + event.getMessage().getChannelMentions().get(0).getLongID() + "') ");
+				DBConnection.getDBConnection().insertQuery(
+						"INSERT INTO " + BotConstant.DB_CHANNEL_FLAGS_TABLE + " (`channel_id`, `flags`, `log_channel_id`) VALUES (?,?,?)",
+						event.getChannel().getLongID(), flag,
+						event.getMessage().getChannelMentions().get(0).getLongID());
 			} else {
-				DBConnection.getDBConnection()
-						.updateQuery("UPDATE " + BotConstant.DB_CHANNEL_FLAGS_TABLE + " SET log_channel_id = '"
-								+ event.getMessage().getChannelMentions().get(0).getLongID() + "' WHERE channel_id = '"
-								+ event.getChannel().getLongID() + "' AND flags = '" + BotConstant.FUNC_FLAG_LOGCHANNEL
-								+ "'");
+				DBConnection.getDBConnection().updateQuery(
+						"UPDATE " + BotConstant.DB_CHANNEL_FLAGS_TABLE + " SET log_channel_id = ? WHERE channel_id = ? AND flags = ?",
+						event.getMessage().getChannelMentions().get(0).getLongID(), event.getChannel().getLongID(),
+						BotConstant.FUNC_FLAG_LOGCHANNEL);
 			}
 			createUpdateMonitor(event.getChannel().getLongID());
 		} else if (command.equalsIgnoreCase("0")) {
-			DBConnection.getDBConnection()
-					.deleteQuery("DELETE FROM " + BotConstant.DB_CHANNEL_FLAGS_TABLE + " WHERE channel_id = '"
-							+ event.getChannel().getLongID() + "' AND flags = '" + BotConstant.FUNC_FLAG_LOGCHANNEL
-							+ "'");
+			DBConnection.getDBConnection().deleteQuery(
+					"DELETE FROM " + BotConstant.DB_CHANNEL_FLAGS_TABLE + " WHERE channel_id = ? AND flags = ?",
+					event.getChannel().getLongID(), BotConstant.FUNC_FLAG_LOGCHANNEL);
 			createUpdateMonitor(event.getChannel().getLongID());
 		} else {
 			sendMessage("Parameter error. Please mention a channel as a parameter for this flag.", event);
@@ -485,29 +480,19 @@ public class ModerationCommandsHandler extends ModuleHandler {
 			if (monitorFlags == null) {
 				sendMessage("The " + BotConstant.FUNC_FLAG_ALLOW_DELETE
 						+ " flag requires at least one other flag on the channel.", event);
-			} else if (monitorFlags.contains(BotConstant.FUNC_FLAG_ALLOW_DELETE)) { // The
-																					// row
-																					// in
-																					// DB
-																					// only
-																					// exists
-																					// if
-																					// its
-																					// 1
+			} else if (monitorFlags.contains(BotConstant.FUNC_FLAG_ALLOW_DELETE)) {
 				if (boolValue.equalsIgnoreCase("0")) {
-					DBConnection.getDBConnection()
-							.deleteQuery("DELETE FROM " + BotConstant.DB_CHANNEL_FLAGS_TABLE + " WHERE channel_id = '"
-									+ event.getChannel().getLongID() + "' AND flags = '"
-									+ BotConstant.FUNC_FLAG_ALLOW_DELETE + "'");
+					DBConnection.getDBConnection().deleteQuery(
+							"DELETE FROM " + BotConstant.DB_CHANNEL_FLAGS_TABLE + " WHERE channel_id = ? AND flags = ?",
+							event.getChannel().getLongID(), BotConstant.FUNC_FLAG_ALLOW_DELETE);
 					createUpdateMonitor(event.getChannel().getLongID());
 				}
 			} else { // It only comes here if there's flags but no Allow Delete
 						// flag.
 				if (boolValue.equalsIgnoreCase("1")) {
-					DBConnection.getDBConnection()
-							.insertQuery("INSERT INTO " + BotConstant.DB_CHANNEL_FLAGS_TABLE
-									+ " (`channel_id`, `flags`, `allow_delete`) VALUES ('"
-									+ event.getChannel().getLongID() + "', '" + flag + "', '" + boolValue + "') ");
+					DBConnection.getDBConnection().insertQuery(
+							"INSERT INTO " + BotConstant.DB_CHANNEL_FLAGS_TABLE + " (`channel_id`, `flags`, `allow_delete`) VALUES (?,?,?)",
+							event.getChannel().getLongID(), flag, boolValue);
 					createUpdateMonitor(event.getChannel().getLongID());
 				}
 			}
@@ -562,9 +547,10 @@ public class ModerationCommandsHandler extends ModuleHandler {
 												Instant.now().minus(Integer.parseInt(command[2]), ChronoUnit.DAYS))
 										.bulkDelete().size())
 						.get();
-			else
+			else {
 				sendMessage("Invalid denomination. Please use either `minutes`, `hours` or `days`.", event);
-			return;
+				return;
+			}
 		}
 		sendMessage("Deleted a total of " + totalMessagesDeleted + " message(s) ~!", event);
 	}

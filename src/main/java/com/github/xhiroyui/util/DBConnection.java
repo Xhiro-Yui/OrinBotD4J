@@ -46,7 +46,7 @@ public class DBConnection {
 		return dbConnection;
 	}
 	
-	public String selectQuerySingleResult(String sql) {
+	public String selectQuerySingleResult(String sql, Object...objs) {
 		Connection connection = null;
 		PreparedStatement statement = null;
 		ResultSet rs = null;
@@ -54,6 +54,11 @@ public class DBConnection {
 		try {
 			connection = hikariDS.getConnection();
 			statement = connection.prepareStatement(sql);
+			if (objs != null) {
+				for (int i = 0; i < objs.length; i++) {
+					statement.setObject(i+1, objs[i]);
+				}				
+			}
 			rs = statement.executeQuery();
 			if (!rs.isBeforeFirst()) {
 				// Empty results
@@ -82,7 +87,7 @@ public class DBConnection {
 		return result;	
 	}
 	
-	public ArrayList<String> selectQuerySingleColumnMultipleResults(String sql) {
+	public ArrayList<String> selectQuerySingleColumnMultipleResults(String sql, Object...objs) {
 		Connection connection = null;
 		PreparedStatement statement = null;
 		ResultSet rs = null;
@@ -90,6 +95,11 @@ public class DBConnection {
 		try {
 			connection = hikariDS.getConnection();
 			statement = connection.prepareStatement(sql);
+			if (objs != null) {
+				for (int i = 0; i < objs.length; i++) {
+					statement.setObject(i+1, objs[i]);
+				}				
+			}
 			rs = statement.executeQuery();
 			if (!rs.isBeforeFirst()) {
 				// Empty results
@@ -119,7 +129,7 @@ public class DBConnection {
 		return result;	
 	}
 	
-	public ArrayList<String[]> selectQueryMultipleColumnMultipleResults(String sql) {
+	public ArrayList<String[]> selectQueryMultipleColumnMultipleResults(String sql, Object...objs) {
 		Connection connection = null;
 		PreparedStatement statement = null;
 		ResultSet rs = null;
@@ -127,6 +137,11 @@ public class DBConnection {
 		try {
 			connection = hikariDS.getConnection();
 			statement = connection.prepareStatement(sql);
+			if (objs != null) {
+				for (int i = 0; i < objs.length; i++) {
+					statement.setObject(i+1, objs[i]);
+				}				
+			}
 			rs = statement.executeQuery();
 			if (!rs.isBeforeFirst()) {
 				// Empty results
@@ -161,15 +176,21 @@ public class DBConnection {
 		return result;	
 	}
 	
-	public void insertQuery(String sql) {
+	public void insertQuery(String sql, Object...objs) {
 		Connection connection = null;
 		PreparedStatement statement = null;
 		try {
 			connection = hikariDS.getConnection();
 			statement = connection.prepareStatement(sql);
+			if (objs != null) {
+				for (int i = 0; i < objs.length; i++) {
+					statement.setObject(i+1, objs[i]);
+				}				
+			}
 			statement.execute();
 		} catch (Exception e) {
-			System.out.println("Error executing SQL statement : " + sql);
+			System.out.println("Error executing SQL statement : " + statement.toString());
+			e.printStackTrace();
 		} finally {
 			try {
 				statement.close();
@@ -183,12 +204,17 @@ public class DBConnection {
 		
 	}
 	
-	public void updateQuery(String sql) {
+	public void updateQuery(String sql, Object...objs) {
 		Connection connection = null;
 		PreparedStatement statement = null;
 		try {
 			connection = hikariDS.getConnection();
 			statement = connection.prepareStatement(sql);
+			if (objs != null) {
+				for (int i = 0; i < objs.length; i++) {
+					statement.setObject(i+1, objs[i]);
+				}				
+			}
 			statement.execute();
 		} catch (Exception e) {
 			System.out.println("Error executing SQL statement : " + sql);
@@ -206,12 +232,17 @@ public class DBConnection {
 	}
 	
 	// Its a copy of updateQuery, if I find no use of this will eventually remove it
-	public void deleteQuery(String sql) {
+	public void deleteQuery(String sql, Object...objs) {
 		Connection connection = null;
 		PreparedStatement statement = null;
 		try {
 			connection = hikariDS.getConnection();
 			statement = connection.prepareStatement(sql);
+			if (objs != null) {
+				for (int i = 0; i < objs.length; i++) {
+					statement.setObject(i+1, objs[i]);
+				}				
+			}
 			statement.execute();
 		} catch (Exception e) {
 			System.out.println("Error executing SQL statement : " + sql);

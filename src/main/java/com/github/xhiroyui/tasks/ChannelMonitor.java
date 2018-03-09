@@ -28,7 +28,7 @@ import sx.blah.discord.util.RateLimitException;
 import sx.blah.discord.util.RequestBuffer;
 import sx.blah.discord.util.RequestBuffer.RequestFuture;
 
-public class ChannelMonitor implements ITask{
+public class ChannelMonitor implements ITask {
 
 	private IChannel channel;
 	private IChannel logChannel = null;
@@ -47,7 +47,7 @@ public class ChannelMonitor implements ITask{
 		channel = DiscordClient.getClient().getChannelByID(channelID);
 		refreshSettings();
 		System.out.println("Initializing Channel Monitor for " + channelID);
-		
+
 	}
 
 	@EventSubscriber
@@ -56,63 +56,81 @@ public class ChannelMonitor implements ITask{
 		if (this.fifoFlag.booleanValue()) {
 			if (channelID.compareTo(event.getChannel().getLongID()) == 0) {
 				if (getChannelPostCount(event.getAuthor().getLongID(), event.getChannel().getLongID()) >= postLimit) {
-					long messageIDtoDelete = getOldestPostID(event.getAuthor().getLongID(), event.getChannel().getLongID());
-					String timeString = event.getChannel().fetchMessage(messageIDtoDelete).getTimestamp().toString();					
+					long messageIDtoDelete = getOldestPostID(event.getAuthor().getLongID(),
+							event.getChannel().getLongID());
+					// String timeString =
+					// event.getChannel().fetchMessage(messageIDtoDelete).getTimestamp().toString();
+					String timeString = event.getChannel().fetchMessage(messageIDtoDelete).getTimestamp()
+							.truncatedTo(ChronoUnit.MICROS).toString();
 					try {
-						RequestBuffer.request( () -> event.getChannel().fetchMessage(messageIDtoDelete).delete() );
+						RequestBuffer.request(() -> event.getChannel().fetchMessage(messageIDtoDelete).delete());
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
 					updateRowEntry(messageIDtoDelete, event.getMessage().getLongID());
 					logEvent(BotConstant.FUNC_FLAG_FIFO, event.getAuthor().mention(), timeString);
 				} else {
-					logToDB(event.getAuthor().getLongID(), event.getChannel().getLongID(), event.getMessage().getLongID(), event.getMessage().getTimestamp().toString());	
+					logToDB(event.getAuthor().getLongID(), event.getChannel().getLongID(),
+							event.getMessage().getLongID(),
+							event.getMessage().getTimestamp().toEpochMilli());
 				}
 			}
-		}
-		else if (this.lifoFlag.booleanValue()) {
+		} else if (this.lifoFlag.booleanValue()) {
 			if (channelID.compareTo(event.getChannel().getLongID()) == 0) {
 				if (getChannelPostCount(event.getAuthor().getLongID(), event.getChannel().getLongID()) == postLimit) {
-					RequestBuffer.request( () -> event.getMessage().delete() );
-					logEvent(BotConstant.FUNC_FLAG_LIFO, event.getAuthor().mention(), event.getMessage().getTimestamp().toString());
+					RequestBuffer.request(() -> event.getMessage().delete());
+					logEvent(BotConstant.FUNC_FLAG_LIFO, event.getAuthor().mention(),
+							event.getMessage().getTimestamp().toString());
 				} else {
-					logToDB(event.getAuthor().getLongID(), event.getChannel().getLongID(), event.getMessage().getLongID(), event.getMessage().getTimestamp().toString());
-					
+					logToDB(event.getAuthor().getLongID(), event.getChannel().getLongID(),
+							event.getMessage().getLongID(),
+							event.getMessage().getTimestamp().toEpochMilli());
+
 				}
 			}
 		}
 	}
-	
+
 	@EventSubscriber
-	public void OnMessageDeleteEvent(MessageDeleteEvent event) { 
+	public void OnMessageDeleteEvent(MessageDeleteEvent event) {
 		if (this.allowDelete.isTrue() && channelID.compareTo(event.getChannel().getLongID()) == 0)
 			deleteRowEntry(event.getMessageID());
 	}
-	
+
 	public long getChannelPostCount(long userID, long channelID) {
-		return Long.parseLong(DBConnection.getDBConnection().selectQuerySingleResult("SELECT count(post_id) AS count FROM " + BotConstant.DB_CHANNEL_MONITOR_TABLE + " WHERE user_id = '" + userID + "' AND channel_id = '" + channelID + "'"));
-	}
-	
-	public long getOldestPostID(long userID, long channelID) {
-		return Long.parseLong(DBConnection.getDBConnection().selectQuerySingleResult("SELECT post_id FROM " + BotConstant.DB_CHANNEL_MONITOR_TABLE + " WHERE user_id = '" + userID + "' AND channel_id = '" + channelID + "' ORDER BY 'datetime_of_post' ASC LIMIT 1"));
+		return Long.parseLong(DBConnection.getDBConnection().selectQuerySingleResult(
+				"SELECT count(post_id) AS count FROM " + BotConstant.DB_CHANNEL_MONITOR_TABLE + " WHERE user_id = ? AND channel_id = ?",
+				userID, channelID));
 	}
 
-	public void logToDB(long userID, long channelID, long messageID, String timeString) {
-		DBConnection.getDBConnection().insertQuery("INSERT INTO " + BotConstant.DB_CHANNEL_MONITOR_TABLE + " (channel_id, user_id, post_id, datetime_of_post) VALUES ('" + channelID + "','" + userID + "','" + messageID + "','" + timeString + "')");
+	public long getOldestPostID(long userID, long channelID) {
+		return Long.parseLong(DBConnection.getDBConnection().selectQuerySingleResult(
+				"SELECT post_id FROM " + BotConstant.DB_CHANNEL_MONITOR_TABLE + " WHERE user_id = ? AND channel_id = ? ORDER BY 'datetime_of_post' ASC LIMIT 1",
+				userID, channelID));
 	}
-	
+
+	public void logToDB(long userID, long channelID, long messageID, long time) {
+		DBConnection.getDBConnection().insertQuery(
+				"INSERT INTO " + BotConstant.DB_CHANNEL_MONITOR_TABLE + " (channel_id, user_id, post_id, datetime_of_post) VALUES (?,?,?,?)",
+				channelID, userID, messageID, time);
+	}
+
 	public void updateRowEntry(long oldMessageID, long messageID) {
-		DBConnection.getDBConnection().updateQuery("UPDATE " + BotConstant.DB_CHANNEL_MONITOR_TABLE + " SET post_id='" + messageID + "' WHERE post_id='" + oldMessageID + "'");
+		DBConnection.getDBConnection().updateQuery(
+				"UPDATE " + BotConstant.DB_CHANNEL_MONITOR_TABLE + " SET post_id = ? WHERE post_id = ?", messageID,
+				oldMessageID);
 	}
-	
+
 	public void deleteRowEntry(long messageID) {
-		DBConnection.getDBConnection().deleteQuery("DELETE FROM " + BotConstant.DB_CHANNEL_MONITOR_TABLE + " WHERE post_id = '" + messageID + "'");
+		DBConnection.getDBConnection()
+				.deleteQuery("DELETE FROM " + BotConstant.DB_CHANNEL_MONITOR_TABLE + " WHERE post_id = ?", messageID);
 	}
-	
+
 	public void deleteChannelLogs() {
-		DBConnection.getDBConnection().deleteQuery("DELETE FROM " + BotConstant.DB_CHANNEL_MONITOR_TABLE + " WHERE channel_id = '" + channel.getLongID() + "'");
+		DBConnection.getDBConnection().deleteQuery(
+				"DELETE FROM " + BotConstant.DB_CHANNEL_MONITOR_TABLE + " WHERE channel_id = ?", channel.getLongID());
 	}
-	
+
 	public ArrayList<String> getMonitorFlags() {
 		ArrayList<String> currentFlags = new ArrayList<String>();
 		if (lifoFlag.isTrue())
@@ -125,28 +143,30 @@ public class ChannelMonitor implements ITask{
 			currentFlags.add(BotConstant.FUNC_FLAG_LOGCHANNEL);
 		return currentFlags;
 	}
-	
+
 	private void createTimeMonitor(int hours) {
 		scheduledExecutorService = Executors.newScheduledThreadPool(0);
 		scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
-				@Override
-				public void run() {
-					try {
-						Instant timeMinusHoursSet = Instant.now().minus(hours, ChronoUnit.HOURS);
-						MessageHistory mh = channel.getMessageHistoryFrom(timeMinusHoursSet);
-						if (mh.size() > 0) {
-							for (IMessage msg : mh) { 
-								rf = RequestBuffer.request( () -> msg.delete() );
-							}
-							logEvent(BotConstant.FUNC_FLAG_DURATION, timeMinusHoursSet.toString());
-							DBConnection.getDBConnection().deleteQuery("DELETE FROM " + BotConstant.DB_CHANNEL_MONITOR_TABLE + " WHERE channel_id = '" + channel.getLongID() + "' AND datetime_of_post < '" + Instant.now().toString() + "'");
+			@Override
+			public void run() {
+				try {
+					Instant timeMinusHoursSet = Instant.now().minus(hours, ChronoUnit.HOURS);
+					MessageHistory mh = channel.getMessageHistoryFrom(timeMinusHoursSet);
+					if (mh.size() > 0) {
+						for (IMessage msg : mh) {
+							rf = RequestBuffer.request(() -> msg.delete());
 						}
-					} catch (Exception e) {
-						e.printStackTrace();
+						logEvent(BotConstant.FUNC_FLAG_DURATION, timeMinusHoursSet.toString());
+						DBConnection.getDBConnection().deleteQuery(
+								"DELETE FROM " + BotConstant.DB_CHANNEL_MONITOR_TABLE + " WHERE channel_id = ? AND datetime_of_post < ?",
+								channel.getLongID(), Instant.now().toEpochMilli());
 					}
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
-		},1, 60 * 60 , TimeUnit.SECONDS); // Runs every hour
-		
+			}
+		}, 1, 60 * 60, TimeUnit.SECONDS); // Runs every hour
+
 	}
 
 	public void stopTimeMonitor() {
@@ -156,10 +176,11 @@ public class ChannelMonitor implements ITask{
 			scheduledExecutorService = null;
 		}
 	}
-	
+
 	@Override
 	public void refreshSettings() {
-		ArrayList<String[]> parameters = DBConnection.getDBConnection().selectQueryMultipleColumnMultipleResults("SELECT * FROM " + BotConstant.DB_CHANNEL_FLAGS_TABLE + " WHERE channel_id = '" + this.channelID + "'");
+		ArrayList<String[]> parameters = DBConnection.getDBConnection().selectQueryMultipleColumnMultipleResults(
+				"SELECT * FROM " + BotConstant.DB_CHANNEL_FLAGS_TABLE + " WHERE channel_id = ?", this.channelID);
 		if (parameters == null) {
 			shutdown();
 		} else {
@@ -168,14 +189,15 @@ public class ChannelMonitor implements ITask{
 			this.fifoFlag.setFalse();
 			this.durationFlag.setFalse();
 
-			// Due to parameters being column sensitive, if there are any changes to column structure in the db, the below code breaks
+			// Due to parameters being column sensitive, if there are any
+			// changes to column structure in the db, the below code breaks
 			for (String[] flags : parameters) {
 				if (flags[1].equalsIgnoreCase(BotConstant.FUNC_FLAG_LIFO)) {
 					if (postLimit > Integer.parseInt(flags[2])) {
 						deleteChannelLogs();
 					}
 					postLimit = Integer.parseInt(flags[2]);
-					if (postLimit > 0) 
+					if (postLimit > 0)
 						this.lifoFlag.setTrue();
 				}
 				if (flags[1].equalsIgnoreCase(BotConstant.FUNC_FLAG_FIFO)) {
@@ -183,17 +205,17 @@ public class ChannelMonitor implements ITask{
 						deleteChannelLogs();
 					}
 					postLimit = Integer.parseInt(flags[2]);
-					if (postLimit > 0) 
+					if (postLimit > 0)
 						this.fifoFlag.setTrue();
 				}
 				if (flags[1].equalsIgnoreCase(BotConstant.FUNC_FLAG_DURATION)) {
 					duration = Integer.parseInt(flags[3]);
-					if (duration > 0) {					
+					if (duration > 0) {
 						createTimeMonitor(duration);
 						this.durationFlag.setTrue();
 					}
 				}
-				if (flags[1].equalsIgnoreCase(BotConstant.FUNC_FLAG_LOGCHANNEL)) {	
+				if (flags[1].equalsIgnoreCase(BotConstant.FUNC_FLAG_LOGCHANNEL)) {
 					logChannel = DiscordClient.getClient().getChannelByID(Long.parseLong(flags[4]));
 				}
 				if (flags[1].equalsIgnoreCase(BotConstant.FUNC_FLAG_ALLOW_DELETE)) {
@@ -205,7 +227,7 @@ public class ChannelMonitor implements ITask{
 			}
 		}
 	}
-	
+
 	@Override
 	public ArrayList<String> getSettings() {
 		ArrayList<String> settings = new ArrayList<String>();
@@ -231,32 +253,36 @@ public class ChannelMonitor implements ITask{
 		}
 		return settings;
 	}
-	
+
 	@Override
 	public long getChannelID() {
 		return channelID;
 	}
-	
+
 	@Override
 	public void shutdown() {
 		stopTimeMonitor();
 		TaskLoader.getTaskLoader().removeMonitor(channelID);
 	}
-	
-	private void logEvent(String eventFlag, Object...args) {
+
+	private void logEvent(String eventFlag, Object... args) {
 		if (!(logChannel == null)) {
 			StringBuilder logSB = new StringBuilder();
 			logSB.append("**LOG** -> ");
 			if (eventFlag.equalsIgnoreCase(BotConstant.FUNC_FLAG_LIFO)) {
-				logSB.append("Flag `" + BotConstant.FUNC_FLAG_LIFO + "` : Message by " + args[0] + " at " + args[1] + " is deleted");
+				logSB.append("Flag `" + BotConstant.FUNC_FLAG_LIFO + "` : Message by " + args[0] + " at " + args[1]
+						+ " is deleted");
 			}
 			if (eventFlag.equalsIgnoreCase(BotConstant.FUNC_FLAG_FIFO)) {
-				logSB.append("Flag `" + BotConstant.FUNC_FLAG_FIFO + "` : Message by " + args[0] + " at " + args[1] + " is deleted");
+				logSB.append("Flag `" + BotConstant.FUNC_FLAG_FIFO + "` : Message by " + args[0] + " at " + args[1]
+						+ " is deleted");
 			}
 			if (eventFlag.equalsIgnoreCase(BotConstant.FUNC_FLAG_DURATION)) {
-				logSB.append("Flag `" + BotConstant.FUNC_FLAG_DURATION + "` : Messages older than " + args[0] + " is deleted");
-			}			
-			RequestBuffer.request( () -> new MessageBuilder(DiscordClient.getClient()).appendContent(logSB.toString()).withChannel(logChannel).build() );			
+				logSB.append("Flag `" + BotConstant.FUNC_FLAG_DURATION + "` : Messages older than " + args[0]
+						+ " is deleted");
+			}
+			RequestBuffer.request(() -> new MessageBuilder(DiscordClient.getClient()).appendContent(logSB.toString())
+					.withChannel(logChannel).build());
 		}
 	}
 }

@@ -1,8 +1,9 @@
 package com.github.xhiroyui.constant;
 
+import java.time.format.DateTimeFormatter;
+
 public class BotConstant {
 	public static final String PREFIX = "!";
-	public static final String INSTANCE_DATE_FORMAT = "uuuu-MM-DD HH:mm:ss";
 	
 	public static final String FUNC_FLAG_DURATION = "DURATION";
 	public static final String FUNC_FLAG_LIFO = "LIFO";
@@ -16,4 +17,7 @@ public class BotConstant {
 	public static final String DB_MUTED_USERS_TABLE = "muted_users";
 	public static final String DB_GUILD_LOG_CHANNEL_TABLE = "guild_log_channels";
 	// Error messages
+	
+	// Utils
+	public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 }

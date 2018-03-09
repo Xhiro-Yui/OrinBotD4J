@@ -36,12 +36,12 @@ public class Unmuter implements ITask {
 			public void run() {
 				try {
 					for (MutedUser user : BotCache.mutedUsersCache) {
-						if (Instant.now().compareTo(Instant.parse(user.getTimeStamp())) > 0) {
+						if (Instant.now().compareTo(Instant.ofEpochMilli(user.getTimeStamp())) > 0) {
 							DiscordClient.getClient().fetchUser(user.getUserID()).removeRole(DiscordClient.getClient()
 									.getRoleByID(BotCache.mutedRoleIDCache.get(user.getGuildID())));
 							DBConnection.getDBConnection().deleteQuery(
-									"DELETE FROM " + BotConstant.DB_MUTED_USERS_TABLE + " WHERE guild_id = '"
-											+ user.getGuildID() + "' AND user_id = '" + user.getUserID() + "'");
+									"DELETE FROM " + BotConstant.DB_MUTED_USERS_TABLE + " WHERE guild_id = ? AND user_id = ?",
+									user.getGuildID(), user.getUserID());
 							RequestBuffer.request(() -> DiscordClient.getClient()
 									.getOrCreatePMChannel(DiscordClient.getClient().fetchUser(user.getUserID()))
 									.sendMessage("You have been unmuted in "
@@ -49,21 +49,19 @@ public class Unmuter implements ITask {
 											+ "."));
 							Long logChannelID = BotCache.guildLogChannelIDCache.get(user.getGuildID());
 							if (logChannelID.compareTo(0L) != 0)
-								RequestBuffer.request(() -> DiscordClient.getClient().getChannelByID(logChannelID).sendMessage(DiscordClient.getClient().fetchUser(user.getUserID()).mention() + " has been unmuted.") );
+								RequestBuffer.request(() -> DiscordClient.getClient().getChannelByID(logChannelID)
+										.sendMessage(DiscordClient.getClient().fetchUser(user.getUserID()).mention()
+												+ " has been unmuted."));
 						}
 
 					}
-					// If current duration > past time -> unmute user
-					// Evict user from cache & from DB
-					// Automatically calls for shutdown when no other user left
-					// in cache/db
 					if (BotCache.refreshMutedUsersCache() == 0)
 						shutdown();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
-		}, 1, 1 * 60, TimeUnit.SECONDS); // Runs every 5 minutes
+		}, 1, 1 * 60, TimeUnit.SECONDS); // Runs every 1 minutes
 	}
 
 	@Override

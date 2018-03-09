@@ -86,6 +86,14 @@ public class TaskLoader {
 		return false;
 	}
 	
+	public ArrayList<ITask> getAllChannelMonitors() {
+		ArrayList<ITask> monitorList = new ArrayList<ITask>();		
+		for (ITask entry : taskList.keySet()) {
+			monitorList.add(entry);
+		}
+		return monitorList;
+	}
+	
 	public void addMonitor(long channelID) {
 		ChannelMonitor newChannelMonitor = new ChannelMonitor(channelID);
 		taskList.put(newChannelMonitor, new MutableBoolean(true));
