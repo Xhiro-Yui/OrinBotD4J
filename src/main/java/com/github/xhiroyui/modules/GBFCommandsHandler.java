@@ -97,7 +97,7 @@ public class GBFCommandsHandler extends ModuleHandler {
 			else 
 				embed.appendField("Gender", "Female", true);
 			embed.appendField("Specialty", character.getSpecialty(), true);
-			embed.withImage(character.getImageUrl());
+//			embed.withImage(character.getImageUrl());
 			embed.withFooterText("Data obtained from GBF Wiki");
 			StringBuilder voiceActorSB = new StringBuilder();
 			for (String[] voiceActor : character.getVoiceActor()) {
@@ -108,23 +108,23 @@ public class GBFCommandsHandler extends ModuleHandler {
 			if (character.getRecruitmentWeapon()!=null) 
 			{ embed.appendField("Recruitment Weapon", "["+character.getRecruitmentWeapon()[0]+"]("+character.getRecruitmentWeapon()[1]+")", true); }
 			
-			if (character.getBonusAtk()!=null && character.getFlbAtk()!=null)
-				embed.appendField("Atk (MIN | MAX | FLB | Fate)", character.getMinAtk() + " | " + character.getMaxAtk() + " | " + character.getFlbAtk() + " | (+" + character.getBonusAtk() + ")", true);
-			else if (character.getBonusAtk()==null && character.getFlbAtk()!=null)
-				embed.appendField("Atk (MIN | MAX | FLB )", character.getMinAtk() + " | " + character.getMaxAtk() + " | " + character.getFlbAtk(), true);
-			else if (character.getBonusAtk()!=null && character.getFlbAtk()==null)
-				embed.appendField("Atk (MIN | MAX | Fate)", character.getMinAtk() + " | " + character.getMaxAtk()  + " | (+" + character.getBonusAtk() + ")", true);
-			else
-				embed.appendField("Atk (MIN | MAX)", character.getMinAtk() + " | " + character.getMaxAtk(), true);
-
-			if (character.getBonusHp()!=null && character.getFlbHp()!=null)
-				embed.appendField("HP (MIN | MAX | FLB | Fate)", character.getMinHp() + " | " + character.getMaxHp() + " | " + character.getFlbHp() + " | (+" + character.getBonusHp() + ")", true);
-			else if (character.getBonusHp()==null && character.getFlbHp()!=null)
-				embed.appendField("HP (MIN | MAX | FLB )", character.getMinHp() + " | " + character.getMaxHp() + " | " + character.getFlbHp(), true);
-			else if (character.getBonusHp()!=null && character.getFlbHp()==null)
-				embed.appendField("HP (MIN | MAX | Fate)", character.getMinHp() + " | " + character.getMaxHp()  + " | (+" + character.getBonusHp() + ")", true);
-			else
-				embed.appendField("HP (MIN | MAX)", character.getMinHp() + " | " + character.getMaxHp(), true);
+//			if (character.getBonusAtk()!=null && character.getFlbAtk()!=null)
+//				embed.appendField("Atk (MIN | MAX | FLB | Fate)", character.getMinAtk() + " | " + character.getMaxAtk() + " | " + character.getFlbAtk() + " | (+" + character.getBonusAtk() + ")", true);
+//			else if (character.getBonusAtk()==null && character.getFlbAtk()!=null)
+//				embed.appendField("Atk (MIN | MAX | FLB )", character.getMinAtk() + " | " + character.getMaxAtk() + " | " + character.getFlbAtk(), true);
+//			else if (character.getBonusAtk()!=null && character.getFlbAtk()==null)
+//				embed.appendField("Atk (MIN | MAX | Fate)", character.getMinAtk() + " | " + character.getMaxAtk()  + " | (+" + character.getBonusAtk() + ")", true);
+//			else
+//				embed.appendField("Atk (MIN | MAX)", character.getMinAtk() + " | " + character.getMaxAtk(), true);
+//
+//			if (character.getBonusHp()!=null && character.getFlbHp()!=null)
+//				embed.appendField("HP (MIN | MAX | FLB | Fate)", character.getMinHp() + " | " + character.getMaxHp() + " | " + character.getFlbHp() + " | (+" + character.getBonusHp() + ")", true);
+//			else if (character.getBonusHp()==null && character.getFlbHp()!=null)
+//				embed.appendField("HP (MIN | MAX | FLB )", character.getMinHp() + " | " + character.getMaxHp() + " | " + character.getFlbHp(), true);
+//			else if (character.getBonusHp()!=null && character.getFlbHp()==null)
+//				embed.appendField("HP (MIN | MAX | Fate)", character.getMinHp() + " | " + character.getMaxHp()  + " | (+" + character.getBonusHp() + ")", true);
+//			else
+//				embed.appendField("HP (MIN | MAX)", character.getMinHp() + " | " + character.getMaxHp(), true);
 			
 			switch (character.getElement().toLowerCase()) {
 			case "fire":
@@ -146,7 +146,7 @@ public class GBFCommandsHandler extends ModuleHandler {
 				embed.withColor(135, 0, 255);
 				break;
 			}
-//			embed.withFooterIcon(this.getClass().getResource("GBFWikiIcon.jpg"));
+			embed.withFooterIcon("https://cdn.discordapp.com/emojis/321247751830634496.png?v=1");
 			sendEmbed(embed, event);
 		}
 		catch (IllegalArgumentException e) {
