@@ -29,6 +29,7 @@ public class Unmuter implements ITask {
 	}
 
 	private void startUnmuter() {
+		shutdown(); // To ensure no duplicate unmuters are ever launched
 		System.out.println("Initializing Unmuter.");
 		unmuterService = Executors.newScheduledThreadPool(0);
 		unmuterService.scheduleAtFixedRate(new Runnable() {
@@ -66,8 +67,10 @@ public class Unmuter implements ITask {
 
 	@Override
 	public void refreshSettings() {
-		if (BotCache.refreshMutedUsersCache() > 0)
-			startUnmuter();
+		if (BotCache.refreshMutedUsersCache() > 0) {
+			if (unmuterService == null) 
+				startUnmuter();
+		}
 		else
 			shutdown();
 	}

@@ -48,9 +48,9 @@ public class BotCache {
 		if (temp != null) {
 			for (String[] each : temp) {
 				MutedUser user = new MutedUser();
-				user.setUserID(Long.parseLong(each[1]));
-				user.setGuildID(Long.parseLong(each[2]));
-				user.setTimeStamp(Long.parseLong(each[3]));
+				user.setUserID(Long.parseLong(each[0]));
+				user.setGuildID(Long.parseLong(each[1]));
+				user.setTimeStamp(Long.parseLong(each[2]));
 				mutedUsersCache.add(user);
 			}
 		}
