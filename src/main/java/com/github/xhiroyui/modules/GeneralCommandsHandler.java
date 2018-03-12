@@ -51,21 +51,21 @@ public class GeneralCommandsHandler extends ModuleHandler {
 		commandList.add(command);
 
 		command = new Command(FunctionConstant.GEN_GET_AVAILABLE_COMMANDS);
-		command.setCommandName("Get Available Commands");
+		command.setCommandName("Available Commands");
 		command.setCommandDescription("Displays all commands available, sorted by Modules.");
 		command.getCommandCallers().add("commands");
 		command.setMaximumArgs(0);
 		commandList.add(command);
 
 		command = new Command(FunctionConstant.GEN_GET_GUILD_STATS);
-		command.setCommandName("Get Guild Statistics");
+		command.setCommandName("Guild Statistics");
 		command.setCommandDescription("Displays miscellaneous statistics of the guild.");
 		command.getCommandCallers().add("guildstats");
 		command.setMaximumArgs(0);
 		commandList.add(command);
 		
 		command = new Command(FunctionConstant.GEN_GET_USER_STATS);
-		command.setCommandName("Get User Statistics");
+		command.setCommandName("User Statistics");
 		command.setCommandDescription("Displays miscellaneous statistics of the user.");
 		command.getCommandCallers().add("userstats");
 		command.setMaximumArgs(0);
@@ -88,7 +88,7 @@ public class GeneralCommandsHandler extends ModuleHandler {
 			switch (commandCode) {
 			case FunctionConstant.GEN_PING:
 				try {
-					sendMessage("Pong <a:ablobaww:422603863820861452>", event);
+					sendMessage("Pong <a:blobAww:422628405507391488>", event);
 				} catch (Exception e) {
 					throwError(FunctionConstant.GEN_PING, e, event);
 				}
@@ -142,7 +142,7 @@ public class GeneralCommandsHandler extends ModuleHandler {
 		EmbedBuilder embed = new EmbedBuilder();
 		embed.withAuthorName("Rhestia");
 		// embed.withAuthorUrl("");
-		embed.withTitle("Not-so-proud owner/author of OrinBot");
+		embed.withTitle("Not-so-proud owner/author of " + DiscordClient.getClient().getOurUser().getDisplayName(event.getGuild()));
 		embed.withUrl("https://github.com/Xhiro-Yui/OrinBotD4J");
 		embed.withAuthorIcon(
 				"https://gravatar.com/avatar/215c7e6f5f54a8b888536f32f09c0a7e?s=96&d=https://www.herokucdn.com/images/ninja-avatar-96x96.png");
@@ -151,7 +151,7 @@ public class GeneralCommandsHandler extends ModuleHandler {
 		embed.withColor(125, 125, 125);
 		// embed.withImage("");
 		embed.withDesc(
-				"I spend more time on things that I shouldn't be doing than things I should be like working on this bot <a:uwu:422628406807494676>");
+				"I spend more time on things that I shouldn't be doing than things I should be doing, like working on this bot <a:uwu:422628406807494676>");
 		sendEmbed(embed, event);
 	}
 
