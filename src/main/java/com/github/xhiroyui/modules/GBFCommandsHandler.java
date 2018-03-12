@@ -18,7 +18,6 @@ import sx.blah.discord.util.RateLimitException;
 public class GBFCommandsHandler extends ModuleHandler {
 
 	private GBFWikiParser gbfWikiParser = new GBFWikiParser();
-//	private final String faviconUrl = "https://gbf.wiki/images/favicon.ico";
 
 	public GBFCommandsHandler() {
 		createCommands();

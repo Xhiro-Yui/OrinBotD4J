@@ -1,10 +1,15 @@
 package com.github.xhiroyui.modules;
 
 import java.io.IOException;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Map;
 
+import com.github.xhiroyui.DiscordClient;
 import com.github.xhiroyui.ModuleLoader;
+import com.github.xhiroyui.OrinBot;
+import com.github.xhiroyui.constant.BotConstant;
 import com.github.xhiroyui.constant.FunctionConstant;
 import com.github.xhiroyui.util.Command;
 import sx.blah.discord.api.events.EventSubscriber;
@@ -30,14 +35,6 @@ public class GeneralCommandsHandler extends ModuleHandler {
 		command.setMaximumArgs(0);
 		commandList.add(command);
 
-		command = new Command(FunctionConstant.GEN_EMBED_PING);
-		command.setCommandName("Ping (Embed Version)");
-		command.setCommandDescription("Ping Pong! (Embed Version)");
-		command.getCommandCallers().add("ping2");
-		command.getCommandCallers().add("pingembed");
-		command.setMaximumArgs(0);
-		commandList.add(command);
-
 		command = new Command(FunctionConstant.GEN_BOT_AUTHOR);
 		command.setCommandName("Bot Author");
 		command.setCommandDescription("Displays the original Bot Author.");
@@ -46,10 +43,31 @@ public class GeneralCommandsHandler extends ModuleHandler {
 		command.setMaximumArgs(0);
 		commandList.add(command);
 
+		command = new Command(FunctionConstant.GEN_UPTIME);
+		command.setCommandName("Bot Uptime");
+		command.setCommandDescription("Displays the uptime of the bot.");
+		command.getCommandCallers().add("uptime");
+		command.setMaximumArgs(0);
+		commandList.add(command);
+
 		command = new Command(FunctionConstant.GEN_GET_AVAILABLE_COMMANDS);
 		command.setCommandName("Get Available Commands");
 		command.setCommandDescription("Displays all commands available, sorted by Modules.");
 		command.getCommandCallers().add("commands");
+		command.setMaximumArgs(0);
+		commandList.add(command);
+
+		command = new Command(FunctionConstant.GEN_GET_GUILD_STATS);
+		command.setCommandName("Get Guild Statistics");
+		command.setCommandDescription("Displays miscellaneous statistics of the guild.");
+		command.getCommandCallers().add("guildstats");
+		command.setMaximumArgs(0);
+		commandList.add(command);
+		
+		command = new Command(FunctionConstant.GEN_GET_USER_STATS);
+		command.setCommandName("Get User Statistics");
+		command.setCommandDescription("Displays miscellaneous statistics of the user.");
+		command.getCommandCallers().add("userstats");
 		command.setMaximumArgs(0);
 		commandList.add(command);
 
@@ -69,49 +87,71 @@ public class GeneralCommandsHandler extends ModuleHandler {
 		if (commandCode != null) {
 			switch (commandCode) {
 			case FunctionConstant.GEN_PING:
-				sendMessage("Pong", event);
-				break;
-			case FunctionConstant.GEN_EMBED_PING:
-				embedPong(event);
+				try {
+					sendMessage("Pong <a:ablobaww:422603863820861452>", event);
+				} catch (Exception e) {
+					throwError(FunctionConstant.GEN_PING, e, event);
+				}
 				break;
 			case FunctionConstant.GEN_BOT_AUTHOR:
-				botAuthor(event);
+				try {
+					botAuthor(event);
+				} catch (Exception e) {
+					throwError(FunctionConstant.GEN_BOT_AUTHOR, e, event);
+				}
+				break;
+			case FunctionConstant.GEN_UPTIME:
+				try {
+					sendMessage(
+							BotConstant.DATE_TIME_FORMATTER.format(
+									Instant.now().minusMillis(OrinBot.rb.getUptime()).truncatedTo(ChronoUnit.SECONDS)),
+							event);
+				} catch (Exception e) {
+					throwError(FunctionConstant.GEN_UPTIME, e, event);
+				}
 				break;
 			case FunctionConstant.GEN_GET_AVAILABLE_COMMANDS:
-				getAvailableCommands(event);
+				try {
+					getAvailableCommands(event);
+				} catch (Exception e) {
+					throwError(FunctionConstant.GEN_GET_AVAILABLE_COMMANDS, e, event);
+				}
+				break;
+			case FunctionConstant.GEN_GET_GUILD_STATS:
+				try {
+					getGuildStatistics(event);
+				} catch (Exception e) {
+					throwError(FunctionConstant.GEN_GET_GUILD_STATS, e, event);
+				}
+				break;
+			case FunctionConstant.GEN_GET_USER_STATS:
+				try {
+					getUserStatistics(event);
+				} catch (Exception e) {
+					throwError(FunctionConstant.GEN_GET_USER_STATS, e, event);
+				}
 				break;
 
 			}
 		}
 	}
 
-	public void embedPong(MessageReceivedEvent event) {
-		EmbedBuilder embed = new EmbedBuilder();
-		embed.withAuthorName("Orin");
-		embed.withThumbnail("https://pbs.twimg.com/media/CdbhdctXIAA25Zu.jpg");
-		embed.withImage("https://i.pinimg.com/564x/7f/61/3f/7f613f1c4c5a6ec291049d1acb056f04.jpg");
-		embed.appendField("Image Credits",
-				"[Image taken from Pinterest](https://i.pinimg.com/564x/7f/61/3f/7f613f1c4c5a6ec291049d1acb056f04.jpg)",
-				false);
-		embed.appendField("Thumbnail Credits",
-				"[Thumbnail Credits to @TouhouFanarts](https://twitter.com/TouhouFanarts)", false);
-		embed.withDesc("Pong");
 
-		sendEmbed(embed, event);
-	}
 
 	public void botAuthor(MessageReceivedEvent event) {
 		EmbedBuilder embed = new EmbedBuilder();
 		embed.withAuthorName("Rhestia");
-		embed.withThumbnail("A");
-		embed.withImage("https://i.pinimg.com/564x/7f/61/3f/7f613f1c4c5a6ec291049d1acb056f04.jpg");
-		embed.appendField("Image Credits",
-				"[Image taken from Pinterest](https://i.pinimg.com/564x/7f/61/3f/7f613f1c4c5a6ec291049d1acb056f04.jpg)",
-				false);
-		embed.appendField("Thumbnail Credits",
-				"[Thumbnail Credits to @TouhouFanarts](https://twitter.com/TouhouFanarts)", false);
-		embed.withDesc("Pong");
-
+		// embed.withAuthorUrl("");
+		embed.withTitle("Not-so-proud owner/author of OrinBot");
+		embed.withUrl("https://github.com/Xhiro-Yui/OrinBotD4J");
+		embed.withAuthorIcon(
+				"https://gravatar.com/avatar/215c7e6f5f54a8b888536f32f09c0a7e?s=96&d=https://www.herokucdn.com/images/ninja-avatar-96x96.png");
+		embed.withThumbnail(DiscordClient.getClient().getApplicationOwner().getAvatarURL());
+		embed.appendField("OrinBot on GitHub", "[GitHub Link](https://github.com/Xhiro-Yui/OrinBotD4J)", false);
+		embed.withColor(125, 125, 125);
+		// embed.withImage("");
+		embed.withDesc(
+				"I spend more time on things that I shouldn't be doing than things I should be like working on this bot <a:uwu:422628406807494676>");
 		sendEmbed(embed, event);
 	}
 
@@ -134,7 +174,35 @@ public class GeneralCommandsHandler extends ModuleHandler {
 			commandString.append("\n\n");
 		}
 		commandString.append("Type `!<command> help` to get more information about specific commands.");
-		
+
 		sendMessage(commandString.toString(), event);
 	}
+	
+	private void getGuildStatistics(MessageReceivedEvent event) {
+		EmbedBuilder embed = new EmbedBuilder();
+		embed.withTitle(event.getGuild().getName());
+		embed.withThumbnail(event.getGuild().getIconURL());
+		try {
+			embed.withUrl("https://discord.gg/" + event.getGuild().getExtendedInvites().get(0).getCode());
+		} catch (MissingPermissionsException e) {}
+		embed.appendField("Guild Owner", event.getGuild().getOwner().getDisplayName(event.getGuild()), true);
+		embed.appendField("Creation Date", BotConstant.DATE_TIME_FORMATTER.format(event.getGuild().getCreationDate()), true);
+		embed.appendField("Total Guild Members", Integer.toString(event.getGuild().getTotalMemberCount()), true);
+		try {
+			embed.appendField("Total Banned Users", Integer.toString(event.getGuild().getBannedUsers().size()), true);
+		} catch (MissingPermissionsException e) {}
+		sendEmbed(embed, event);
+	}
+	
+	private void getUserStatistics(MessageReceivedEvent event) {
+		EmbedBuilder embed = new EmbedBuilder();
+		embed.withAuthorName(event.getAuthor().getName());
+		embed.withAuthorIcon(event.getAuthor().getAvatarURL());
+		embed.withThumbnail(event.getAuthor().getAvatarURL());
+		embed.appendField("Display Name", event.getAuthor().getDisplayName(event.getGuild()), true);
+		embed.appendField("Account Creation Date", BotConstant.DATE_TIME_FORMATTER.format(event.getAuthor().getCreationDate()), true);
+		embed.withColor(event.getAuthor().getColorForGuild(event.getGuild()));
+		sendEmbed(embed, event);
+	}
+
 }

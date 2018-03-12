@@ -10,6 +10,9 @@ public class FunctionConstant {
 	public static final String OWNER_CHANNEL_MONITOR_LOOKUP = "OWNER_CHANNEL_MONITOR_LOOKUP";
 	public static final String OWNER_CHANGE_DISPLAY_PICTURE = "OWNER_CHANGE_DISPLAY_PICTURE";
 	public static final String OWNER_CHANGE_STATUS = "OWNER_CHANGE_STATUS";
+	public static final String OWNER_EMOJI_STRING = "OWNER_EMOJI_STRING";
+	public static final String OWNER_EMBED_PING = "OWNER_EMBED_PING";
+	
 	
 	// Admin Module
 	public static final String ADMIN_PING = "ADMIN_PING";
@@ -26,9 +29,11 @@ public class FunctionConstant {
 
 	// General Module
 	public static final String GEN_PING = "GEN_PING";
-	public static final String GEN_EMBED_PING = "GEN_EMBED_PING";
 	public static final String GEN_BOT_AUTHOR = "GEN_BOT_AUTHOR";
 	public static final String GEN_GET_AVAILABLE_COMMANDS = "GEN_GET_AVAILABLE_COMMANDS";
+	public static final String GEN_UPTIME = "GEN_UPTIME";
+	public static final String GEN_GET_GUILD_STATS = "GEN_GET_GUILD_STATS";
+	public static final String GEN_GET_USER_STATS = "GEN_GET_USER_STATS";
 	
 	// GBF Module
 	public static final String GBF_GET_CHARACTER = "GBF_GET_CHARACTER";

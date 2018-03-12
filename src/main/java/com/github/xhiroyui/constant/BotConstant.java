@@ -1,5 +1,6 @@
 package com.github.xhiroyui.constant;
 
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
 public class BotConstant {
@@ -19,5 +20,5 @@ public class BotConstant {
 	// Error messages
 	
 	// Utils
-	public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+	public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.of("GMT+8"));
 }

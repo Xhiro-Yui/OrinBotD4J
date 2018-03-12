@@ -25,7 +25,8 @@ public class ModuleHandler {
 	protected ArrayList<Command> commandList = new ArrayList<Command>();
 
 	public String[] parseMessage(String message) {
-		String[] command = StringUtils.split(message.toLowerCase(), ' ');
+		String[] command = StringUtils.split(message, ' ');
+		command[0] = command[0].toLowerCase();
 		return command;
 	}
 

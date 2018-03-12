@@ -13,8 +13,10 @@ import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.obj.ActivityType;
 import sx.blah.discord.handle.obj.IChannel;
+import sx.blah.discord.handle.obj.IEmoji;
 import sx.blah.discord.handle.obj.StatusType;
 import sx.blah.discord.util.DiscordException;
+import sx.blah.discord.util.EmbedBuilder;
 import sx.blah.discord.util.Image;
 import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.RateLimitException;
@@ -59,6 +61,22 @@ public class OwnerCommandsHandler extends ModuleHandler {
 		command.setParams(new String[] { "Status text" });
 		command.setMaximumArgs(10);
 		commandList.add(command);
+		
+		command = new Command(FunctionConstant.OWNER_EMOJI_STRING);
+		command.setCommandName("Emoji String Printer");
+		command.setCommandDescription("Prints all the emojis in string format");
+		command.setCommandCallers("emojistring");
+		command.setMaximumArgs(0);
+		commandList.add(command);
+		
+		command = new Command(FunctionConstant.OWNER_EMBED_PING);
+		command.setCommandName("Ping (Embed Version)");
+		command.setCommandDescription("Ping Pong! (Embed Version)");
+		command.getCommandCallers().add("ping2");
+		command.getCommandCallers().add("pingembed");
+		command.setMaximumArgs(0);
+		commandList.add(command);
+
 		// command = new Command(FunctionConstant.OWNER_ADD_TO_WL);
 		// command.setCommandName("Add to Whitelist");
 		// command.setCommandDescription("Adds a user to whitelist");
@@ -125,6 +143,20 @@ public class OwnerCommandsHandler extends ModuleHandler {
 					changeStatus(command, event);
 				} catch (Exception e) {
 					throwError(FunctionConstant.OWNER_CHANGE_STATUS, e, event);
+				}
+				break;
+			case FunctionConstant.OWNER_EMOJI_STRING:
+				try {
+					getEmojiString(event);
+				} catch (Exception e) {
+					throwError(FunctionConstant.OWNER_EMOJI_STRING, e, event);
+				}
+				break;
+			case FunctionConstant.OWNER_EMBED_PING:
+				try {
+					embedPong(event);
+				} catch (Exception e) {
+					throwError(FunctionConstant.OWNER_EMBED_PING, e, event);
 				}
 				break;
 
@@ -204,6 +236,31 @@ public class OwnerCommandsHandler extends ModuleHandler {
 			sendMessage(monitorSB.toString(), event);
 		}
 
+	}
+	
+	public void embedPong(MessageReceivedEvent event) {
+		EmbedBuilder embed = new EmbedBuilder();
+		embed.withAuthorName("Orin");
+		embed.withThumbnail("https://pbs.twimg.com/media/CdbhdctXIAA25Zu.jpg");
+		embed.withImage("https://i.pinimg.com/564x/7f/61/3f/7f613f1c4c5a6ec291049d1acb056f04.jpg");
+		embed.appendField("Image Credits",
+				"[Image taken from Pinterest](https://i.pinimg.com/564x/7f/61/3f/7f613f1c4c5a6ec291049d1acb056f04.jpg)",
+				false);
+		embed.appendField("Thumbnail Credits",
+				"[Thumbnail Credits to @TouhouFanarts](https://twitter.com/TouhouFanarts)", false);
+		embed.withDesc("Pong");
+
+		sendEmbed(embed, event);
+	}
+	
+	private void getEmojiString(MessageReceivedEvent event) {
+		StringBuilder emojiString = new StringBuilder();
+		for (IEmoji emoji : event.getGuild().getEmojis()) {
+			if (emoji.isAnimated()) {
+				emojiString.append("<a:" + emoji.getName() + ":" + emoji.getStringID() + "> - `<a:" + emoji.getName() + ":" + emoji.getStringID() + ">`\n");
+			}
+		}
+		sendMessage(emojiString.toString(), event);
 	}
 
 	// private void addToWhitelist(String userID, MessageReceivedEvent event) {

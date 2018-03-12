@@ -1,11 +1,15 @@
 package com.github.xhiroyui;
 
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
 import com.github.xhiroyui.util.BotCache;
 
 public class OrinBot {
 	public static String db_cstring; // For testing
 	public static String db_userid; // For testing
 	public static String db_pw; // For testing
+	public static RuntimeMXBean rb = ManagementFactory.getRuntimeMXBean();
+	
 	
 	public static void main(String[] args) {
 		String token = System.getenv("TOKEN");
@@ -22,7 +26,6 @@ public class OrinBot {
 		
 		ModuleLoader.getModuleLoader().initModules();
 		ModuleLoader.getModuleLoader().enableModules();
-		
 		DiscordClient.getClient().login();
 		BotCache.refreshMutedUsersCache();
 		TaskLoader.getTaskLoader().initTasks();

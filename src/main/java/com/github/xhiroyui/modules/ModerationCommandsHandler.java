@@ -37,7 +37,7 @@ public class ModerationCommandsHandler extends ModuleHandler {
 		command.setCommandCallers("setupmute");
 		command.setParams(new String[] { "@Role" });
 		command.setMaximumArgs(1);
-		command.setExample("setupmute @Muted");
+		command.setExample("@Muted");
 		commandList.add(command);
 
 		command = new Command(FunctionConstant.MOD_SETUP_LOG_CHANNEL);
@@ -47,7 +47,7 @@ public class ModerationCommandsHandler extends ModuleHandler {
 		command.setCommandCallers("setuplogchannel");
 		command.setParams(new String[] { "#channel" });
 		command.setMaximumArgs(1);
-		command.setExample("setuplog #channel");
+		command.setExample("#channel");
 		commandList.add(command);
 
 		command = new Command(FunctionConstant.MOD_MUTE_USER);
@@ -57,8 +57,9 @@ public class ModerationCommandsHandler extends ModuleHandler {
 		command.setCommandCallers("mute");
 		command.setParams(new String[] { "@User" });
 		command.setParams(new String[] { "Duration in minutes" });
-		command.setMaximumArgs(2);
-		command.setExample("mute @User 30");
+		command.setParams(new String[] { "Mute reason *[Optional]*" });
+		command.setMaximumArgs(10);
+		command.setExample("@User 30 spamming");
 		commandList.add(command);
 
 		command = new Command(FunctionConstant.MOD_FLAG_CHANNEL);
@@ -68,7 +69,7 @@ public class ModerationCommandsHandler extends ModuleHandler {
 		command.setParams(new String[] { "Flag (not case-sensitive)" });
 		command.setParams(new String[] { "Additional arguments based on flag. Check with List Flags" });
 		command.setMaximumArgs(2);
-		command.setExample("flag " + BotConstant.FUNC_FLAG_FIFO + " 1");
+		command.setExample(BotConstant.FUNC_FLAG_FIFO + " 1");
 		commandList.add(command);
 
 		command = new Command(FunctionConstant.MOD_UNFLAG_CHANNEL);
@@ -234,7 +235,7 @@ public class ModerationCommandsHandler extends ModuleHandler {
 	}
 
 	private void muteUser(String[] command, MessageReceivedEvent event) throws ExecutionException {
-		if (command.length != 3)
+		if (command.length < 3)
 			sendMessage(
 					"Missing parameters. Please consult the help function for the required parameters for using this command",
 					event);
@@ -258,18 +259,37 @@ public class ModerationCommandsHandler extends ModuleHandler {
 							event.getMessage().getMentions().get(0).getLongID(), event.getGuild().getLongID(),
 							Instant.now().plus(Long.parseLong(command[2]), ChronoUnit.HOURS).toEpochMilli(),
 							Instant.now().plus(Long.parseLong(command[2]), ChronoUnit.HOURS).toEpochMilli());
-					RequestBuffer.request(() -> DiscordClient.getClient()
-							.getOrCreatePMChannel(event.getMessage().getMentions().get(0))
-							.sendMessage("You have been muted in " + event.getGuild().getName() + " for " + command[2]
-									+ " hour(s)."));
 					Long logChannelID = BotCache.guildLogChannelIDCache.get(event.getGuild().getLongID());
-					if (logChannelID.compareTo(0L) != 0)
-						RequestBuffer
-								.request(
-										() -> sendLogMessage(
-												"User " + event.getMessage().getMentions().get(0).mention()
-														+ " has been muted for " + command[2] + " hour(s).",
-												logChannelID));
+					if (command.length > 3) {
+						StringBuilder reason = new StringBuilder().append("Reason :");
+						for (int i = 3; i < command.length; i++) {
+							reason.append(" " + command[i]);
+						}
+						reason.append(".");
+						RequestBuffer.request(() -> DiscordClient.getClient()
+								.getOrCreatePMChannel(event.getMessage().getMentions().get(0))
+								.sendMessage("You have been muted in " + event.getGuild().getName() + " for " + command[2]
+										+ " hour(s). " + reason.toString()));
+						if (logChannelID.compareTo(0L) != 0)
+							RequestBuffer
+									.request(
+											() -> sendLogMessage(
+													"User " + event.getMessage().getMentions().get(0).mention()
+															+ " has been muted for " + command[2] + " hour(s). " + reason.toString() + " -" + event.getAuthor().getName(),
+													logChannelID));
+					} else {
+						RequestBuffer.request(() -> DiscordClient.getClient()
+								.getOrCreatePMChannel(event.getMessage().getMentions().get(0))
+								.sendMessage("You have been muted in " + event.getGuild().getName() + " for " + command[2]
+										+ " hour(s)."));
+						if (logChannelID.compareTo(0L) != 0)
+							RequestBuffer
+									.request(
+											() -> sendLogMessage(
+													"User " + event.getMessage().getMentions().get(0).mention()
+															+ " has been muted for " + command[2] + " hour(s). -" + event.getAuthor().getName(),
+													logChannelID));
+					}
 					TaskLoader.getTaskLoader().refreshUnmuter();
 				} catch (NullPointerException e) {
 					sendMessage("Role not found. Has the role been deleted? Please setup a new role using the **"
