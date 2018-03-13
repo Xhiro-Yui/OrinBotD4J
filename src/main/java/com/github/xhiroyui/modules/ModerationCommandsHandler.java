@@ -56,7 +56,7 @@ public class ModerationCommandsHandler extends ModuleHandler {
 				"Gives the user the Muted role. Muted role is obtained from " + FunctionConstant.MOD_SETUP_MUTE_ROLE);
 		command.setCommandCallers("mute");
 		command.setParams(new String[] { "@User" });
-		command.setParams(new String[] { "Duration in minutes" });
+		command.setParams(new String[] { "Duration in hours" });
 		command.setParams(new String[] { "Mute reason *[Optional]*" });
 		command.setMaximumArgs(10);
 		command.setExample("@User 30 spamming");
