@@ -154,7 +154,8 @@ public class ChannelMonitor implements ITask {
 					MessageHistory mh = channel.getMessageHistoryFrom(timeMinusHoursSet);
 					if (mh.size() > 0) {
 						for (IMessage msg : mh) {
-							rf = RequestBuffer.request(() -> msg.delete());
+							if (!msg.isPinned())
+								rf = RequestBuffer.request(() -> msg.delete());
 						}
 						logEvent(BotConstant.FUNC_FLAG_DURATION, timeMinusHoursSet.toString());
 						DBConnection.getDBConnection().deleteQuery(
