@@ -26,6 +26,9 @@ dependencies {
 	compile group: 'com.zaxxer', name: 'HikariCP', version: '2.7.7'
 	compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
 	compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
+	compile "org.glassfish.jersey.core:jersey-client:2.8"
+	compile "org.glassfish.jersey.media:jersey-media-json-jackson:2.8"
+	compile group: 'org.apache.commons', name: 'commons-collections4', version: '4.1'
 	
 	
 	

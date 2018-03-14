@@ -9,9 +9,12 @@ import org.apache.commons.lang3.StringUtils;
 import com.github.xhiroyui.DiscordClient;
 import com.github.xhiroyui.constant.BotConstant;
 import com.github.xhiroyui.util.Command;
+
+import sx.blah.discord.handle.impl.events.guild.channel.ChannelEvent;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
+import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.Permissions;
 import sx.blah.discord.util.DiscordException;
@@ -30,12 +33,13 @@ public class ModuleHandler {
 		return command;
 	}
 
-	protected void sendMessage(String message, MessageReceivedEvent event)
+	protected IMessage sendMessage(String message, ChannelEvent event)
 			throws DiscordException, MissingPermissionsException {
-		RequestBuffer.request(() -> {
-			new MessageBuilder(DiscordClient.getClient()).appendContent(message)
-			.withChannel(event.getMessage().getChannel()).build();
-			});	
+		return RequestBuffer.request(() ->  event.getChannel().sendMessage(message)).get();		
+	}
+	
+	protected IMessage sendEmbed(EmbedBuilder embed, MessageReceivedEvent event) {
+		return RequestBuffer.request(() -> event.getChannel().sendMessage(embed.build())).get();
 	}
 	
 	protected void sendLogMessage(String message, Long channelID)
@@ -128,10 +132,6 @@ public class ModuleHandler {
 			}
 		}
 		return null;
-	}
-
-	protected void sendEmbed(EmbedBuilder embed, MessageReceivedEvent event) {
-		RequestBuffer.request(() -> event.getChannel().sendMessage(embed.build()));
 	}
 
 	protected void throwError(String command, Exception e, MessageReceivedEvent event) {

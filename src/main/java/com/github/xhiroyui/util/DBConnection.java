@@ -30,7 +30,7 @@ public class DBConnection {
 				config.setJdbcUrl(OrinBot.db_cstring);
 				config.setUsername(OrinBot.db_userid);
 				config.setPassword(OrinBot.db_pw);
-				config.setMaximumPoolSize(2);
+				config.setMaximumPoolSize(1);
 			}
 			config.addDataSourceProperty("cachePrepStmts", true);
 			config.addDataSourceProperty("prepStmtCacheSize", "250");
