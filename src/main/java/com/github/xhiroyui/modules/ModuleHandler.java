@@ -12,6 +12,7 @@ import com.github.xhiroyui.util.Command;
 
 import sx.blah.discord.handle.impl.events.guild.channel.ChannelEvent;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
+import sx.blah.discord.handle.impl.obj.ReactionEmoji;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
@@ -22,6 +23,7 @@ import sx.blah.discord.util.EmbedBuilder;
 import sx.blah.discord.util.MessageBuilder;
 import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.RequestBuffer;
+import sx.blah.discord.util.RequestBuilder;
 
 public class ModuleHandler {
 
@@ -35,27 +37,37 @@ public class ModuleHandler {
 
 	protected IMessage sendMessage(String message, ChannelEvent event)
 			throws DiscordException, MissingPermissionsException {
-		return RequestBuffer.request(() ->  event.getChannel().sendMessage(message)).get();		
+		return RequestBuffer.request(() -> event.getChannel().sendMessage(message)).get();
 	}
-	
+
 	protected IMessage sendEmbed(EmbedBuilder embed, MessageReceivedEvent event) {
 		return RequestBuffer.request(() -> event.getChannel().sendMessage(embed.build())).get();
 	}
-	
-	protected void sendLogMessage(String message, Long channelID)
-			throws DiscordException, MissingPermissionsException {
+
+	protected void addReaction(IMessage msg, ReactionEmoji[] reaction) {
+		RequestBuilder builder = new RequestBuilder(DiscordClient.getClient()).shouldBufferRequests(true);
+		builder.doAction(() -> true);
+		for (ReactionEmoji reactions : reaction) {
+			builder.andThen(() -> {
+				msg.addReaction(reactions);
+				return true;
+			});
+		}
+		builder.build();
+	}
+
+	protected void sendLogMessage(String message, Long channelID) throws DiscordException, MissingPermissionsException {
 		RequestBuffer.request(() -> {
 			new MessageBuilder(DiscordClient.getClient()).appendContent(message)
-			.withChannel(DiscordClient.getClient().getChannelByID(channelID)).build();
-			});	
+					.withChannel(DiscordClient.getClient().getChannelByID(channelID)).build();
+		});
 	}
 
 	protected void sendLogMessage(String message, IChannel channel)
 			throws DiscordException, MissingPermissionsException {
 		RequestBuffer.request(() -> {
-			new MessageBuilder(DiscordClient.getClient()).appendContent(message)
-			.withChannel(channel).build();
-			});	
+			new MessageBuilder(DiscordClient.getClient()).appendContent(message).withChannel(channel).build();
+		});
 	}
 
 	protected Command getCommandObj(String command) {
@@ -83,8 +95,7 @@ public class ModuleHandler {
 						param.append(" / ").append(params[i]);
 				}
 				param.append("\n");
-			}
-			else
+			} else
 				param.append(paramCount + " : " + params[0] + "\n");
 		}
 		if (param.length() == 0)
@@ -139,7 +150,7 @@ public class ModuleHandler {
 				+ "`.\nPlease contact the bot author to solve this error.", event);
 		e.printStackTrace();
 	}
-	
+
 	protected boolean checkCommands(String command) {
 		for (Command commands : commandList) {
 			for (String commandCaller : commands.getCommandCallers()) {
@@ -149,7 +160,7 @@ public class ModuleHandler {
 		}
 		return false;
 	}
-	
+
 	protected String[] processCommand(MessageReceivedEvent event) {
 		if (event.getMessage().getContent().startsWith(BotConstant.PREFIX)) {
 			String[] command = parseMessage(
@@ -160,15 +171,15 @@ public class ModuleHandler {
 		}
 		return null;
 	}
-	
+
 	public ArrayList<Command> getModuleCommands() {
 		return commandList;
 	}
-	
+
 	protected boolean adminCheck(IUser user, IGuild guild) {
 		return user.getPermissionsForGuild(guild).contains(Permissions.ADMINISTRATOR);
 	}
-	
+
 	protected boolean moderatorCheck(IUser user, IGuild guild) {
 		return user.getPermissionsForGuild(guild).contains(Permissions.MANAGE_SERVER);
 	}

@@ -1,9 +1,12 @@
 package com.github.xhiroyui.modules;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
+
+import org.apache.commons.text.StringEscapeUtils;
 
 import com.github.xhiroyui.bean.MALAnime;
 import com.github.xhiroyui.bean.MALSearch;
@@ -140,11 +143,11 @@ public class MALCommandsHandler extends ModuleHandler {
 			count++;
 		}
 		embed.withFooterText("Data queried from MyAnimeList via Jikan API");
-		
+		embed.withColor(46, 81, 162);
 		waitMsg.edit("Search completed.", embed.build());
 		BotCache.malSearchCache.put(key, results);
-		for (int i = 0; i < results.getResults().size(); i++)
-			waitMsg.addReaction(BotConstant.REACTION_ONE_TILL_FIVE[i]);
+		if (results.getResults().size() > 0)
+			addReaction(waitMsg, Arrays.copyOfRange(BotConstant.REACTION_ONE_TILL_FIVE, 0, results.getResults().size()));
 	}
 	
 	private void createMALEmbed(String flag, IMessage message, String id) {
@@ -172,8 +175,8 @@ public class MALCommandsHandler extends ModuleHandler {
 		embed.withTitle(results.getTitle());
 		embed.withUrl(results.getLink());
 		embed.withThumbnail(results.getThumbnailUrl());
-		if (results.getSynopsis().length() > 100)
-			embed.withDesc(results.getSynopsis().substring(0, 100));
+		if (results.getSynopsis().length() > 500)
+			embed.withDesc(StringEscapeUtils.unescapeHtml4(results.getSynopsis().substring(0, 500)) + "...");
 		else 
 			embed.withDesc(results.getSynopsis());
 		embed.appendField("Type", results.getType(), true);
@@ -197,6 +200,7 @@ public class MALCommandsHandler extends ModuleHandler {
 			embed.appendField("Studio", producerName+producerLink, false);
 			
 		}
+		embed.withColor(46, 81, 162);
 		toEdit.edit(embed.build());
 		toEdit.removeAllReactions();
 		
