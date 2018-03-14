@@ -187,6 +187,7 @@ public class MALCommandsHandler extends ModuleHandler {
 		embed.appendField("Score", Double.toString(results.getScore()), true);
 		embed.appendField("Scored By", Integer.toString(results.getScoredBy()), true);
 		embed.appendField("Rank", Integer.toString(results.getRank()), true);
+		StringBuilder producer = new StringBuilder();
 		for (JsonElement element : results.getStudio()) {
 			Set<Map.Entry<String, JsonElement>> entries = element.getAsJsonObject().entrySet();
 			String producerName = null;
@@ -197,9 +198,13 @@ public class MALCommandsHandler extends ModuleHandler {
 				if (entry.getKey().equalsIgnoreCase("url"))
 					producerLink = "(" + entry.getValue().toString().substring(1, entry.getValue().toString().length()-1) + ")\n";
 			}
-			embed.appendField("Studio", producerName+producerLink, false);
+			if (producer.length() == 0) 
+				producer.append(producerName+producerLink);
+			else
+				producer.append(", " + producerName+producerLink);
 			
 		}
+		embed.appendField("Studio", producer.toString(), false);
 		embed.withColor(46, 81, 162);
 		toEdit.edit(embed.build());
 		toEdit.removeAllReactions();
