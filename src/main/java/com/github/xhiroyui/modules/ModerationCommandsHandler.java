@@ -58,7 +58,7 @@ public class ModerationCommandsHandler extends ModuleHandler {
 		command.setParams(new String[] { "@User" });
 		command.setParams(new String[] { "Duration in hours" });
 		command.setParams(new String[] { "Mute reason *[Optional]*" });
-		command.setMaximumArgs(10);
+		command.setMaximumArgs(69);
 		command.setExample("@User 30 spamming");
 		commandList.add(command);
 

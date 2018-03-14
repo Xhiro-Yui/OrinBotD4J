@@ -41,9 +41,10 @@ public class MALCommandsHandler extends ModuleHandler {
 		command.setCommandName("MyAnimeList Search");
 		command.setCommandDescription("Returns a dynamic search of the given query");
 		command.getCommandCallers().add("mal");
+		command.setParams(new String[] { "Search type" });
 		command.setParams(new String[] { "Search query" });
 		command.setMaximumArgs(69);
-		command.setExample("Montage");
+		command.setExample("manga Montage");
 		commandList.add(command);
 
 	}
@@ -121,7 +122,7 @@ public class MALCommandsHandler extends ModuleHandler {
 				}
 			}
 			else
-				sendMessage("Please dictate a search type as first parameter", event);
+				sendMessage("Please dictate a search type as first parameter. Available search types are `anime`, `manga`, `char`, `person`.", event);
 		} catch (Exception e) {
 			sendMessage("ERROR!", event);
 			e.printStackTrace();
@@ -172,6 +173,11 @@ public class MALCommandsHandler extends ModuleHandler {
 
 	private void createMALAnimeEmbed(MALAnime results, IMessage toEdit) {
 		EmbedBuilder embed = new EmbedBuilder();
+		if (results.getStatusCode() == 429) {
+			toEdit.edit("Rate limit reached. This command will be unavailable for the rest of the day.");
+			toEdit.removeAllReactions();
+			return;
+		}
 		embed.withTitle(results.getTitle());
 		embed.withUrl(results.getLink());
 		embed.withThumbnail(results.getThumbnailUrl());

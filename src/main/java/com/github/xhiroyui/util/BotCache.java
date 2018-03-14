@@ -40,7 +40,7 @@ public class BotCache {
 			});
 
 	// Cache of Search objects by Message IDs
-	public static PassiveExpiringMap<String, MALSearch> malSearchCache = new PassiveExpiringMap<String, MALSearch>(60, TimeUnit.SECONDS);
+	public static PassiveExpiringMap<String, MALSearch> malSearchCache = new PassiveExpiringMap<String, MALSearch>(300, TimeUnit.SECONDS);
 
 	// Cache of muted users by the bot to automatically remove the mute by a
 	// scheduled task
