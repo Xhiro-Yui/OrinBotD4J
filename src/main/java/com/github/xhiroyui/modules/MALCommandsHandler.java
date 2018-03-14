@@ -196,7 +196,7 @@ public class MALCommandsHandler extends ModuleHandler {
 				if (entry.getKey().equalsIgnoreCase("name"))
 					producerName = "[" + entry.getValue().toString().substring(1, entry.getValue().toString().length()-1) + "]";
 				if (entry.getKey().equalsIgnoreCase("url"))
-					producerLink = "(" + entry.getValue().toString().substring(1, entry.getValue().toString().length()-1) + ")\n";
+					producerLink = "(" + entry.getValue().toString().substring(1, entry.getValue().toString().length()-1) + ")";
 			}
 			if (producer.length() == 0) 
 				producer.append(producerName+producerLink);
