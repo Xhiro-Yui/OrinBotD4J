@@ -36,6 +36,7 @@ public class FunctionConstant {
 	public static final String GEN_GET_USER_STATS = "GEN_GET_USER_STATS";
 	
 	// GBF Module
+	public static final String GBF_WIKI_SEARCH = "GBF_WIKI_SEARCH";
 	public static final String GBF_GET_CHARACTER = "GBF_GET_CHARACTER";
 	
 	// MAL Module

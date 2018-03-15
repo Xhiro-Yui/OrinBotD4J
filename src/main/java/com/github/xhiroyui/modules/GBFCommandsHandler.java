@@ -26,6 +26,16 @@ public class GBFCommandsHandler extends ModuleHandler {
 	private void createCommands() {
 		Command command;
 
+		command = new Command(FunctionConstant.GBF_WIKI_SEARCH);
+		command.setCommandName("GBF Wiki Search");
+		command.setCommandDescription("Lazy people's method of searching the GBF Wiki");
+		command.getCommandCallers().add("gbfwiki");
+		command.getCommandCallers().add("gbfsearch");
+		command.setParams(new String[] { "Query" });
+		command.setMaximumArgs(69);
+		command.setExample("wEapOn skILLS");
+		commandList.add(command);
+		
 		command = new Command(FunctionConstant.GBF_GET_CHARACTER);
 		command.setCommandName("GBF Character");
 		command.setCommandDescription("Displays a GBF character with info");
@@ -61,14 +71,25 @@ public class GBFCommandsHandler extends ModuleHandler {
 			case FunctionConstant.GBF_GET_CHARACTER:
 				createCharEmbed(gbfWikiParser.gbfWikiSearch(Arrays.copyOfRange(command, 1, command.length)) ,event);
 				break;
-
+			case FunctionConstant.GBF_WIKI_SEARCH:
+				gbfLazySearch(gbfWikiParser.gbfWikiSearch(Arrays.copyOfRange(command, 1, command.length)) ,event);
+				break;
 			}
 		}
 	}
 
 
 	
-	public void createCharEmbed(String webUrl, MessageReceivedEvent event) throws IOException {
+	private void gbfLazySearch(String gbfWikiSearch, MessageReceivedEvent event) throws DiscordException, MissingPermissionsException, IOException {
+		String results = gbfWikiParser.lazySearch(gbfWikiSearch);
+		if (results == null) 
+			sendMessage("Medusa-chan couldn't find anything <a:blobSeppuku:422628396334317568>"  , event);
+		else 
+			sendMessage("Here's what I found for you b-baka. \n<a:blobReach2:422628404483981322> " + results , event);
+		
+	}
+
+	private void createCharEmbed(String webUrl, MessageReceivedEvent event) throws IOException {
 		// Do a check to see if search failed or not
 		// Do X if search fails (select top result?), do Y if search success
 		// Below is do Y

@@ -30,6 +30,19 @@ public class GBFWikiParser {
 		return name;
 	}
 	
+	public String lazySearch(String url) throws IOException {
+		Document doc = Jsoup.connect(url).get();
+		if (doc.baseUri().contains("index.php?search=")) {
+			try {
+				return doc.select("div.mw-search-result-heading").first().select("a").attr("abs:href");
+			} catch (NullPointerException e) {
+				return null;
+			}
+		} else {
+			return doc.baseUri();
+		}
+	}
+	
 	public GBFCharacter parseGbfCharacter(String url) throws IOException {
 		// Web Connection
 		Document doc = Jsoup.connect(url).get();
