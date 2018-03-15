@@ -5,6 +5,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.collections4.map.PassiveExpiringMap;
 
+import com.github.xhiroyui.bean.MALAnime;
+import com.github.xhiroyui.bean.MALManga;
 import com.github.xhiroyui.bean.MALSearch;
 import com.github.xhiroyui.bean.MutedUser;
 import com.github.xhiroyui.constant.BotConstant;
@@ -39,8 +41,11 @@ public class BotCache {
 				}
 			});
 
-	// Cache of Search objects by Message IDs
+	// MAL Related Caches
 	public static PassiveExpiringMap<String, MALSearch> malSearchCache = new PassiveExpiringMap<String, MALSearch>(300, TimeUnit.SECONDS);
+	public static PassiveExpiringMap<String, MALAnime> malAnimeCache = new PassiveExpiringMap<String, MALAnime>(600, TimeUnit.SECONDS);
+	public static PassiveExpiringMap<String, MALManga> malMangaCache = new PassiveExpiringMap<String, MALManga>(600, TimeUnit.SECONDS);
+	
 
 	// Cache of muted users by the bot to automatically remove the mute by a
 	// scheduled task

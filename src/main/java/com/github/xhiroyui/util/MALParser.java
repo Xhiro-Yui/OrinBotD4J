@@ -8,6 +8,7 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Response;
 
 import com.github.xhiroyui.bean.MALAnime;
+import com.github.xhiroyui.bean.MALManga;
 import com.github.xhiroyui.bean.MALSearch;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -46,7 +47,6 @@ public class MALParser {
 					
 				}
 				search.getResults().add(animu);
-				System.out.println(animu[0] + animu[1] + animu[2]);
 				if (search.getResults().size() == 5)
 					return search;
 			}
@@ -59,12 +59,17 @@ public class MALParser {
 	
 	public MALAnime malAnimeSearch(String id) {
 		try {
+			MALAnime anime = BotCache.malAnimeCache.get(id);
+			if (anime != null) {
+				System.out.println("Obtained from Cache");
+				return anime;
+			}
 			Client client = ClientBuilder.newClient();
 			Response response = client.target(searchUrl + "anime/" + id)
 			  .request(MediaType.TEXT_PLAIN_TYPE)
 			  .get();
 			
-			MALAnime anime = new MALAnime();
+			anime = new MALAnime();
 			anime.setStatusCode(response.getStatus());
 			
 			JsonParser jp = new JsonParser();
@@ -88,7 +93,7 @@ public class MALParser {
 				if (entry.getKey().equalsIgnoreCase("status"))
 					anime.setStatus(entry.getValue().toString().substring(1, entry.getValue().toString().length()-1));
 				if (entry.getKey().equalsIgnoreCase("aired_string"))
-					anime.setAiredTime(entry.getValue().toString().substring(1, entry.getValue().toString().length()-1));
+					anime.setAiredString(entry.getValue().toString().substring(1, entry.getValue().toString().length()-1));
 				if (entry.getKey().equalsIgnoreCase("score"))
 					anime.setScore(entry.getValue().getAsDouble());
 				if (entry.getKey().equalsIgnoreCase("scored_by"))
@@ -100,7 +105,70 @@ public class MALParser {
 				if (entry.getKey().equalsIgnoreCase("studio"))
 					anime.setStudio(entry.getValue().getAsJsonArray());
 			}
+			BotCache.malAnimeCache.put(id, anime);
 			return anime;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}	
+	}
+	
+	public MALManga malMangaSearch(String id) {
+		try {
+			MALManga manga = BotCache.malMangaCache.get(id);
+			if (manga != null) {
+				System.out.println("Obtained from Cache");
+				return manga;
+			}
+			Client client = ClientBuilder.newClient();
+			Response response = client.target(searchUrl + "manga/" + id)
+			  .request(MediaType.TEXT_PLAIN_TYPE)
+			  .get();
+			
+			manga = new MALManga();
+			manga.setStatusCode(response.getStatus());
+			
+			JsonParser jp = new JsonParser();
+			JsonObject ja = jp.parse(response.readEntity(String.class)).getAsJsonObject();
+			Set<Map.Entry<String, JsonElement>> entries = ja.entrySet();
+			for (Map.Entry<String, JsonElement> entry: entries) {
+				if (entry.getKey().equalsIgnoreCase("link_canonical"))
+					manga.setLink(entry.getValue().toString().substring(1, entry.getValue().toString().length()-1));
+				if (entry.getKey().equalsIgnoreCase("title"))
+					manga.setTitle(entry.getValue().toString().substring(1, entry.getValue().toString().length()-1));
+				if (entry.getKey().equalsIgnoreCase("title_japanese"))
+					manga.setJpTitle(entry.getValue().toString().substring(1, entry.getValue().toString().length()-1));
+				if (entry.getKey().equalsIgnoreCase("image_url"))
+					manga.setThumbnailUrl(entry.getValue().toString().substring(1, entry.getValue().toString().length()-1));
+				if (entry.getKey().equalsIgnoreCase("type"))
+					manga.setType(entry.getValue().toString().substring(1, entry.getValue().toString().length()-1));
+				if (entry.getKey().equalsIgnoreCase("volumes"))
+					manga.setVolumes(entry.getValue().getAsString());
+				if (entry.getKey().equalsIgnoreCase("chapters"))
+					manga.setChapters(entry.getValue().getAsString());
+				if (entry.getKey().equalsIgnoreCase("status"))
+					manga.setStatus(entry.getValue().toString().substring(1, entry.getValue().toString().length()-1));
+				if (entry.getKey().equalsIgnoreCase("publishing"))
+					manga.setPublishing(entry.getValue().getAsBoolean());
+				if (entry.getKey().equalsIgnoreCase("published_string"))
+					manga.setPublishedString(entry.getValue().toString().substring(1, entry.getValue().toString().length()-1));
+				if (entry.getKey().equalsIgnoreCase("score"))
+					manga.setScore(entry.getValue().getAsDouble());
+				if (entry.getKey().equalsIgnoreCase("scored_by"))
+					manga.setScoredBy(entry.getValue().getAsInt());
+				if (entry.getKey().equalsIgnoreCase("rank"))
+					manga.setRank(entry.getValue().getAsInt());
+				if (entry.getKey().equalsIgnoreCase("synopsis"))
+					manga.setSynopsis(entry.getValue().toString().substring(1, entry.getValue().toString().length()-1));
+				if (entry.getKey().equalsIgnoreCase("genre"))
+					manga.setGenre(entry.getValue().getAsJsonArray());
+				if (entry.getKey().equalsIgnoreCase("author"))
+					manga.setAuthor(entry.getValue().getAsJsonArray());
+				if (entry.getKey().equalsIgnoreCase("serialization"))
+					manga.setSerialization(entry.getValue().getAsJsonArray());
+			}
+			BotCache.malMangaCache.put(id, manga);
+			return manga;
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;

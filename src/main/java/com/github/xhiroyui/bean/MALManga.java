@@ -2,22 +2,25 @@ package com.github.xhiroyui.bean;
 
 import com.google.gson.JsonArray;
 
-public class MALAnime {
+public class MALManga {
 	private int statusCode;
 	private String link;
 	private String title;
 	private String jpTitle;
+	private String status;
 	private String thumbnailUrl; // image_url
 	private String type;
-	private String source;
-	private int episodes;
-	private String status;
-	private String airedString; //aired_string
+	private String volumes;
+	private String chapters;
+	private boolean publishing;
+	private String publishedString;
+	private int rank;
 	private double score;
 	private int scoredBy;
-	private int rank;
 	private String synopsis;
-	private JsonArray studio;
+	private JsonArray genre;
+	private JsonArray author;
+	private JsonArray serialization;
 	
 	public int getStatusCode() {
 		return statusCode;
@@ -43,6 +46,12 @@ public class MALAnime {
 	public void setJpTitle(String jpTitle) {
 		this.jpTitle = jpTitle;
 	}
+	public String getStatus() {
+		return status;
+	}
+	public void setStatus(String status) {
+		this.status = status;
+	}
 	public String getThumbnailUrl() {
 		return thumbnailUrl;
 	}
@@ -55,29 +64,35 @@ public class MALAnime {
 	public void setType(String type) {
 		this.type = type;
 	}
-	public String getSource() {
-		return source;
+	public String getVolumes() {
+		return volumes;
 	}
-	public void setSource(String source) {
-		this.source = source;
+	public void setVolumes(String volumes) {
+		this.volumes = volumes;
 	}
-	public int getEpisodes() {
-		return episodes;
+	public String getChapters() {
+		return chapters;
 	}
-	public void setEpisodes(int episodes) {
-		this.episodes = episodes;
+	public void setChapters(String chapters) {
+		this.chapters = chapters;
 	}
-	public String getStatus() {
-		return status;
+	public boolean isPublishing() {
+		return publishing;
 	}
-	public void setStatus(String status) {
-		this.status = status;
+	public void setPublishing(boolean publishing) {
+		this.publishing = publishing;
 	}
-	public String getAiredString() {
-		return airedString;
+	public String getPublishedString() {
+		return publishedString;
 	}
-	public void setAiredString(String airedString) {
-		this.airedString = airedString;
+	public void setPublishedString(String publishedString) {
+		this.publishedString = publishedString;
+	}
+	public int getRank() {
+		return rank;
+	}
+	public void setRank(int rank) {
+		this.rank = rank;
 	}
 	public double getScore() {
 		return score;
@@ -91,24 +106,28 @@ public class MALAnime {
 	public void setScoredBy(int scoredBy) {
 		this.scoredBy = scoredBy;
 	}
-	public int getRank() {
-		return rank;
-	}
-	public void setRank(int rank) {
-		this.rank = rank;
-	}
 	public String getSynopsis() {
 		return synopsis;
 	}
 	public void setSynopsis(String synopsis) {
 		this.synopsis = synopsis;
 	}
-	public JsonArray getStudio() {
-		return studio;
+	public JsonArray getGenre() {
+		return genre;
 	}
-	public void setStudio(JsonArray studio) {
-		this.studio = studio;
+	public void setGenre(JsonArray genre) {
+		this.genre = genre;
 	}
-	
-
+	public JsonArray getAuthor() {
+		return author;
+	}
+	public void setAuthor(JsonArray author) {
+		this.author = author;
+	}
+	public JsonArray getSerialization() {
+		return serialization;
+	}
+	public void setSerialization(JsonArray serialization) {
+		this.serialization = serialization;
+	}
 }
