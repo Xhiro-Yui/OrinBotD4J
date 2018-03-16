@@ -85,7 +85,7 @@ public class GBFCommandsHandler extends ModuleHandler {
 		if (results == null) 
 			sendMessage("Medusa-chan couldn't find anything <a:blobSeppuku:422628396334317568>"  , event);
 		else 
-			sendMessage("Here's what I found for you b-baka. \n<a:blobReach2:422628404483981322> " + results , event);
+			sendMessage("Here's what I found for you b-baka! \n<a:blobReach2:422628404483981322> " + results , event);
 		
 	}
 

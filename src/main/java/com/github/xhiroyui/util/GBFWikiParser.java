@@ -7,6 +7,7 @@ import java.net.URLEncoder;
 import java.util.regex.Matcher;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
+import org.jsoup.helper.HttpConnection;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import com.github.xhiroyui.bean.GBFCharacter;
@@ -31,7 +32,7 @@ public class GBFWikiParser {
 	}
 	
 	public String lazySearch(String url) throws IOException {
-		Document doc = Jsoup.connect(url).get();
+		Document doc = Jsoup.connect(url).userAgent(HttpConnection.DEFAULT_UA+"Rhestia'sDiscordBot").get();
 		if (doc.baseUri().contains("index.php?search=")) {
 			try {
 				return doc.select("div.mw-search-result-heading").first().select("a").attr("abs:href");
@@ -45,7 +46,7 @@ public class GBFWikiParser {
 	
 	public GBFCharacter parseGbfCharacter(String url) throws IOException {
 		// Web Connection
-		Document doc = Jsoup.connect(url).get();
+		Document doc = Jsoup.connect(url).userAgent(HttpConnection.DEFAULT_UA+"Rhestia'sDiscordBot").get();
 		
 		// Json Connection
 		URL jsonurl = new URL(baseJsonUrl + URLEncoder.encode(doc.select("h1#firstHeading").text(), "UTF-8"));
