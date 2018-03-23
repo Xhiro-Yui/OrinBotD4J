@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import com.github.xhiroyui.bean.GBFCharacter;
+import com.github.xhiroyui.bean.GBFWeapon;
 import com.github.xhiroyui.constant.FunctionConstant;
 import com.github.xhiroyui.util.Command;
 import com.github.xhiroyui.util.GBFWikiParser;
@@ -46,6 +47,16 @@ public class GBFCommandsHandler extends ModuleHandler {
 		command.setExample("Vajra");
 		commandList.add(command);
 		
+		command = new Command(FunctionConstant.GBF_GET_WEAPON);
+		command.setCommandName("GBF Weapon");
+		command.setCommandDescription("Displays a GBF weapon with info");
+		command.getCommandCallers().add("wpn");
+		command.getCommandCallers().add("weapon");
+		command.setParams(new String[] { "Weapon name" });
+		command.setMaximumArgs(5);
+		command.setExample("Gargantua");
+		commandList.add(command);
+		
 //		command = new Command("SEARCH_GBF_WIKI");
 //		command.setCommandName("GBF Character");
 //		command.setCommandDescription("Searches GBF wiki based on query");
@@ -70,6 +81,9 @@ public class GBFCommandsHandler extends ModuleHandler {
 			switch (commandCode) {
 			case FunctionConstant.GBF_GET_CHARACTER:
 				createCharEmbed(gbfWikiParser.gbfWikiSearch(Arrays.copyOfRange(command, 1, command.length)) ,event);
+				break;
+			case FunctionConstant.GBF_GET_WEAPON:
+				createWeaponEmbed(gbfWikiParser.gbfWikiSearch(Arrays.copyOfRange(command, 1, command.length)) ,event);
 				break;
 			case FunctionConstant.GBF_WIKI_SEARCH:
 				gbfLazySearch(gbfWikiParser.gbfWikiSearch(Arrays.copyOfRange(command, 1, command.length)) ,event);
@@ -118,7 +132,6 @@ public class GBFCommandsHandler extends ModuleHandler {
 				embed.appendField("Gender", "Female", true);
 			embed.appendField("Specialty", character.getSpecialty(), true);
 //			embed.withImage(character.getImageUrl());
-			embed.withFooterText("Data obtained from GBF Wiki");
 			StringBuilder voiceActorSB = new StringBuilder();
 			for (String[] voiceActor : character.getVoiceActor()) {
 				voiceActorSB.append("["+voiceActor[0]+"]("+voiceActor[1]+") ");
@@ -166,6 +179,62 @@ public class GBFCommandsHandler extends ModuleHandler {
 				embed.withColor(135, 0, 255);
 				break;
 			}
+			embed.withFooterText("Data obtained from GBF Wiki");
+			embed.withFooterIcon("https://cdn.discordapp.com/emojis/321247751830634496.png?v=1");
+			sendEmbed(embed, event);
+		}
+		catch (IllegalArgumentException e) {
+			sendMessage("ERROR : Failed to create embed.", event);
+			e.printStackTrace();
+		}
+		
+	}
+	
+	private void createWeaponEmbed(String webUrl, MessageReceivedEvent event) throws IOException {
+		// Do a check to see if search failed or not
+		// Do X if search fails (select top result?), do Y if search success
+		// Below is do Y
+		try {
+			EmbedBuilder embed = new EmbedBuilder();
+			GBFWeapon weapon = gbfWikiParser.parseGbfWeapon(webUrl);
+			if (weapon == null) {
+				sendMessage("Weapon not found.", event);
+				return;
+			}
+			if (!weapon.getTitle().isEmpty())
+				embed.withAuthorName("[" + weapon.getTitle() +"]");
+			else
+				embed.withAuthorName("[Skybound]");
+			embed.withAuthorIcon(weapon.getRarityImageUrl());
+			embed.withThumbnail(weapon.getThumbnailUrl());
+			embed.appendDesc(weapon.getFlavor());
+			embed.withTitle(weapon.getName());
+			embed.withUrl(weapon.getBaseUri());
+			embed.appendField(weapon.getSkill1Name() + " (" +  weapon.getSkill1Level() + ")", weapon.getSkill1Desc(), false);
+			embed.appendField(weapon.getSkill2Name() + " (" + weapon.getSkill2Level() + ")", weapon.getSkill2Desc(), false);
+			embed.appendField("Ougi", weapon.getOugiName() + " - " + weapon.getOugiEffect(), false);
+			
+			switch (weapon.getElement().toLowerCase()) {
+			case "fire":
+				embed.withColor(255, 0, 35);
+				break;
+			case "water":
+				embed.withColor(0, 115, 255);
+				break;
+			case "earth":
+				embed.withColor(175, 100, 35);
+				break;
+			case "wind":
+				embed.withColor(135, 255, 0);
+				break;
+			case "light":
+				embed.withColor(255, 235, 0);
+				break;
+			case "dark":
+				embed.withColor(135, 0, 255);
+				break;
+			}
+			embed.withFooterText("Data obtained from GBF Wiki");
 			embed.withFooterIcon("https://cdn.discordapp.com/emojis/321247751830634496.png?v=1");
 			sendEmbed(embed, event);
 		}

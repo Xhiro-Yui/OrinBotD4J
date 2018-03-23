@@ -32,9 +32,9 @@ public class TaskLoader {
 			
 		} else {
 			for (String each : channelList) {
-				taskList.put(new ChannelMonitor(Long.parseLong(each)), new MutableBoolean(true));
+				if (DiscordClient.getClient().getChannelByID(Long.parseLong(each)) != null)
+					taskList.put(new ChannelMonitor(Long.parseLong(each)), new MutableBoolean(true));
 			}
-			
 		}
 
 		// Unmuter

@@ -3,6 +3,8 @@ package com.github.xhiroyui.constant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
+import org.jsoup.helper.HttpConnection;
+
 import sx.blah.discord.handle.impl.obj.ReactionEmoji;
 
 public class BotConstant {
@@ -22,6 +24,7 @@ public class BotConstant {
 	// Error messages
 
 	// Utils
+	public static final String USER_AGENT = HttpConnection.DEFAULT_UA+"Rhestia'sDiscordBot";
 	public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
 			.withZone(ZoneId.of("GMT+8"));
 	public static final ReactionEmoji REACTION_ONE_TILL_FIVE[] = { ReactionEmoji.of("\u0031\u20E3"),

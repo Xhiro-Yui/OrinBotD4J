@@ -38,6 +38,7 @@ public class FunctionConstant {
 	// GBF Module
 	public static final String GBF_WIKI_SEARCH = "GBF_WIKI_SEARCH";
 	public static final String GBF_GET_CHARACTER = "GBF_GET_CHARACTER";
+	public static final String GBF_GET_WEAPON = "GBF_GET_WEAPON";
 	
 	// MAL Module
 	public static final String MAL_SEARCH = "MAL_SEARCH";
