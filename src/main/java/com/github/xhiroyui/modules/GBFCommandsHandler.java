@@ -3,6 +3,7 @@ package com.github.xhiroyui.modules;
 import java.io.IOException;
 import java.util.Arrays;
 
+import com.github.xhiroyui.DiscordClient;
 import com.github.xhiroyui.bean.GBFCharacter;
 import com.github.xhiroyui.bean.GBFWeapon;
 import com.github.xhiroyui.constant.FunctionConstant;
@@ -35,6 +36,26 @@ public class GBFCommandsHandler extends ModuleHandler {
 		command.setParams(new String[] { "Query" });
 		command.setMaximumArgs(69);
 		command.setExample("wEapOn skILLS");
+		commandList.add(command);
+		
+		command = new Command(FunctionConstant.GBF_GAIJIN_TIERLIST); // i plan to change this into reading an external file instead in the future
+		command.setCommandName("GBF Gaijins Tier-List Link");
+		command.setCommandDescription("So you can stop searching for it and just type the command instead");
+		command.getCommandCallers().add("tierlist");
+		command.getCommandCallers().add("gaijintierlist");
+		command.setMaximumArgs(0);
+		commandList.add(command);
+		
+		command = new Command(FunctionConstant.GBF_DAMA_GOLD_SUNSTONE); // i plan to change this into reading an external file instead in the future
+		command.setCommandName("GBF Path-of-Regrets");
+		command.setCommandDescription("When someone asks you \"Do I Dama/GoldBar/Sunstone <Insert weapon/summon here>?\"");
+		command.getCommandCallers().add("dama");
+		command.getCommandCallers().add("sunstone");
+		command.getCommandCallers().add("goldbar");
+		command.getCommandCallers().add("boldgar");
+		command.getCommandCallers().add("zeed");
+		command.getCommandCallers().add("regretlifedecisions");
+		command.setMaximumArgs(0);
 		commandList.add(command);
 		
 		command = new Command(FunctionConstant.GBF_GET_CHARACTER);
@@ -88,12 +109,44 @@ public class GBFCommandsHandler extends ModuleHandler {
 			case FunctionConstant.GBF_WIKI_SEARCH:
 				gbfLazySearch(gbfWikiParser.gbfWikiSearch(Arrays.copyOfRange(command, 1, command.length)) ,event);
 				break;
+			case FunctionConstant.GBF_GAIJIN_TIERLIST:
+				gaijinTierListEmbed(event);
+				break;
+			case FunctionConstant.GBF_DAMA_GOLD_SUNSTONE:
+				pathOfRegrets(event);
+				break;
 			}
 		}
 	}
 
 
 	
+	private void pathOfRegrets(MessageReceivedEvent event) {
+		sendMessage("Q: What do I use my **Sunstone / Gold Bar / Damascus Ingot** on?\n"
+				+ "A: The fact that you are asking means you don't know what it's worth and what you *should* be doing with it and as such, you *DON'T* use it.\n\n"
+				+ "If it is something you should be using one of the above items on, you wouldn't have to ask. Asking means you *don't* know what it's worth.\n\n"
+				+ "The time will come eventually when you know when to use it/what to use it on __*without asking*__ and that is when you actually use it.\n\n"
+				+ "If anyone tells you to use it on <insert something here>, they are leading you to the path of regrets/doom/sadness/ <a:blobSeppuku:422628396334317568>", event);
+	}
+
+	private void gaijinTierListEmbed(MessageReceivedEvent event) {
+		EmbedBuilder embed = new EmbedBuilder();
+		embed.withAuthorName("Diamonit & Co");
+		// embed.withAuthorUrl("");
+		embed.withTitle("Gaijins Tier List, because filthy Gaijins can't read moonrunes");
+		embed.withUrl("https://docs.google.com/spreadsheets/d/1lo-r5oP5PVDBjDtN8SlJBpFCqCcYnZmvy1d0mIQsriw/htmlview?sle=true#gid=0");
+		embed.withAuthorIcon(
+				"https://rin-kaenbyou.is-my-waifu.com/ToVWmJKcG.png");
+		embed.withThumbnail(DiscordClient.getClient().fetchUser(157516003272687616L).getAvatarURL());
+		embed.appendField("Diamonit on Patreon", "[Patreon Link](https://www.patreon.com/gaijintierlist)", false);
+		embed.withColor(125, 125, 125);
+		// embed.withImage("");
+		embed.withDesc(
+				"ITU PUN DIA! ~~*lame joke*~~");
+		sendEmbed(embed, event);
+	
+	}
+
 	private void gbfLazySearch(String gbfWikiSearch, MessageReceivedEvent event) throws DiscordException, MissingPermissionsException, IOException {
 		String results = gbfWikiParser.lazySearch(gbfWikiSearch);
 		if (results == null) 
