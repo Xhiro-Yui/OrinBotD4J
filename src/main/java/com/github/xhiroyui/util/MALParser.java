@@ -1,6 +1,7 @@
 package com.github.xhiroyui.util;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.ws.rs.client.Client;
@@ -99,7 +100,7 @@ public class MALParser {
 				if (entry.getKey().equalsIgnoreCase("scored_by"))
 					anime.setScoredBy(entry.getValue().getAsInt());
 				if (entry.getKey().equalsIgnoreCase("rank"))
-					anime.setRank(entry.getValue().getAsInt());
+					anime.setRank(!entry.getValue().isJsonNull()? entry.getValue().getAsInt() : 0);
 				if (entry.getKey().equalsIgnoreCase("synopsis"))
 					anime.setSynopsis(entry.getValue().toString().substring(1, entry.getValue().toString().length()-1));
 				if (entry.getKey().equalsIgnoreCase("studio"))
