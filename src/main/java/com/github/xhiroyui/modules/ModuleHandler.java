@@ -108,19 +108,19 @@ public class ModuleHandler {
 				caller.append(" | ").append(command.getCommandCallers().get(i));
 		}
 
-		EmbedBuilder builder = new EmbedBuilder();
-		builder.withAuthorName(command.getCommandCode());
-		builder.withTitle("*" + command.getCommandName() + "*");
-		builder.withDesc(command.getCommandDescription());
-		builder.appendField("Params", param.toString(), true);
-		builder.appendField("Maximum Arguments", Integer.toString(command.getMaximumArgs()), true);
-		builder.appendField("Example Use", command.getExample().toString(), false);
-		builder.appendField("Alternative command calls", caller.toString(), false);
-		builder.withColor(ThreadLocalRandom.current().nextInt(0, 255 + 1),
+		EmbedBuilder embed = new EmbedBuilder().setLenient(true);
+		embed.withAuthorName(command.getCommandCode());
+		embed.withTitle("*" + command.getCommandName() + "*");
+		embed.withDesc(command.getCommandDescription());
+		embed.appendField("Params", param.toString(), true);
+		embed.appendField("Maximum Arguments", Integer.toString(command.getMaximumArgs()), true);
+		embed.appendField("Example Use", command.getExample().toString(), false);
+		embed.appendField("Alternative command calls", caller.toString(), false);
+		embed.withColor(ThreadLocalRandom.current().nextInt(0, 255 + 1),
 				ThreadLocalRandom.current().nextInt(0, 255 + 1), ThreadLocalRandom.current().nextInt(0, 255 + 1));
 
-		builder.withFooterText("OrinBot by Rhestia :3");
-		sendEmbed(builder, event);
+		embed.withFooterText("OrinBot by Rhestia :3");
+		sendEmbed(embed, event);
 	}
 
 	protected void invalidArgsLength(Command commandObj, MessageReceivedEvent event) {

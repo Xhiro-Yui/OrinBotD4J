@@ -130,7 +130,7 @@ public class GBFCommandsHandler extends ModuleHandler {
 	}
 
 	private void gaijinTierListEmbed(MessageReceivedEvent event) {
-		EmbedBuilder embed = new EmbedBuilder();
+		EmbedBuilder embed = new EmbedBuilder().setLenient(true);
 		embed.withAuthorName("Diamonit & Co");
 		// embed.withAuthorUrl("");
 		embed.withTitle("Gaijins Tier List, because filthy Gaijins can't read moonrunes");
@@ -161,7 +161,7 @@ public class GBFCommandsHandler extends ModuleHandler {
 		// Do X if search fails (select top result?), do Y if search success
 		// Below is do Y
 		try {
-			EmbedBuilder embed = new EmbedBuilder();
+			EmbedBuilder embed = new EmbedBuilder().setLenient(true); 
 			GBFCharacter character = gbfWikiParser.parseGbfCharacter(webUrl);
 			if (character == null) {
 				sendMessage("Character not found.", event);
@@ -248,7 +248,7 @@ public class GBFCommandsHandler extends ModuleHandler {
 		// Do X if search fails (select top result?), do Y if search success
 		// Below is do Y
 		try {
-			EmbedBuilder embed = new EmbedBuilder();
+			EmbedBuilder embed = new EmbedBuilder().setLenient(true);
 			GBFWeapon weapon = gbfWikiParser.parseGbfWeapon(webUrl);
 			if (weapon == null) {
 				sendMessage("Weapon not found.", event);

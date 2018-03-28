@@ -239,7 +239,7 @@ public class OwnerCommandsHandler extends ModuleHandler {
 	}
 	
 	public void embedPong(MessageReceivedEvent event) {
-		EmbedBuilder embed = new EmbedBuilder();
+		EmbedBuilder embed = new EmbedBuilder().setLenient(true);
 		embed.withAuthorName("Orin");
 		embed.withThumbnail("https://pbs.twimg.com/media/CdbhdctXIAA25Zu.jpg");
 		embed.withImage("https://i.pinimg.com/564x/7f/61/3f/7f613f1c4c5a6ec291049d1acb056f04.jpg");

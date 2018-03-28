@@ -132,7 +132,7 @@ public class MALCommandsHandler extends ModuleHandler {
 	}
 
 	private void createMALSearchEmbed(String key, IMessage waitMsg, MALSearch results, MessageReceivedEvent event) {
-		EmbedBuilder embed = new EmbedBuilder();
+		EmbedBuilder embed = new EmbedBuilder().setLenient(true);
 		embed.withAuthorName("MyAnimeList");
 		embed.withAuthorIcon("https://pbs.twimg.com/profile_images/926302376738377729/SMlpasPv_bigger.jpg");
 		embed.withAuthorUrl("https://myanimelist.net/");
@@ -170,7 +170,7 @@ public class MALCommandsHandler extends ModuleHandler {
 	}
 
 	private void createMALMangaEmbed(MALManga results, IMessage toEdit) {
-		EmbedBuilder embed = new EmbedBuilder();
+		EmbedBuilder embed = new EmbedBuilder().setLenient(true);
 		if (results.getStatusCode() == 429) {
 			toEdit.edit("Rate limit reached. This command will be unavailable for the rest of the day.");
 			toEdit.removeAllReactions();
@@ -253,7 +253,7 @@ public class MALCommandsHandler extends ModuleHandler {
 	}
 
 	private void createMALAnimeEmbed(MALAnime results, IMessage toEdit) {
-		EmbedBuilder embed = new EmbedBuilder();
+		EmbedBuilder embed = new EmbedBuilder().setLenient(true);
 		if (results.getStatusCode() == 429) {
 			toEdit.edit("Rate limit reached. This command will be unavailable for the rest of the day.");
 			toEdit.removeAllReactions();

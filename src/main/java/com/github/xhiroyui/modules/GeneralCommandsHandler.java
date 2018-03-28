@@ -139,7 +139,7 @@ public class GeneralCommandsHandler extends ModuleHandler {
 
 
 	public void botAuthor(MessageReceivedEvent event) {
-		EmbedBuilder embed = new EmbedBuilder();
+		EmbedBuilder embed = new EmbedBuilder().setLenient(true);
 		embed.withAuthorName("Rhestia");
 		// embed.withAuthorUrl("");
 		embed.withTitle("Not-so-proud owner/author of " + DiscordClient.getClient().getOurUser().getDisplayName(event.getGuild()));
@@ -179,7 +179,7 @@ public class GeneralCommandsHandler extends ModuleHandler {
 	}
 	
 	private void getGuildStatistics(MessageReceivedEvent event) {
-		EmbedBuilder embed = new EmbedBuilder();
+		EmbedBuilder embed = new EmbedBuilder().setLenient(true);
 		embed.withTitle(event.getGuild().getName());
 		embed.withThumbnail(event.getGuild().getIconURL());
 		try {
@@ -195,7 +195,7 @@ public class GeneralCommandsHandler extends ModuleHandler {
 	}
 	
 	private void getUserStatistics(MessageReceivedEvent event) {
-		EmbedBuilder embed = new EmbedBuilder();
+		EmbedBuilder embed = new EmbedBuilder().setLenient(true);
 		embed.withAuthorName(event.getAuthor().getName());
 		embed.withAuthorIcon(event.getAuthor().getAvatarURL());
 		embed.withThumbnail(event.getAuthor().getAvatarURL());
