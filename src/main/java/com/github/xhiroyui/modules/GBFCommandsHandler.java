@@ -254,10 +254,10 @@ public class GBFCommandsHandler extends ModuleHandler {
 				sendMessage("Weapon not found.", event);
 				return;
 			}
-			if (!weapon.getTitle().isEmpty())
-				embed.withAuthorName("[" + weapon.getTitle() +"]");
-			else
+			if (weapon.getTitle() == null || weapon.getTitle().isEmpty())
 				embed.withAuthorName("[Skybound]");
+			else
+				embed.withAuthorName("[" + weapon.getTitle() +"]");
 			embed.withAuthorIcon(weapon.getRarityImageUrl());
 			embed.withThumbnail(weapon.getThumbnailUrl());
 			embed.appendDesc(weapon.getFlavor());

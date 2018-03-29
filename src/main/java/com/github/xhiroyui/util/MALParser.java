@@ -1,7 +1,6 @@
 package com.github.xhiroyui.util;
 
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
 import javax.ws.rs.client.Client;
