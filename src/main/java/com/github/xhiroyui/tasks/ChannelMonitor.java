@@ -160,7 +160,7 @@ public class ChannelMonitor implements ITask {
 						logEvent(BotConstant.FUNC_FLAG_DURATION, timeMinusHoursSet.toString());
 						DBConnection.getDBConnection().deleteQuery(
 								"DELETE FROM " + BotConstant.DB_CHANNEL_MONITOR_TABLE + " WHERE channel_id = ? AND datetime_of_post < ?",
-								DiscordClient.getClient().getChannelByID(channelID), Instant.now().toEpochMilli());
+								channelID, timeMinusHoursSet.toEpochMilli());
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
