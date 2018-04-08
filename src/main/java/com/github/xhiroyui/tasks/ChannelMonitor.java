@@ -151,7 +151,7 @@ public class ChannelMonitor implements ITask {
 			public void run() {
 				try {
 					Instant timeMinusHoursSet = Instant.now().minus(hours, ChronoUnit.HOURS);
-					MessageHistory mh = DiscordClient.getClient().getChannelByID(Long.parseLong(channelID)).getMessageHistoryFrom(timeMinusHoursSet);
+					MessageHistory mh = DiscordClient.getClient().getChannelByID(channelID).getMessageHistoryFrom(timeMinusHoursSet);
 					if (mh.size() > 0) {
 						for (IMessage msg : mh) {
 							if (!msg.isPinned())
@@ -160,7 +160,7 @@ public class ChannelMonitor implements ITask {
 						logEvent(BotConstant.FUNC_FLAG_DURATION, timeMinusHoursSet.toString());
 						DBConnection.getDBConnection().deleteQuery(
 								"DELETE FROM " + BotConstant.DB_CHANNEL_MONITOR_TABLE + " WHERE channel_id = ? AND datetime_of_post < ?",
-								DiscordClient.getClient().getChannelByID(Long.parseLong(channelID)), Instant.now().toEpochMilli());
+								DiscordClient.getClient().getChannelByID(channelID), Instant.now().toEpochMilli());
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
