@@ -6,7 +6,9 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.collections4.map.PassiveExpiringMap;
 
 import com.github.xhiroyui.bean.MALAnime;
+import com.github.xhiroyui.bean.MALCharacter;
 import com.github.xhiroyui.bean.MALManga;
+import com.github.xhiroyui.bean.MALPerson;
 import com.github.xhiroyui.bean.MALSearch;
 import com.github.xhiroyui.bean.MutedUser;
 import com.github.xhiroyui.constant.BotConstant;
@@ -45,6 +47,9 @@ public class BotCache {
 	public static PassiveExpiringMap<String, MALSearch> malSearchCache = new PassiveExpiringMap<String, MALSearch>(300, TimeUnit.SECONDS);
 	public static PassiveExpiringMap<String, MALAnime> malAnimeCache = new PassiveExpiringMap<String, MALAnime>(600, TimeUnit.SECONDS);
 	public static PassiveExpiringMap<String, MALManga> malMangaCache = new PassiveExpiringMap<String, MALManga>(600, TimeUnit.SECONDS);
+	public static PassiveExpiringMap<String, MALPerson> malPersonCache = new PassiveExpiringMap<String, MALPerson>(600, TimeUnit.SECONDS);
+	public static PassiveExpiringMap<String, MALCharacter> malCharacterCache = new PassiveExpiringMap<String, MALCharacter>(600, TimeUnit.SECONDS);
+	
 	
 
 	// Cache of muted users by the bot to automatically remove the mute by a

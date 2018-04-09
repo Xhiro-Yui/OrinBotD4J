@@ -30,7 +30,6 @@ import sx.blah.discord.util.RequestBuffer.RequestFuture;
 
 public class ChannelMonitor implements ITask {
 
-	private IChannel channel;
 	private IChannel logChannel = null;
 	private Long channelID;
 	private MutableBoolean fifoFlag = new MutableBoolean();
@@ -44,7 +43,6 @@ public class ChannelMonitor implements ITask {
 
 	public ChannelMonitor(long channelID) {
 		this.channelID = channelID;
-		channel = DiscordClient.getClient().getChannelByID(channelID);
 		refreshSettings();
 		System.out.println("Initializing Channel Monitor for " + channelID);
 
@@ -128,7 +126,7 @@ public class ChannelMonitor implements ITask {
 
 	public void deleteChannelLogs() {
 		DBConnection.getDBConnection().deleteQuery(
-				"DELETE FROM " + BotConstant.DB_CHANNEL_MONITOR_TABLE + " WHERE channel_id = ?", channel.getLongID());
+				"DELETE FROM " + BotConstant.DB_CHANNEL_MONITOR_TABLE + " WHERE channel_id = ?", channelID);
 	}
 
 	public ArrayList<String> getMonitorFlags() {

@@ -3,6 +3,7 @@ package com.github.xhiroyui.bean;
 import com.google.gson.JsonArray;
 
 public class MALManga {
+	private int id;
 	private int statusCode;
 	private String link;
 	private String title;
@@ -22,6 +23,12 @@ public class MALManga {
 	private JsonArray author;
 	private JsonArray serialization;
 	
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
 	public int getStatusCode() {
 		return statusCode;
 	}

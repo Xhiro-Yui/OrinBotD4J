@@ -10,6 +10,7 @@ import org.apache.commons.text.StringEscapeUtils;
 
 import com.github.xhiroyui.bean.MALAnime;
 import com.github.xhiroyui.bean.MALManga;
+import com.github.xhiroyui.bean.MALPerson;
 import com.github.xhiroyui.bean.MALSearch;
 import com.github.xhiroyui.constant.BotConstant;
 import com.github.xhiroyui.constant.FunctionConstant;
@@ -62,7 +63,8 @@ public class MALCommandsHandler extends ModuleHandler {
 	@EventSubscriber
 	public void OnReactionAddEvent(ReactionAddEvent event)
 			throws DiscordException, MissingPermissionsException, ExecutionException {
-		MALSearch search = BotCache.malSearchCache.get(event.getUser().getStringID() + Long.toString(event.getMessageID()));
+		MALSearch search = BotCache.malSearchCache
+				.get(event.getUser().getStringID() + Long.toString(event.getMessageID()));
 		if (search != null)
 			if (event.getReaction().getEmoji().equals(BotConstant.REACTION_ONE_TILL_FIVE[0])) {
 				createMALEmbed(search.getFlag(), event.getMessage(), search.getResults().get(0)[0]);
@@ -115,15 +117,17 @@ public class MALCommandsHandler extends ModuleHandler {
 					return;
 				} else {
 					if (searchResults.getStatus() == 200) {
-						createMALSearchEmbed(event.getAuthor().getStringID() + waitMsg.getStringID(), waitMsg, searchResults, event);
+						createMALSearchEmbed(event.getAuthor().getStringID() + waitMsg.getStringID(), waitMsg,
+								searchResults, event);
 					} else if (searchResults.getStatus() == 429) {
 						sendMessage("Rate limit reached. This command will be unavailable for the rest of the day.",
 								event);
 					}
 				}
-			}
-			else
-				sendMessage("Please dictate a search type as first parameter. Available search types are `anime`, `manga`, `char`, `person`.", event);
+			} else
+				sendMessage(
+						"Please dictate a search type as first parameter. Available search types are `anime`, `manga`, `char`, `person`.",
+						event);
 		} catch (Exception e) {
 			sendMessage("ERROR!", event);
 			e.printStackTrace();
@@ -137,7 +141,7 @@ public class MALCommandsHandler extends ModuleHandler {
 		embed.withAuthorIcon("https://pbs.twimg.com/profile_images/926302376738377729/SMlpasPv_bigger.jpg");
 		embed.withAuthorUrl("https://myanimelist.net/");
 		embed.withThumbnail("https://pbs.twimg.com/profile_images/926302376738377729/SMlpasPv_400x400.jpg");
-//		embed.withTitle("*Search Results [" + results.getFlag() + "]*");
+		// embed.withTitle("*Search Results [" + results.getFlag() + "]*");
 		embed.withDesc(":mag_right: Displaying top 5 search results [" + results.getFlag().toUpperCase() + "]\n");
 		int count = 1;
 		for (String[] each : results.getResults()) {
@@ -149,9 +153,10 @@ public class MALCommandsHandler extends ModuleHandler {
 		waitMsg.edit("Search completed.", embed.build());
 		BotCache.malSearchCache.put(key, results);
 		if (results.getResults().size() > 0)
-			addReaction(waitMsg, Arrays.copyOfRange(BotConstant.REACTION_ONE_TILL_FIVE, 0, results.getResults().size()));
+			addReaction(waitMsg,
+					Arrays.copyOfRange(BotConstant.REACTION_ONE_TILL_FIVE, 0, results.getResults().size()));
 	}
-	
+
 	private void createMALEmbed(String flag, IMessage message, String id) {
 		if (flag.equalsIgnoreCase("anime"))
 			createMALAnimeEmbed(malParser.malAnimeSearch(id), message);
@@ -160,13 +165,34 @@ public class MALCommandsHandler extends ModuleHandler {
 		if (flag.equalsIgnoreCase("character"))
 			createMALCharaEmbed();
 		if (flag.equalsIgnoreCase("person"))
-			createMALPersonEmbed();
+			createMALPersonEmbed(malParser.malPersonSearch(id), message);
 	}
 
 	private void createMALCharaEmbed() {
 	}
 
-	private void createMALPersonEmbed() {
+	private void createMALPersonEmbed(MALPerson results, IMessage toEdit) {
+		EmbedBuilder embed = new EmbedBuilder().setLenient(true);
+		if (results.getStatusCode() == 429) {
+			toEdit.edit("Rate limit reached. This command will be unavailable for the rest of the day.");
+			toEdit.removeAllReactions();
+			return;
+		}
+		embed.withTitle(results.getNameRomaji() + " | " + (results.getFamilyName()!= null? results.getFamilyName() : "")
+				+ (results.getGivenName()!= null? results.getGivenName() : ""));
+		embed.withUrl(results.getLink());
+		embed.appendField("Birthday", results.getBirthday(), true);
+		if (results.getWebsite().length() > 7) 
+			embed.appendField("Website", "[Link](" + results.getWebsite() + ")", true);
+		embed.withThumbnail(results.getThumbnailUrl());
+		if (results.getDescription().length() > 500)
+			embed.withDesc(results.getDescription().substring(0, 500) + "...");
+		else
+			embed.withDesc(results.getDescription());
+		embed.withColor(46, 81, 162);
+		toEdit.edit(embed.build());
+		toEdit.removeAllReactions();
+
 	}
 
 	private void createMALMangaEmbed(MALManga results, IMessage toEdit) {
@@ -181,14 +207,14 @@ public class MALCommandsHandler extends ModuleHandler {
 		embed.withThumbnail(results.getThumbnailUrl());
 		if (results.getSynopsis().length() > 500)
 			embed.withDesc(StringEscapeUtils.unescapeHtml4(results.getSynopsis().substring(0, 500)) + "...");
-		else 
+		else
 			embed.withDesc(results.getSynopsis());
 		embed.appendField("Type", results.getType(), true);
 		embed.appendField("Status", results.getStatus(), true);
-		embed.appendField("Volumes", results.getVolumes() , true);
-		embed.appendField("Chapter", results.getChapters() , true);
-		embed.appendField("Publishing Status", Boolean.toString(results.isPublishing()) , true);
-		embed.appendField("Published Date", results.getPublishedString().replace(" to ", "-") , true);
+		embed.appendField("Volumes", results.getVolumes(), true);
+		embed.appendField("Chapter", results.getChapters(), true);
+		embed.appendField("Publishing Status", Boolean.toString(results.isPublishing()), true);
+		embed.appendField("Published Date", results.getPublishedString().replace(" to ", "-"), true);
 		embed.appendField("Score", Double.toString(results.getScore()), true);
 		embed.appendField("Scored By", Integer.toString(results.getScoredBy()), true);
 		embed.appendField("Rank", Integer.toString(results.getRank()), true);
@@ -197,17 +223,19 @@ public class MALCommandsHandler extends ModuleHandler {
 			Set<Map.Entry<String, JsonElement>> entries = element.getAsJsonObject().entrySet();
 			String genreName = null;
 			String genreLink = null;
-			for (Map.Entry<String, JsonElement> entry: entries) {
+			for (Map.Entry<String, JsonElement> entry : entries) {
 				if (entry.getKey().equalsIgnoreCase("name"))
-					genreName = "[" + entry.getValue().toString().substring(1, entry.getValue().toString().length()-1) + "]";
+					genreName = "[" + entry.getValue().toString().substring(1, entry.getValue().toString().length() - 1)
+							+ "]";
 				if (entry.getKey().equalsIgnoreCase("url"))
-					genreLink = "(" + entry.getValue().toString().substring(1, entry.getValue().toString().length()-1) + ")";
+					genreLink = "(" + entry.getValue().toString().substring(1, entry.getValue().toString().length() - 1)
+							+ ")";
 			}
-			if (genre.length() == 0) 
-				genre.append(genreName+genreLink);
+			if (genre.length() == 0)
+				genre.append(genreName + genreLink);
 			else
-				genre.append(", " + genreName+genreLink);
-			
+				genre.append(", " + genreName + genreLink);
+
 		}
 		embed.appendField("Genre", genre.toString(), false);
 		StringBuilder author = new StringBuilder();
@@ -215,17 +243,19 @@ public class MALCommandsHandler extends ModuleHandler {
 			Set<Map.Entry<String, JsonElement>> entries = element.getAsJsonObject().entrySet();
 			String authorName = null;
 			String authorLink = null;
-			for (Map.Entry<String, JsonElement> entry: entries) {
+			for (Map.Entry<String, JsonElement> entry : entries) {
 				if (entry.getKey().equalsIgnoreCase("name"))
-					authorName = "[" + entry.getValue().toString().substring(1, entry.getValue().toString().length()-1) + "]";
+					authorName = "["
+							+ entry.getValue().toString().substring(1, entry.getValue().toString().length() - 1) + "]";
 				if (entry.getKey().equalsIgnoreCase("url"))
-					authorLink = "(" + entry.getValue().toString().substring(1, entry.getValue().toString().length()-1) + ")";
+					authorLink = "("
+							+ entry.getValue().toString().substring(1, entry.getValue().toString().length() - 1) + ")";
 			}
-			if (author.length() == 0) 
-				author.append(authorName+authorLink);
+			if (author.length() == 0)
+				author.append(authorName + authorLink);
 			else
-				author.append(", " + authorName+authorLink);
-			
+				author.append(", " + authorName + authorLink);
+
 		}
 		embed.appendField("Author", author.toString(), false);
 		StringBuilder serialization = new StringBuilder();
@@ -233,20 +263,22 @@ public class MALCommandsHandler extends ModuleHandler {
 			Set<Map.Entry<String, JsonElement>> entries = element.getAsJsonObject().entrySet();
 			String serializationName = null;
 			String serializationLink = null;
-			for (Map.Entry<String, JsonElement> entry: entries) {
+			for (Map.Entry<String, JsonElement> entry : entries) {
 				if (entry.getKey().equalsIgnoreCase("name"))
-					serializationName = "[" + entry.getValue().toString().substring(1, entry.getValue().toString().length()-1) + "]";
+					serializationName = "["
+							+ entry.getValue().toString().substring(1, entry.getValue().toString().length() - 1) + "]";
 				if (entry.getKey().equalsIgnoreCase("url"))
-					serializationLink = "(" + entry.getValue().toString().substring(1, entry.getValue().toString().length()-1) + ")";
+					serializationLink = "("
+							+ entry.getValue().toString().substring(1, entry.getValue().toString().length() - 1) + ")";
 			}
-			if (serialization.length() == 0) 
-				serialization.append(serializationName+serializationLink);
+			if (serialization.length() == 0)
+				serialization.append(serializationName + serializationLink);
 			else
-				serialization.append(", " + serializationName+serializationLink);
-			
+				serialization.append(", " + serializationName + serializationLink);
+
 		}
 		embed.appendField("Serialization", serialization.toString(), false);
-		
+
 		embed.withColor(46, 81, 162);
 		toEdit.edit(embed.build());
 		toEdit.removeAllReactions();
@@ -264,7 +296,7 @@ public class MALCommandsHandler extends ModuleHandler {
 		embed.withThumbnail(results.getThumbnailUrl());
 		if (results.getSynopsis().length() > 500)
 			embed.withDesc(StringEscapeUtils.unescapeHtml4(results.getSynopsis().substring(0, 500)) + "...");
-		else 
+		else
 			embed.withDesc(results.getSynopsis());
 		embed.appendField("Type", results.getType(), true);
 		embed.appendField("Source", results.getSource(), true);
@@ -279,22 +311,24 @@ public class MALCommandsHandler extends ModuleHandler {
 			Set<Map.Entry<String, JsonElement>> entries = element.getAsJsonObject().entrySet();
 			String producerName = null;
 			String producerLink = null;
-			for (Map.Entry<String, JsonElement> entry: entries) {
+			for (Map.Entry<String, JsonElement> entry : entries) {
 				if (entry.getKey().equalsIgnoreCase("name"))
-					producerName = "[" + entry.getValue().toString().substring(1, entry.getValue().toString().length()-1) + "]";
+					producerName = "["
+							+ entry.getValue().toString().substring(1, entry.getValue().toString().length() - 1) + "]";
 				if (entry.getKey().equalsIgnoreCase("url"))
-					producerLink = "(" + entry.getValue().toString().substring(1, entry.getValue().toString().length()-1) + ")";
+					producerLink = "("
+							+ entry.getValue().toString().substring(1, entry.getValue().toString().length() - 1) + ")";
 			}
-			if (producer.length() == 0) 
-				producer.append(producerName+producerLink);
+			if (producer.length() == 0)
+				producer.append(producerName + producerLink);
 			else
-				producer.append(", " + producerName+producerLink);
-			
+				producer.append(", " + producerName + producerLink);
+
 		}
 		embed.appendField("Studio", producer.toString(), false);
 		embed.withColor(46, 81, 162);
 		toEdit.edit(embed.build());
 		toEdit.removeAllReactions();
-		
+
 	}
 }

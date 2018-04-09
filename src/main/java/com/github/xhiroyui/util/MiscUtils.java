@@ -1,5 +1,7 @@
 package com.github.xhiroyui.util;
 
+import com.google.gson.JsonElement;
+
 public class MiscUtils {
 	
 	public static boolean isInteger(String s) {
@@ -22,5 +24,9 @@ public class MiscUtils {
 	        return false;
 	    }
 	    return true;
+	}
+	
+	public static String getJsonString(JsonElement e) {
+		return e.isJsonNull()? null : e.getAsString();
 	}
 }

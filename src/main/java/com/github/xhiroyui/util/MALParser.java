@@ -7,8 +7,11 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.text.StringEscapeUtils;
+
 import com.github.xhiroyui.bean.MALAnime;
 import com.github.xhiroyui.bean.MALManga;
+import com.github.xhiroyui.bean.MALPerson;
 import com.github.xhiroyui.bean.MALSearch;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -36,17 +39,17 @@ public class MALParser {
 			JsonArray ja = jp.parse(response.readEntity(String.class)).getAsJsonObject().get("result").getAsJsonArray();
 			for (JsonElement each : ja) {				
 				Set<Map.Entry<String, JsonElement>> entries = ((JsonObject) each).entrySet();
-				String[] animu = new String[3];
+				String[] results = new String[3];
 				for (Map.Entry<String, JsonElement> entry: entries) {
 					if (entry.getKey().equalsIgnoreCase("id"))
-						animu[0] = entry.getValue().toString();
-					if (entry.getKey().equalsIgnoreCase("title"))
-						animu[1] = entry.getValue().toString().substring(1, entry.getValue().toString().length()-1);
+						results[0] = entry.getValue().toString();
+					if (entry.getKey().equalsIgnoreCase("title") || entry.getKey().equalsIgnoreCase("name"))
+						results[1] = entry.getValue().toString().substring(1, entry.getValue().toString().length()-1);
 					if (entry.getKey().equalsIgnoreCase("url"))
-						animu[2] = entry.getValue().toString().substring(1, entry.getValue().toString().length()-1);
+						results[2] = entry.getValue().toString().substring(1, entry.getValue().toString().length()-1);
 					
 				}
-				search.getResults().add(animu);
+				search.getResults().add(results);
 				if (search.getResults().size() == 5)
 					return search;
 			}
@@ -76,6 +79,8 @@ public class MALParser {
 			JsonObject ja = jp.parse(response.readEntity(String.class)).getAsJsonObject();
 			Set<Map.Entry<String, JsonElement>> entries = ja.entrySet();
 			for (Map.Entry<String, JsonElement> entry: entries) {
+				if (entry.getKey().equalsIgnoreCase("mal_id"))
+					anime.setId(entry.getValue().getAsInt());
 				if (entry.getKey().equalsIgnoreCase("link_canonical"))
 					anime.setLink(entry.getValue().toString().substring(1, entry.getValue().toString().length()-1));
 				if (entry.getKey().equalsIgnoreCase("title"))
@@ -132,6 +137,8 @@ public class MALParser {
 			JsonObject ja = jp.parse(response.readEntity(String.class)).getAsJsonObject();
 			Set<Map.Entry<String, JsonElement>> entries = ja.entrySet();
 			for (Map.Entry<String, JsonElement> entry: entries) {
+				if (entry.getKey().equalsIgnoreCase("mal_id"))
+					manga.setId(entry.getValue().getAsInt());
 				if (entry.getKey().equalsIgnoreCase("link_canonical"))
 					manga.setLink(entry.getValue().toString().substring(1, entry.getValue().toString().length()-1));
 				if (entry.getKey().equalsIgnoreCase("title"))
@@ -169,6 +176,52 @@ public class MALParser {
 			}
 			BotCache.malMangaCache.put(id, manga);
 			return manga;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}	
+	}
+	
+	public MALPerson malPersonSearch(String id) {
+		try {
+			MALPerson person = BotCache.malPersonCache.get(id);
+			if (person != null) {
+				System.out.println("Obtained from Cache");
+				return person;
+			}
+			Client client = ClientBuilder.newClient();
+			Response response = client.target(searchUrl + "person/" + id)
+			  .request(MediaType.TEXT_PLAIN_TYPE)
+			  .get();
+			
+			person = new MALPerson();
+			person.setStatusCode(response.getStatus());
+			
+			JsonParser jp = new JsonParser();
+			JsonObject ja = jp.parse(response.readEntity(String.class)).getAsJsonObject();
+			Set<Map.Entry<String, JsonElement>> entries = ja.entrySet();
+			for (Map.Entry<String, JsonElement> entry: entries) {
+				if (entry.getKey().equalsIgnoreCase("mal_id"))
+					person.setId(entry.getValue().getAsInt());
+				if (entry.getKey().equalsIgnoreCase("link_canonical"))
+					person.setLink(entry.getValue().toString().substring(1, entry.getValue().toString().length()-1));
+				if (entry.getKey().equalsIgnoreCase("name"))
+					person.setNameRomaji(entry.getValue().toString().substring(1, entry.getValue().toString().length()-1));
+				if (entry.getKey().equalsIgnoreCase("given_name"))
+					person.setGivenName(MiscUtils.getJsonString(entry.getValue()));
+				if (entry.getKey().equalsIgnoreCase("family_name"))
+					person.setFamilyName(MiscUtils.getJsonString(entry.getValue()));
+				if (entry.getKey().equalsIgnoreCase("birthday"))
+					person.setBirthday(entry.getValue().toString().substring(1, entry.getValue().toString().length()-1));
+				if (entry.getKey().equalsIgnoreCase("website_url"))
+					person.setWebsite(entry.getValue().toString().substring(1, entry.getValue().toString().length()-1));				
+				if (entry.getKey().equalsIgnoreCase("more"))
+					person.setDescription(StringEscapeUtils.unescapeJson(entry.getValue().getAsString()));
+				if (entry.getKey().equalsIgnoreCase("image_url"))
+					person.setThumbnailUrl(entry.getValue().toString().substring(1, entry.getValue().toString().length()-1));
+			}
+			BotCache.malPersonCache.put(id, person);
+			return person;
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;

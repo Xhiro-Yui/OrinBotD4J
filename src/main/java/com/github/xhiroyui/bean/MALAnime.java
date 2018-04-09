@@ -3,6 +3,7 @@ package com.github.xhiroyui.bean;
 import com.google.gson.JsonArray;
 
 public class MALAnime {
+	private int id;
 	private int statusCode;
 	private String link;
 	private String title;
@@ -19,6 +20,12 @@ public class MALAnime {
 	private String synopsis;
 	private JsonArray studio;
 	
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
 	public int getStatusCode() {
 		return statusCode;
 	}
