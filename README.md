@@ -69,8 +69,8 @@ Actual description of the commands can be found ~~here~~ (I'll work on it soon, 
 ### How to get ~~this adorable cat~~ OrinBot on my own server - *she's adorable k...?*
 As with all open source bots, there are typically two options on how to get the bot to your own server.
 
-**1.** Get me, the owner to add the bot into your server
-**2.** Host the bot yourself
+1. Get me, the owner to add the bot into your server
+2. Host the bot yourself
 
 As for option 1, until the rewrite is complete, there is actually a module on the bot currently that actually takes up quite a large amount of CPU power and RAM if used and as such I won't be adding the bot to any other server until then to avoid the overhead to increase even further than it's current state.
 
