@@ -263,7 +263,7 @@ public class ModerationCommandsHandler extends ModuleHandler {
 							Instant.now().plus(Long.parseLong(command[2]), ChronoUnit.HOURS).toEpochMilli());
 					Long logChannelID = BotCache.guildLogChannelIDCache.get(event.getGuild().getLongID());
 					if (command.length > 3) {
-						StringBuilder reason = new StringBuilder().append("Reason :");
+						StringBuilder reason = new StringBuilder();
 						for (int i = 3; i < command.length; i++) {
 							reason.append(" " + command[i]);
 						}
@@ -271,7 +271,7 @@ public class ModerationCommandsHandler extends ModuleHandler {
 						RequestBuffer.request(() -> DiscordClient.getClient()
 								.getOrCreatePMChannel(event.getMessage().getMentions().get(0))
 								.sendMessage("You have been muted in " + event.getGuild().getName() + " for " + command[2]
-										+ " hour(s). " + reason.toString()));
+										+ " hour(s). Reason : " + reason.toString()));
 						if (logChannelID.compareTo(0L) != 0)
 							embedLogMessage(event.getMessage().getMentions().get(0), event.getAuthor(), "MUTE", command[2], reason.toString(), logChannelID);
 					} else {
@@ -294,7 +294,7 @@ public class ModerationCommandsHandler extends ModuleHandler {
 	private void embedLogMessage(IUser offender, IUser enforcer, String type, String duration, String reason, long logChannelID) {
 		EmbedBuilder embed = new EmbedBuilder();
 		if (type.equalsIgnoreCase("mute"))
-			embed.withTitle("<:blobcatM:384229508888395779><:blobcatU:384229509387517952><:blobcatT:384229509026807811><:blobcatE:384229507655270401>");
+			embed.withTitle("<:blobCatM:433564121473089545><:blobCatU:433564121057984512><:blobCatT:433564121796050954><:blobCatE:433564121519095818>");
 		embed.withThumbnail(offender.getAvatarURL());
 		embed.appendField("Member", offender.mention(false) + "\n" + offender.getLongID(), false);
 		embed.appendField("Enforcer", enforcer.getName(), true);
