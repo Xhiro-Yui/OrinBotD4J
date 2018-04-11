@@ -18,7 +18,9 @@ import com.github.xhiroyui.util.MiscUtils;
 
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
+import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.DiscordException;
+import sx.blah.discord.util.EmbedBuilder;
 import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.RateLimitException;
 import sx.blah.discord.util.RequestBuffer;
@@ -271,24 +273,14 @@ public class ModerationCommandsHandler extends ModuleHandler {
 								.sendMessage("You have been muted in " + event.getGuild().getName() + " for " + command[2]
 										+ " hour(s). " + reason.toString()));
 						if (logChannelID.compareTo(0L) != 0)
-							RequestBuffer
-									.request(
-											() -> sendLogMessage(
-													"User " + event.getMessage().getMentions().get(0).mention()
-															+ " has been muted for " + command[2] + " hour(s). " + reason.toString() + " -" + event.getAuthor().getName(),
-													logChannelID));
+							embedLogMessage(event.getMessage().getMentions().get(0), event.getAuthor(), "MUTE", command[2], reason.toString(), logChannelID);
 					} else {
 						RequestBuffer.request(() -> DiscordClient.getClient()
 								.getOrCreatePMChannel(event.getMessage().getMentions().get(0))
 								.sendMessage("You have been muted in " + event.getGuild().getName() + " for " + command[2]
 										+ " hour(s)."));
 						if (logChannelID.compareTo(0L) != 0)
-							RequestBuffer
-									.request(
-											() -> sendLogMessage(
-													"User " + event.getMessage().getMentions().get(0).mention()
-															+ " has been muted for " + command[2] + " hour(s). -" + event.getAuthor().getName(),
-													logChannelID));
+							embedLogMessage(event.getMessage().getMentions().get(0), event.getAuthor(), "MUTE", command[2], "", logChannelID);
 					}
 					TaskLoader.getTaskLoader().refreshUnmuter();
 				} catch (NullPointerException e) {
@@ -297,6 +289,21 @@ public class ModerationCommandsHandler extends ModuleHandler {
 				}
 			}
 		}
+	}
+	
+	private void embedLogMessage(IUser offender, IUser enforcer, String type, String duration, String reason, long logChannelID) {
+		EmbedBuilder embed = new EmbedBuilder();
+		if (type.equalsIgnoreCase("mute"))
+			embed.withTitle("<:blobcatM:384229508888395779><:blobcatU:384229509387517952><:blobcatT:384229509026807811><:blobcatE:384229507655270401>");
+		embed.withThumbnail(offender.getAvatarURL());
+		embed.appendField("Member", offender.mention(false) + "\n" + offender.getLongID(), false);
+		embed.appendField("Enforcer", enforcer.getName(), true);
+		embed.appendField("Duration", duration, true);
+		embed.appendField("Reason", reason.isEmpty()? "Not specified" : reason , false);
+		embed.withFooterText("Case #0");
+		embed.withColor(255, 200, 100);
+		
+		RequestBuffer.request(() -> DiscordClient.getClient().getChannelByID(logChannelID).sendMessage(embed.build()));	
 	}
 
 	private void printAvailableFlags(MessageReceivedEvent event) {
