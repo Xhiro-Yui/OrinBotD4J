@@ -201,6 +201,7 @@ public class GeneralCommandsHandler extends ModuleHandler {
 		embed.withThumbnail(event.getAuthor().getAvatarURL());
 		embed.appendField("Display Name", event.getAuthor().getDisplayName(event.getGuild()), true);
 		embed.appendField("Account Creation Date", BotConstant.DATE_TIME_FORMATTER.format(event.getAuthor().getCreationDate()), true);
+		embed.appendField("Joined Date", BotConstant.DATE_TIME_FORMATTER.format(event.getGuild().getJoinTimeForUser(event.getAuthor())), true);
 		embed.withColor(event.getAuthor().getColorForGuild(event.getGuild()));
 		sendEmbed(embed, event);
 	}

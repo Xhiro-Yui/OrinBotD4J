@@ -9,6 +9,7 @@ import com.github.xhiroyui.bean.GBFWeapon;
 import com.github.xhiroyui.constant.FunctionConstant;
 import com.github.xhiroyui.util.Command;
 import com.github.xhiroyui.util.GBFWikiParser;
+import com.github.xhiroyui.util.MiscUtils;
 
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
@@ -265,7 +266,7 @@ public class GBFCommandsHandler extends ModuleHandler {
 			embed.withUrl(weapon.getBaseUri());
 			embed.appendField(weapon.getSkill1Name() + " (" +  weapon.getSkill1Level() + ")", weapon.getSkill1Desc(), false);
 			embed.appendField(weapon.getSkill2Name() + " (" + weapon.getSkill2Level() + ")", weapon.getSkill2Desc(), false);
-			embed.appendField("Ougi", weapon.getOugiName() + " - " + weapon.getOugiEffect(), false);
+			embed.appendField("Ougi", weapon.getOugiName() + " - " + MiscUtils.gbfWikiTextParser(weapon.getOugiEffect()), false);
 			
 			switch (weapon.getElement().toLowerCase()) {
 			case "fire":

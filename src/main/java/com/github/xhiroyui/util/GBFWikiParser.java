@@ -123,7 +123,6 @@ public class GBFWikiParser {
 	}
 	
 	public GBFWeapon parseGbfWeapon(String url) throws IOException {
-		try { // delete this line
 		// Web Connection
 		Document doc = Jsoup.connect(url).userAgent(BotConstant.USER_AGENT).get();
 		
@@ -219,6 +218,5 @@ public class GBFWikiParser {
 			
 		}
 		return weapon;
-		} catch (Exception e) { e.printStackTrace(); return null; } // delete this line
 	}
 }
