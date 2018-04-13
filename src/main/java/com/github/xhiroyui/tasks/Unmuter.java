@@ -6,6 +6,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.github.xhiroyui.DiscordClient;
 import com.github.xhiroyui.bean.MutedUser;
 import com.github.xhiroyui.constant.BotConstant;
@@ -15,6 +18,7 @@ import com.github.xhiroyui.util.DBConnection;
 import sx.blah.discord.util.RequestBuffer;
 
 public class Unmuter implements ITask {
+	private static final Logger logger = LoggerFactory.getLogger(Unmuter.class.getSimpleName());
 	private ScheduledExecutorService unmuterService = null;
 
 	private static Unmuter unmuter;
@@ -23,14 +27,16 @@ public class Unmuter implements ITask {
 	}
 
 	public static Unmuter getUnmuter() {
-		if (unmuter == null)
+		if (unmuter == null) {
+			logger.debug("Instantiating Unmuter");
 			unmuter = new Unmuter();
+		}
 		return unmuter;
 	}
 
 	private void startUnmuter() {
 		shutdown(); // To ensure no duplicate unmuters are ever launched
-		System.out.println("Initializing Unmuter.");
+		logger.info("Initializing Unmuter.");
 		unmuterService = Executors.newScheduledThreadPool(0);
 		unmuterService.scheduleAtFixedRate(new Runnable() {
 			@Override
@@ -67,6 +73,7 @@ public class Unmuter implements ITask {
 
 	@Override
 	public void refreshSettings() {
+		logger.debug("Refreshing Unmuter settings");
 		if (BotCache.refreshMutedUsersCache() > 0) {
 			if (unmuterService == null) 
 				startUnmuter();
@@ -88,7 +95,7 @@ public class Unmuter implements ITask {
 	@Override
 	public void shutdown() {
 		if (unmuterService != null) {
-			System.out.println("Shutting down Unmuter.");
+			logger.info("Shutting down Unmuter.");
 			unmuterService.shutdown();
 			unmuterService = null;
 		}

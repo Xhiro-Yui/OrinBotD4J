@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.mutable.MutableBoolean;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.github.xhiroyui.modules.AdminCommands;
 import com.github.xhiroyui.modules.GBFCommands;
@@ -16,17 +18,21 @@ import com.github.xhiroyui.modules.OwnerCommands;
 import com.github.xhiroyui.util.Command;
 
 public class ModuleLoader {
+	private static final Logger logger = LoggerFactory.getLogger(ModuleLoader.class.getSimpleName());
 	
 	private static ModuleLoader moduleLoader;
 	private HashMap<IModuleExtended, MutableBoolean> moduleList = new HashMap<IModuleExtended, MutableBoolean>();
 	
 	public static ModuleLoader getModuleLoader() {
-		if (moduleLoader == null)
+		if (moduleLoader == null) {
+			logger.debug("Instantiating ModuleLoader singleton");
 			moduleLoader = new ModuleLoader();
+		}
 		return moduleLoader;
 	}
 
 	public void initModules() {
+		logger.debug("Initializing command modules");
 		moduleList.put(new OwnerCommands(), new MutableBoolean(true));
 		moduleList.put(new AdminCommands(), new MutableBoolean(true));
 		moduleList.put(new ModerationCommands(), new MutableBoolean(true));

@@ -2,6 +2,9 @@ package com.github.xhiroyui.modules;
 
 import java.io.IOException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.github.xhiroyui.UserWhitelist;
 import com.github.xhiroyui.constant.FunctionConstant;
 import com.github.xhiroyui.util.Command;
@@ -13,8 +16,11 @@ import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.RateLimitException;
 
 public class AdminCommandsHandler extends ModuleHandler {
+	private static final Logger logger = LoggerFactory.getLogger(AdminCommandsHandler.class.getSimpleName());
+
 	public AdminCommandsHandler() {
 		createCommands();
+		logger.debug("AdminCommands successfully initialized");
 	}
 
 	private void createCommands() {
@@ -52,21 +58,23 @@ public class AdminCommandsHandler extends ModuleHandler {
 			switch (commandCode) {
 			case FunctionConstant.ADMIN_PING:
 				try {
-					adminPing(event);					
+					logger.info("{} [{}] - {} - {}", event.getAuthor().getDisplayName(event.getGuild()),
+							event.getAuthor().getLongID(), FunctionConstant.ADMIN_PING, gson.toJson(command));
+					adminPing(event);
 				} catch (Exception e) {
 					throwError(FunctionConstant.ADMIN_PING, e, event);
 				}
 				break;
-			
+
 			}
 
 		}
 	}
-	
+
 	// Command functions are placed below here
-	
+
 	private void adminPing(MessageReceivedEvent event) {
 		sendMessage("PONG", event);
 	}
-	
+
 }

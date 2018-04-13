@@ -28,4 +28,5 @@ bin/
 !gradle-wrapper.jar
 
 # Program files
+src/main/resources/logback-test.xml
 whitelist.json

@@ -3,6 +3,9 @@ package com.github.xhiroyui.modules;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.github.xhiroyui.DiscordClient;
 import com.github.xhiroyui.TaskLoader;
 import com.github.xhiroyui.constant.FunctionConstant;
@@ -23,8 +26,11 @@ import sx.blah.discord.util.RateLimitException;
 import sx.blah.discord.util.RequestBuffer;
 
 public class OwnerCommandsHandler extends ModuleHandler {
+	private static final Logger logger = LoggerFactory.getLogger(OwnerCommandsHandler.class.getSimpleName());
+	
 	public OwnerCommandsHandler() {
 		createCommands();
+		logger.debug("OwnerCommands successfully initialized");
 	}
 
 	private void createCommands() {
@@ -119,6 +125,8 @@ public class OwnerCommandsHandler extends ModuleHandler {
 			switch (commandCode) {
 			case FunctionConstant.OWNER_KILL_REQUEST_BUFFER:
 				try {
+					logger.info("{} [{}] - {} - {}", event.getAuthor().getDisplayName(event.getGuild()),
+							event.getAuthor().getLongID(), FunctionConstant.OWNER_KILL_REQUEST_BUFFER, gson.toJson(command));
 					sendMessage(Integer.toString(killRequestBuffer()) + " requests killed. Merciless ;)", event);
 				} catch (Exception e) {
 					throwError(FunctionConstant.OWNER_KILL_REQUEST_BUFFER, e, event);
@@ -126,6 +134,8 @@ public class OwnerCommandsHandler extends ModuleHandler {
 				break;
 			case FunctionConstant.OWNER_CHANNEL_MONITOR_LOOKUP:
 				try {
+					logger.info("{} [{}] - {} - {}", event.getAuthor().getDisplayName(event.getGuild()),
+							event.getAuthor().getLongID(), FunctionConstant.OWNER_CHANNEL_MONITOR_LOOKUP, gson.toJson(command));
 					lookForChannelMonitors(event);
 				} catch (Exception e) {
 					throwError(FunctionConstant.OWNER_CHANNEL_MONITOR_LOOKUP, e, event);
@@ -133,6 +143,8 @@ public class OwnerCommandsHandler extends ModuleHandler {
 				break;
 			case FunctionConstant.OWNER_CHANGE_DISPLAY_PICTURE:
 				try {
+					logger.info("{} [{}] - {} - {}", event.getAuthor().getDisplayName(event.getGuild()),
+							event.getAuthor().getLongID(), FunctionConstant.OWNER_CHANGE_DISPLAY_PICTURE, gson.toJson(command));
 					changeDisplayPicture(command, event);
 				} catch (Exception e) {
 					throwError(FunctionConstant.OWNER_CHANGE_DISPLAY_PICTURE, e, event);
@@ -140,6 +152,8 @@ public class OwnerCommandsHandler extends ModuleHandler {
 				break;
 			case FunctionConstant.OWNER_CHANGE_STATUS:
 				try {
+					logger.info("{} [{}] - {} - {}", event.getAuthor().getDisplayName(event.getGuild()),
+							event.getAuthor().getLongID(), FunctionConstant.OWNER_CHANGE_STATUS, gson.toJson(command));
 					changeStatus(command, event);
 				} catch (Exception e) {
 					throwError(FunctionConstant.OWNER_CHANGE_STATUS, e, event);
@@ -147,6 +161,8 @@ public class OwnerCommandsHandler extends ModuleHandler {
 				break;
 			case FunctionConstant.OWNER_EMOJI_STRING:
 				try {
+					logger.info("{} [{}] - {} - {}", event.getAuthor().getDisplayName(event.getGuild()),
+							event.getAuthor().getLongID(), FunctionConstant.OWNER_EMOJI_STRING, gson.toJson(command));
 					getEmojiString(event);
 				} catch (Exception e) {
 					throwError(FunctionConstant.OWNER_EMOJI_STRING, e, event);
@@ -154,6 +170,8 @@ public class OwnerCommandsHandler extends ModuleHandler {
 				break;
 			case FunctionConstant.OWNER_EMBED_PING:
 				try {
+					logger.info("{} [{}] - {} - {}", event.getAuthor().getDisplayName(event.getGuild()),
+							event.getAuthor().getLongID(), FunctionConstant.OWNER_EMBED_PING, gson.toJson(command));
 					embedPong(event);
 				} catch (Exception e) {
 					throwError(FunctionConstant.OWNER_EMBED_PING, e, event);

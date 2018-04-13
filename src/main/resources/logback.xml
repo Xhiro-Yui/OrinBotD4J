@@ -1,0 +1,17 @@
+<configuration>
+
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%d{ISO8601, Asia/Singapore} | %5level | %-24logger{1} - %msg%n</pattern>
+		</encoder>
+	</appender>
+
+	<root level="INFO">
+		<appender-ref ref="STDOUT" />
+	</root>
+
+	<logger name="com.zaxxer.hikari" level="WARN" />
+	<logger name="org.eclipse.jetty" level="OFF" />
+	<logger name="sx.blah.discord.Discord4J" level="WARN" />
+
+</configuration>

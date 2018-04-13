@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.apache.commons.lang3.StringUtils;
-//import org.apache.http.client.methods.RequestBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.github.xhiroyui.DiscordClient;
 import com.github.xhiroyui.constant.BotConstant;
 import com.github.xhiroyui.util.Command;
+import com.google.gson.Gson;
 
 import sx.blah.discord.handle.impl.events.guild.channel.ChannelEvent;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
@@ -26,8 +28,9 @@ import sx.blah.discord.util.RequestBuffer;
 import sx.blah.discord.util.RequestBuilder;
 
 public class ModuleHandler {
-
+	private static final Logger logger = LoggerFactory.getLogger(ModuleHandler.class.getSimpleName());
 	protected ArrayList<Command> commandList = new ArrayList<Command>();
+	protected Gson gson = new Gson();
 
 	public String[] parseMessage(String message) {
 		String[] command = StringUtils.split(message, ' ');
@@ -74,7 +77,6 @@ public class ModuleHandler {
 		for (int i = 0; i < commandList.size(); i++) {
 			for (int j = 0; j < commandList.get(i).getCommandCallers().size(); j++) {
 				if (command.equalsIgnoreCase(commandList.get(i).getCommandCallers().get(j))) {
-					System.out.println(commandList.get(i).getCommandCode());
 					return commandList.get(i);
 				}
 			}
@@ -130,6 +132,8 @@ public class ModuleHandler {
 	}
 
 	protected String validateCommand(MessageReceivedEvent event, String[] command) {
+//		Logger logger = LoggerFactory.getLogger(getClass().getSimpleName());
+//		logger.info("Bla");
 		Command commandObj = getCommandObj(command[0]);
 		if (commandObj != null) {
 			if (command.length > 1 && command[1].equalsIgnoreCase("help")) {
@@ -148,6 +152,7 @@ public class ModuleHandler {
 	protected void throwError(String command, Exception e, MessageReceivedEvent event) {
 		sendMessage("Command **" + command + "** faced an error `" + e.getClass().getName()
 				+ "`.\nPlease contact the bot author to solve this error.", event);
+		logger.warn("Command {} faced an error.", command);
 		e.printStackTrace();
 	}
 

@@ -5,22 +5,26 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.mutable.MutableBoolean;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.github.xhiroyui.constant.BotConstant;
-import com.github.xhiroyui.tasks.ChannelMonitor;
+import com.github.xhiroyui.tasks.OldChannelMonitor;
 import com.github.xhiroyui.tasks.ITask;
 import com.github.xhiroyui.tasks.Unmuter;
 import com.github.xhiroyui.util.BotCache;
 import com.github.xhiroyui.util.DBConnection;
 
 public class TaskLoader {
-	
+	private static final Logger logger = LoggerFactory.getLogger(TaskLoader.class.getSimpleName());
 	private static TaskLoader taskLoader;
 	private HashMap<ITask, MutableBoolean> taskList = new HashMap<ITask, MutableBoolean>();
 	
 	public static TaskLoader getTaskLoader() {
-		if (taskLoader == null)
+		if (taskLoader == null) {
+			logger.debug("Instantiating TaskLoader");
 			taskLoader = new TaskLoader();
+		}
 		return taskLoader;
 	}
 
@@ -33,7 +37,7 @@ public class TaskLoader {
 		} else {
 			for (String each : channelList) {
 				if (OrinBot.db_cstring == null) // Means deployment
-					taskList.put(new ChannelMonitor(Long.parseLong(each)), new MutableBoolean(true));
+					taskList.put(new OldChannelMonitor(Long.parseLong(each)), new MutableBoolean(true));
 			}
 		}
 
@@ -95,7 +99,7 @@ public class TaskLoader {
 	}
 	
 	public void addMonitor(long channelID) {
-		ChannelMonitor newChannelMonitor = new ChannelMonitor(channelID);
+		OldChannelMonitor newChannelMonitor = new OldChannelMonitor(channelID);
 		taskList.put(newChannelMonitor, new MutableBoolean(true));
 		enableTask(newChannelMonitor);
 	}
@@ -115,7 +119,7 @@ public class TaskLoader {
 	public ArrayList<String> getMonitorFlags(Long channelID) {
 		for (ITask entry : taskList.keySet()) {
 			if (channelID.compareTo(entry.getChannelID()) == 0) {
-				return ((ChannelMonitor)entry).getMonitorFlags();
+				return ((OldChannelMonitor)entry).getMonitorFlags();
 			}
 		}
 		return null;

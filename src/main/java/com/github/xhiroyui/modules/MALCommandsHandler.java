@@ -7,6 +7,8 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.commons.text.StringEscapeUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.github.xhiroyui.bean.MALAnime;
 import com.github.xhiroyui.bean.MALManga;
@@ -29,11 +31,12 @@ import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.RateLimitException;
 
 public class MALCommandsHandler extends ModuleHandler {
-
+	private static final Logger logger = LoggerFactory.getLogger(MALCommandsHandler.class.getSimpleName());
 	private MALParser malParser = new MALParser();
 
 	public MALCommandsHandler() {
 		createCommands();
+		logger.debug("MALCommands successfully initialized");
 	}
 
 	private void createCommands() {
@@ -84,7 +87,13 @@ public class MALCommandsHandler extends ModuleHandler {
 		if (commandCode != null) {
 			switch (commandCode) {
 			case FunctionConstant.MAL_SEARCH:
-				searchMAL(command, event);
+				try {
+					logger.info("{} [{}] - {} - {}", event.getAuthor().getDisplayName(event.getGuild()),
+							event.getAuthor().getLongID(), FunctionConstant.MAL_SEARCH, gson.toJson(command));
+					searchMAL(command, event);
+				} catch (Exception e) {
+					throwError(FunctionConstant.MAL_SEARCH, e, event);
+				}
 				break;
 
 			}
@@ -178,11 +187,12 @@ public class MALCommandsHandler extends ModuleHandler {
 			toEdit.removeAllReactions();
 			return;
 		}
-		embed.withTitle(results.getNameRomaji() + " | " + (results.getFamilyName()!= null? results.getFamilyName() : "")
-				+ (results.getGivenName()!= null? results.getGivenName() : ""));
+		embed.withTitle(
+				results.getNameRomaji() + " | " + (results.getFamilyName() != null ? results.getFamilyName() : "")
+						+ (results.getGivenName() != null ? results.getGivenName() : ""));
 		embed.withUrl(results.getLink());
 		embed.appendField("Birthday", results.getBirthday(), true);
-		if (results.getWebsite().length() > 7) 
+		if (results.getWebsite().length() > 7)
 			embed.appendField("Website", "[Link](" + results.getWebsite() + ")", true);
 		embed.withThumbnail(results.getThumbnailUrl());
 		if (results.getDescription().length() > 500)

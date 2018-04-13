@@ -28,10 +28,8 @@ import sx.blah.discord.util.RateLimitException;
 import sx.blah.discord.util.RequestBuffer;
 import sx.blah.discord.util.RequestBuffer.RequestFuture;
 
-public class ChannelMonitor implements ITask {
+public class OldChannelMonitor implements ITask {
 
-	private ArrayList<IChannel> channels;
-	
 	private IChannel logChannel = null;
 	private Long channelID;
 	private MutableBoolean fifoFlag = new MutableBoolean();
@@ -43,7 +41,7 @@ public class ChannelMonitor implements ITask {
 	private ScheduledExecutorService scheduledExecutorService = null;
 	volatile RequestFuture<Void> rf;
 
-	public ChannelMonitor(long channelID) {
+	public OldChannelMonitor(long channelID) {
 		this.channelID = channelID;
 		refreshSettings();
 		System.out.println("Initializing Channel Monitor for " + channelID);

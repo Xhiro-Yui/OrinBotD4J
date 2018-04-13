@@ -6,6 +6,9 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.github.xhiroyui.DiscordClient;
 import com.github.xhiroyui.TaskLoader;
 import com.github.xhiroyui.UserWhitelist;
@@ -26,8 +29,10 @@ import sx.blah.discord.util.RateLimitException;
 import sx.blah.discord.util.RequestBuffer;
 
 public class ModerationCommandsHandler extends ModuleHandler {
+	private static final Logger logger = LoggerFactory.getLogger(ModerationCommandsHandler.class.getSimpleName());
 	public ModerationCommandsHandler() {
 		createCommands();
+		logger.debug("ModerationCommands successfully initialized");
 	}
 
 	private void createCommands() {
@@ -135,13 +140,17 @@ public class ModerationCommandsHandler extends ModuleHandler {
 			switch (commandCode) {
 			case FunctionConstant.MOD_SETUP_MUTE_ROLE:
 				try {
+					logger.info("{} [{}] - {} - {}", event.getAuthor().getDisplayName(event.getGuild()),
+							event.getAuthor().getLongID(), FunctionConstant.MOD_SETUP_MUTE_ROLE, gson.toJson(command));
 					setupMuteRole(event);
 				} catch (Exception e) {
-					throwError(FunctionConstant.MOD_FLAG_CHANNEL, e, event);
+					throwError(FunctionConstant.MOD_SETUP_MUTE_ROLE, e, event);
 				}
 				break;
 			case FunctionConstant.MOD_SETUP_LOG_CHANNEL:
 				try {
+					logger.info("{} [{}] - {} - {}", event.getAuthor().getDisplayName(event.getGuild()),
+							event.getAuthor().getLongID(), FunctionConstant.MOD_SETUP_LOG_CHANNEL, gson.toJson(command));
 					setupLogChannelForGuild(event);
 				} catch (Exception e) {
 					throwError(FunctionConstant.MOD_SETUP_LOG_CHANNEL, e, event);
@@ -150,6 +159,8 @@ public class ModerationCommandsHandler extends ModuleHandler {
 
 			case FunctionConstant.MOD_MUTE_USER:
 				try {
+					logger.info("{} [{}] - {} - {}", event.getAuthor().getDisplayName(event.getGuild()),
+							event.getAuthor().getLongID(), FunctionConstant.MOD_MUTE_USER, gson.toJson(command));
 					muteUser(command, event);
 				} catch (Exception e) {
 					throwError(FunctionConstant.MOD_MUTE_USER, e, event);
@@ -157,6 +168,8 @@ public class ModerationCommandsHandler extends ModuleHandler {
 				break;
 			case FunctionConstant.MOD_FLAG_CHANNEL:
 				try {
+					logger.info("{} [{}] - {} - {}", event.getAuthor().getDisplayName(event.getGuild()),
+							event.getAuthor().getLongID(), FunctionConstant.MOD_FLAG_CHANNEL, gson.toJson(command));
 					flagChannel(command, event);
 				} catch (Exception e) {
 					throwError(FunctionConstant.MOD_FLAG_CHANNEL, e, event);
@@ -164,6 +177,8 @@ public class ModerationCommandsHandler extends ModuleHandler {
 				break;
 			case FunctionConstant.MOD_UNFLAG_CHANNEL:
 				try {
+					logger.info("{} [{}] - {} - {}", event.getAuthor().getDisplayName(event.getGuild()),
+							event.getAuthor().getLongID(), FunctionConstant.MOD_UNFLAG_CHANNEL, gson.toJson(command));
 					removeAllFlags(event.getChannel().getLongID());
 					printFlagsForCurrentChannel(event);
 				} catch (Exception e) {
@@ -172,6 +187,8 @@ public class ModerationCommandsHandler extends ModuleHandler {
 				break;
 			case FunctionConstant.MOD_CHECK_CHANNEL_FLAGS:
 				try {
+					logger.info("{} [{}] - {} - {}", event.getAuthor().getDisplayName(event.getGuild()),
+							event.getAuthor().getLongID(), FunctionConstant.MOD_CHECK_CHANNEL_FLAGS, gson.toJson(command));
 					printFlagsForCurrentChannel(event);
 				} catch (Exception e) {
 					throwError(FunctionConstant.MOD_CHECK_CHANNEL_FLAGS, e, event);
@@ -179,6 +196,8 @@ public class ModerationCommandsHandler extends ModuleHandler {
 				break;
 			case FunctionConstant.MOD_LIST_FLAGS:
 				try {
+					logger.info("{} [{}] - {} - {}", event.getAuthor().getDisplayName(event.getGuild()),
+							event.getAuthor().getLongID(), FunctionConstant.MOD_LIST_FLAGS, gson.toJson(command));
 					printAvailableFlags(event);
 				} catch (Exception e) {
 					throwError(FunctionConstant.MOD_LIST_FLAGS, e, event);
@@ -186,6 +205,8 @@ public class ModerationCommandsHandler extends ModuleHandler {
 				break;
 			case FunctionConstant.MOD_MESSAGE_PURGE:
 				try {
+					logger.info("{} [{}] - {} - {}", event.getAuthor().getDisplayName(event.getGuild()),
+							event.getAuthor().getLongID(), FunctionConstant.MOD_MESSAGE_PURGE, gson.toJson(command));
 					purgeMessages(command, event);
 				} catch (Exception e) {
 					throwError(FunctionConstant.MOD_MESSAGE_PURGE, e, event);

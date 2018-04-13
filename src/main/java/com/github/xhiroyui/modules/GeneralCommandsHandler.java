@@ -6,6 +6,9 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.github.xhiroyui.DiscordClient;
 import com.github.xhiroyui.ModuleLoader;
 import com.github.xhiroyui.OrinBot;
@@ -20,9 +23,11 @@ import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.RateLimitException;
 
 public class GeneralCommandsHandler extends ModuleHandler {
-
+	private static final Logger logger = LoggerFactory.getLogger(GeneralCommandsHandler.class.getSimpleName());
+	
 	public GeneralCommandsHandler() {
 		createCommands();
+		logger.debug("GeneralCommands successfully initialized");
 	}
 
 	private void createCommands() {
@@ -88,6 +93,8 @@ public class GeneralCommandsHandler extends ModuleHandler {
 			switch (commandCode) {
 			case FunctionConstant.GEN_PING:
 				try {
+					logger.info("{} [{}] - {} - {}", event.getAuthor().getDisplayName(event.getGuild()),
+							event.getAuthor().getLongID(), FunctionConstant.GEN_PING, gson.toJson(command));
 					sendMessage("Pong <a:blobAww:422628405507391488>", event);
 				} catch (Exception e) {
 					throwError(FunctionConstant.GEN_PING, e, event);
@@ -95,6 +102,8 @@ public class GeneralCommandsHandler extends ModuleHandler {
 				break;
 			case FunctionConstant.GEN_BOT_AUTHOR:
 				try {
+					logger.info("{} [{}] - {} - {}", event.getAuthor().getDisplayName(event.getGuild()),
+							event.getAuthor().getLongID(), FunctionConstant.GEN_BOT_AUTHOR, gson.toJson(command));
 					botAuthor(event);
 				} catch (Exception e) {
 					throwError(FunctionConstant.GEN_BOT_AUTHOR, e, event);
@@ -102,6 +111,8 @@ public class GeneralCommandsHandler extends ModuleHandler {
 				break;
 			case FunctionConstant.GEN_UPTIME:
 				try {
+					logger.info("{} [{}] - {} - {}", event.getAuthor().getDisplayName(event.getGuild()),
+							event.getAuthor().getLongID(), FunctionConstant.GEN_UPTIME, gson.toJson(command));
 					sendMessage(
 							BotConstant.DATE_TIME_FORMATTER.format(
 									Instant.now().minusMillis(OrinBot.rb.getUptime()).truncatedTo(ChronoUnit.SECONDS)),
@@ -112,6 +123,8 @@ public class GeneralCommandsHandler extends ModuleHandler {
 				break;
 			case FunctionConstant.GEN_GET_AVAILABLE_COMMANDS:
 				try {
+					logger.info("{} [{}] - {} - {}", event.getAuthor().getDisplayName(event.getGuild()),
+							event.getAuthor().getLongID(), FunctionConstant.GEN_GET_AVAILABLE_COMMANDS, gson.toJson(command));
 					getAvailableCommands(event);
 				} catch (Exception e) {
 					throwError(FunctionConstant.GEN_GET_AVAILABLE_COMMANDS, e, event);
@@ -119,6 +132,8 @@ public class GeneralCommandsHandler extends ModuleHandler {
 				break;
 			case FunctionConstant.GEN_GET_GUILD_STATS:
 				try {
+					logger.info("{} [{}] - {} - {}", event.getAuthor().getDisplayName(event.getGuild()),
+							event.getAuthor().getLongID(), FunctionConstant.GEN_GET_GUILD_STATS, gson.toJson(command));
 					getGuildStatistics(event);
 				} catch (Exception e) {
 					throwError(FunctionConstant.GEN_GET_GUILD_STATS, e, event);
@@ -126,6 +141,8 @@ public class GeneralCommandsHandler extends ModuleHandler {
 				break;
 			case FunctionConstant.GEN_GET_USER_STATS:
 				try {
+					logger.info("{} [{}] - {} - {}", event.getAuthor().getDisplayName(event.getGuild()),
+							event.getAuthor().getLongID(), FunctionConstant.GEN_GET_USER_STATS, gson.toJson(command));
 					getUserStatistics(event);
 				} catch (Exception e) {
 					throwError(FunctionConstant.GEN_GET_USER_STATS, e, event);
